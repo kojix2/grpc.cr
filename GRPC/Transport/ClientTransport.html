@@ -14,7 +14,7 @@
 <script type="text/javascript" src="../../js/doc.js"></script>
 
   <meta name="repository-name" content="grpc">
-  <title>GRPC::Transport::StreamData - grpc main</title>
+  <title>GRPC::Transport::ClientTransport - grpc main</title>
   <script type="text/javascript">
     CrystalDocs.base_path = "../../";
   </script>
@@ -252,7 +252,7 @@
       
         <ul>
   
-  <li class=" " data-id="grpc/GRPC/Transport/ClientTransport" data-name="grpc::transport::clienttransport">
+  <li class=" current" data-id="grpc/GRPC/Transport/ClientTransport" data-name="grpc::transport::clienttransport">
       <a href="../../GRPC/Transport/ClientTransport.html">ClientTransport</a>
       
     </li>
@@ -302,7 +302,7 @@
       
     </li>
   
-  <li class=" current" data-id="grpc/GRPC/Transport/StreamData" data-name="grpc::transport::streamdata">
+  <li class=" " data-id="grpc/GRPC/Transport/StreamData" data-name="grpc::transport::streamdata">
       <a href="../../GRPC/Transport/StreamData.html">StreamData</a>
       
     </li>
@@ -362,13 +362,11 @@
 <h1 class="type-name">
 
   <span class="kind">
-    class
-  </span> GRPC::<wbr>Transport::<wbr>StreamData
+    module
+  </span> GRPC::<wbr>Transport::<wbr>ClientTransport
 
 </h1>
 
-
-  <ul class="superclass-hierarchy"><li class="superclass"><a href="../../GRPC/Transport/StreamData.html">GRPC::Transport::StreamData</a></li><li class="superclass">Reference</li><li class="superclass">Object</li></ul>
 
 
 
@@ -382,7 +380,9 @@
     Overview
   </h2>
 
-  <p>StreamData accumulates headers and body for one HTTP/2 stream.</p>
+  <p>ClientTransport is the interface that Channel depends on.
+Concrete implementations (Http2ClientConnection) include this module.
+All methods return public stream types; PendingStream stays internal.</p>
 
 
 
@@ -395,6 +395,20 @@
 
 
 
+
+  <h2>
+    <a id="direct-including-types" class="anchor" href="#direct-including-types">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Direct including types
+  </h2>
+  <ul class="other-types-list">
+    
+      <li class="other-type"><a href="../../GRPC/Transport/Http2ClientConnection.html">GRPC::Transport::Http2ClientConnection</a></li>
+    
+  </ul>
 
 
 
@@ -409,8 +423,8 @@
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/transport/http2_connection.cr#L8" target="_blank">
-        grpc/transport/http2_connection.cr
+      <a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/transport/interface.cr#L6" target="_blank">
+        grpc/transport/interface.cr
       </a>
     
     <br/>
@@ -421,23 +435,6 @@
 
 
   
-  <h2>
-    <a id="constructors" class="anchor" href="#constructors">
-  <svg class="octicon-link" aria-hidden="true">
-    <use href="#octicon-link"/>
-  </svg>
-</a>
-    Constructors
-  </h2>
-  <ul class="list-summary">
-    
-      <li class="entry-summary">
-        <a href="#new-class-method" class="signature"><strong>.new</strong></a>
-        
-      </li>
-    
-  </ul>
-
 
   
 
@@ -455,22 +452,12 @@
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#body%3AIO%3A%3AMemory-instance-method" class="signature"><strong>#body</strong> : IO::Memory</a>
+        <a href="#client_stream_call%28service%3AString%2Cmethod%3AString%2Crequest_messages%3AArray%28Bytes%29%2Cmetadata%3AMetadata%29%3ATuple%28Bytes%2CStatus%29-instance-method" class="signature"><strong>#client_stream_call</strong>(service : String, method : String, request_messages : Array(Bytes), metadata : Metadata) : Tuple(Bytes, Status)</a>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#body%3D%28body%3AIO%3A%3AMemory%29-instance-method" class="signature"><strong>#body=</strong>(body : IO::Memory)</a>
-        
-      </li>
-    
-      <li class="entry-summary">
-        <a href="#body_bytes%3ABytes-instance-method" class="signature"><strong>#body_bytes</strong> : Bytes</a>
-        
-      </li>
-    
-      <li class="entry-summary">
-        <a href="#closed%3D%28closed%3ABool%29-instance-method" class="signature"><strong>#closed=</strong>(closed : Bool)</a>
+        <a href="#close%3ANil-instance-method" class="signature"><strong>#close</strong> : Nil</a>
         
       </li>
     
@@ -480,12 +467,27 @@
       </li>
     
       <li class="entry-summary">
-        <a href="#headers%3AHash%28String%2CString%29-instance-method" class="signature"><strong>#headers</strong> : Hash(String, String)</a>
+        <a href="#open_bidi_stream%28service%3AString%2Cmethod%3AString%2Crequest_messages%3AArray%28Bytes%29%2Cmetadata%3AMetadata%29%3ARawServerStream-instance-method" class="signature"><strong>#open_bidi_stream</strong>(service : String, method : String, request_messages : Array(Bytes), metadata : Metadata) : RawServerStream</a>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#headers%3D%28headers%3AHash%28String%2CString%29%29-instance-method" class="signature"><strong>#headers=</strong>(headers : Hash(String, String))</a>
+        <a href="#open_bidi_stream_live%28service%3AString%2Cmethod%3AString%2Cmetadata%3AMetadata%29%3ARawBidiCall-instance-method" class="signature"><strong>#open_bidi_stream_live</strong>(service : String, method : String, metadata : Metadata) : RawBidiCall</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#open_client_stream_live%28service%3AString%2Cmethod%3AString%2Cmetadata%3AMetadata%29%3ARawClientCall-instance-method" class="signature"><strong>#open_client_stream_live</strong>(service : String, method : String, metadata : Metadata) : RawClientCall</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#open_server_stream%28service%3AString%2Cmethod%3AString%2Crequest_bytes%3ABytes%2Cmetadata%3AMetadata%29%3ARawServerStream-instance-method" class="signature"><strong>#open_server_stream</strong>(service : String, method : String, request_bytes : Bytes, metadata : Metadata) : RawServerStream</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#unary_call%28service%3AString%2Cmethod%3AString%2Crequest_body%3ABytes%2Cmetadata%3AMetadata%29%3ATuple%28Bytes%2CStatus%29-instance-method" class="signature"><strong>#unary_call</strong>(service : String, method : String, request_body : Bytes, metadata : Metadata) : Tuple(Bytes, Status)</a>
         
       </li>
     
@@ -495,61 +497,9 @@
 
   <div class="methods-inherited">
     
-      
-
-
-      
-
-
-      
-
-
-      
-
-
-    
-      
-
-
-      
-
-
-      
-
-
-      
-
-
-    
   </div>
 
   
-  <h2>
-    <a id="constructor-detail" class="anchor" href="#constructor-detail">
-  <svg class="octicon-link" aria-hidden="true">
-    <use href="#octicon-link"/>
-  </svg>
-</a>
-    Constructor Detail
-  </h2>
-  
-    <div class="entry-detail" id="new-class-method">
-      <div class="signature">
-        
-        def self.<strong>new</strong>
-
-        <a class="method-permalink" href="#new-class-method">#</a>
-      </div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/transport/http2_connection.cr#L13" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
-
 
   
 
@@ -565,73 +515,41 @@
     Instance Method Detail
   </h2>
   
-    <div class="entry-detail" id="body:IO::Memory-instance-method">
+    <div class="entry-detail" id="client_stream_call(service:String,method:String,request_messages:Array(Bytes),metadata:Metadata):Tuple(Bytes,Status)-instance-method">
       <div class="signature">
-        
-        def <strong>body</strong> : IO::Memory
+        abstract 
+        def <strong>client_stream_call</strong>(service : String, method : String, request_messages : Array(Bytes), metadata : <a href="../../GRPC/Metadata.html">Metadata</a>) : Tuple(Bytes, <a href="../../GRPC/Status.html">Status</a>)
 
-        <a class="method-permalink" href="#body%3AIO%3A%3AMemory-instance-method">#</a>
+        <a class="method-permalink" href="#client_stream_call%28service%3AString%2Cmethod%3AString%2Crequest_messages%3AArray%28Bytes%29%2Cmetadata%3AMetadata%29%3ATuple%28Bytes%2CStatus%29-instance-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/transport/http2_connection.cr#L10" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/transport/interface.cr#L10" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="body=(body:IO::Memory)-instance-method">
+    <div class="entry-detail" id="close:Nil-instance-method">
       <div class="signature">
-        
-        def <strong>body=</strong>(body : IO::Memory)
+        abstract 
+        def <strong>close</strong> : Nil
 
-        <a class="method-permalink" href="#body%3D%28body%3AIO%3A%3AMemory%29-instance-method">#</a>
+        <a class="method-permalink" href="#close%3ANil-instance-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/transport/http2_connection.cr#L10" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
-    <div class="entry-detail" id="body_bytes:Bytes-instance-method">
-      <div class="signature">
-        
-        def <strong>body_bytes</strong> : Bytes
-
-        <a class="method-permalink" href="#body_bytes%3ABytes-instance-method">#</a>
-      </div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/transport/http2_connection.cr#L19" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
-    <div class="entry-detail" id="closed=(closed:Bool)-instance-method">
-      <div class="signature">
-        
-        def <strong>closed=</strong>(closed : Bool)
-
-        <a class="method-permalink" href="#closed%3D%28closed%3ABool%29-instance-method">#</a>
-      </div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/transport/http2_connection.cr#L11" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/transport/interface.cr#L29" target="_blank">View source</a>]
         
       </div>
     </div>
   
     <div class="entry-detail" id="closed?:Bool-instance-method">
       <div class="signature">
-        
+        abstract 
         def <strong>closed?</strong> : Bool
 
         <a class="method-permalink" href="#closed%3F%3ABool-instance-method">#</a>
@@ -640,39 +558,87 @@
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/transport/http2_connection.cr#L11" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/transport/interface.cr#L28" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="headers:Hash(String,String)-instance-method">
+    <div class="entry-detail" id="open_bidi_stream(service:String,method:String,request_messages:Array(Bytes),metadata:Metadata):RawServerStream-instance-method">
       <div class="signature">
-        
-        def <strong>headers</strong> : Hash(String, String)
+        abstract 
+        def <strong>open_bidi_stream</strong>(service : String, method : String, request_messages : Array(Bytes), metadata : <a href="../../GRPC/Metadata.html">Metadata</a>) : <a href="../../GRPC/RawServerStream.html">RawServerStream</a>
 
-        <a class="method-permalink" href="#headers%3AHash%28String%2CString%29-instance-method">#</a>
+        <a class="method-permalink" href="#open_bidi_stream%28service%3AString%2Cmethod%3AString%2Crequest_messages%3AArray%28Bytes%29%2Cmetadata%3AMetadata%29%3ARawServerStream-instance-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/transport/http2_connection.cr#L9" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/transport/interface.cr#L18" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="headers=(headers:Hash(String,String))-instance-method">
+    <div class="entry-detail" id="open_bidi_stream_live(service:String,method:String,metadata:Metadata):RawBidiCall-instance-method">
       <div class="signature">
-        
-        def <strong>headers=</strong>(headers : Hash(String, String))
+        abstract 
+        def <strong>open_bidi_stream_live</strong>(service : String, method : String, metadata : <a href="../../GRPC/Metadata.html">Metadata</a>) : <a href="../../GRPC/RawBidiCall.html">RawBidiCall</a>
 
-        <a class="method-permalink" href="#headers%3D%28headers%3AHash%28String%2CString%29%29-instance-method">#</a>
+        <a class="method-permalink" href="#open_bidi_stream_live%28service%3AString%2Cmethod%3AString%2Cmetadata%3AMetadata%29%3ARawBidiCall-instance-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/transport/http2_connection.cr#L9" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/transport/interface.cr#L22" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="open_client_stream_live(service:String,method:String,metadata:Metadata):RawClientCall-instance-method">
+      <div class="signature">
+        abstract 
+        def <strong>open_client_stream_live</strong>(service : String, method : String, metadata : <a href="../../GRPC/Metadata.html">Metadata</a>) : <a href="../../GRPC/RawClientCall.html">RawClientCall</a>
+
+        <a class="method-permalink" href="#open_client_stream_live%28service%3AString%2Cmethod%3AString%2Cmetadata%3AMetadata%29%3ARawClientCall-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/transport/interface.cr#L25" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="open_server_stream(service:String,method:String,request_bytes:Bytes,metadata:Metadata):RawServerStream-instance-method">
+      <div class="signature">
+        abstract 
+        def <strong>open_server_stream</strong>(service : String, method : String, request_bytes : Bytes, metadata : <a href="../../GRPC/Metadata.html">Metadata</a>) : <a href="../../GRPC/RawServerStream.html">RawServerStream</a>
+
+        <a class="method-permalink" href="#open_server_stream%28service%3AString%2Cmethod%3AString%2Crequest_bytes%3ABytes%2Cmetadata%3AMetadata%29%3ARawServerStream-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/transport/interface.cr#L14" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="unary_call(service:String,method:String,request_body:Bytes,metadata:Metadata):Tuple(Bytes,Status)-instance-method">
+      <div class="signature">
+        abstract 
+        def <strong>unary_call</strong>(service : String, method : String, request_body : Bytes, metadata : <a href="../../GRPC/Metadata.html">Metadata</a>) : Tuple(Bytes, <a href="../../GRPC/Status.html">Status</a>)
+
+        <a class="method-permalink" href="#unary_call%28service%3AString%2Cmethod%3AString%2Crequest_body%3ABytes%2Cmetadata%3AMetadata%29%3ATuple%28Bytes%2CStatus%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/transport/interface.cr#L7" target="_blank">View source</a>]
         
       </div>
     </div>

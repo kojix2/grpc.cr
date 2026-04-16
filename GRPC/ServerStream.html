@@ -142,6 +142,16 @@
       
     </li>
   
+  <li class=" " data-id="grpc/GRPC/LiveBidiStreamClientCall" data-name="grpc::livebidistreamclientcall">
+      <a href="../GRPC/LiveBidiStreamClientCall.html">LiveBidiStreamClientCall</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/LiveClientStreamClientCall" data-name="grpc::liveclientstreamclientcall">
+      <a href="../GRPC/LiveClientStreamClientCall.html">LiveClientStreamClientCall</a>
+      
+    </li>
+  
   <li class=" " data-id="grpc/GRPC/Metadata" data-name="grpc::metadata">
       <a href="../GRPC/Metadata.html">Metadata</a>
       
@@ -157,6 +167,11 @@
       
     </li>
   
+  <li class=" " data-id="grpc/GRPC/RawRequestStream" data-name="grpc::rawrequeststream">
+      <a href="../GRPC/RawRequestStream.html">RawRequestStream</a>
+      
+    </li>
+  
   <li class=" " data-id="grpc/GRPC/RawResponseStream" data-name="grpc::rawresponsestream">
       <a href="../GRPC/RawResponseStream.html">RawResponseStream</a>
       
@@ -164,6 +179,11 @@
   
   <li class=" " data-id="grpc/GRPC/RawServerStream" data-name="grpc::rawserverstream">
       <a href="../GRPC/RawServerStream.html">RawServerStream</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/RequestStream" data-name="grpc::requeststream(t)">
+      <a href="../GRPC/RequestStream.html">RequestStream</a>
       
     </li>
   
@@ -232,6 +252,11 @@
       
         <ul>
   
+  <li class=" " data-id="grpc/GRPC/Transport/ClientTransport" data-name="grpc::transport::clienttransport">
+      <a href="../GRPC/Transport/ClientTransport.html">ClientTransport</a>
+      
+    </li>
+  
   <li class=" " data-id="grpc/GRPC/Transport/Http2ClientConnection" data-name="grpc::transport::http2clientconnection">
       <a href="../GRPC/Transport/Http2ClientConnection.html">Http2ClientConnection</a>
       
@@ -269,6 +294,11 @@
   
   <li class=" " data-id="grpc/GRPC/Transport/SendBuffer" data-name="grpc::transport::sendbuffer">
       <a href="../GRPC/Transport/SendBuffer.html">SendBuffer</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Transport/ServerTransport" data-name="grpc::transport::servertransport">
+      <a href="../GRPC/Transport/ServerTransport.html">ServerTransport</a>
       
     </li>
   
@@ -400,7 +430,7 @@ puts stream.status</p>
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/stream.cr#L43" target="_blank">
+      <a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/stream.cr#L43" target="_blank">
         grpc/stream.cr
       </a>
     
@@ -423,7 +453,11 @@ puts stream.status</p>
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#new%28cancel_proc%3A-%3ENil%3D-%3Edo%0Aend%29-class-method" class="signature"><strong>.new</strong>(cancel_proc :  -> Nil = <span class="o">-&gt;</span> <span class="k">do</span>
+        <a href="#new%28status_proc%3A-%3EStatus%3D-%3Edo%0AStatus.ok%0Aend%2Ctrailers_proc%3A-%3EMetadata%3D-%3Edo%0AMetadata.new%0Aend%2Ccancel_proc%3A-%3ENil%3D-%3Edo%0Aend%29-class-method" class="signature"><strong>.new</strong>(status_proc :  -> Status = <span class="o">-&gt;</span> <span class="k">do</span>
+  <span class="t">Status</span>.ok
+<span class="k">end</span>, trailers_proc :  -> Metadata = <span class="o">-&gt;</span> <span class="k">do</span>
+  <span class="t">Metadata</span>.new
+<span class="k">end</span>, cancel_proc :  -> Nil = <span class="o">-&gt;</span> <span class="k">do</span>
 <span class="k">end</span>)</a>
         
       </li>
@@ -459,7 +493,9 @@ puts stream.status</p>
       </li>
     
       <li class="entry-summary">
-        <a href="#finish%28status%3AStatus%2Ctrailers%3AMetadata%3DMetadata.new%29%3ANil-instance-method" class="signature"><strong>#finish</strong>(status : Status, trailers : Metadata = <span class="t">Metadata</span>.new) : Nil</a>
+        <a href="#finish%28status_override%3AStatus%7CNil%3Dnil%29%3ANil-instance-method" class="signature"><strong>#finish</strong>(status_override : Status | Nil = <span class="n">nil</span>) : Nil</a>
+        
+          <div class="summary"><p>finish signals end of stream.</p></div>
         
       </li>
     
@@ -535,20 +571,28 @@ puts stream.status</p>
     Constructor Detail
   </h2>
   
-    <div class="entry-detail" id="new(cancel_proc:-&gt;Nil=-&gt;do
+    <div class="entry-detail" id="new(status_proc:-&gt;Status=-&gt;do
+Status.ok
+end,trailers_proc:-&gt;Metadata=-&gt;do
+Metadata.new
+end,cancel_proc:-&gt;Nil=-&gt;do
 end)-class-method">
       <div class="signature">
         
-        def self.<strong>new</strong>(cancel_proc :  -> Nil = <span class="o">-&gt;</span> <span class="k">do</span>
+        def self.<strong>new</strong>(status_proc :  -> <a href="../GRPC/Status.html">Status</a> = <span class="o">-&gt;</span> <span class="k">do</span>
+  <span class="t">Status</span>.ok
+<span class="k">end</span>, trailers_proc :  -> <a href="../GRPC/Metadata.html">Metadata</a> = <span class="o">-&gt;</span> <span class="k">do</span>
+  <span class="t">Metadata</span>.new
+<span class="k">end</span>, cancel_proc :  -> Nil = <span class="o">-&gt;</span> <span class="k">do</span>
 <span class="k">end</span>)
 
-        <a class="method-permalink" href="#new%28cancel_proc%3A-%3ENil%3D-%3Edo%0Aend%29-class-method">#</a>
+        <a class="method-permalink" href="#new%28status_proc%3A-%3EStatus%3D-%3Edo%0AStatus.ok%0Aend%2Ctrailers_proc%3A-%3EMetadata%3D-%3Edo%0AMetadata.new%0Aend%2Ccancel_proc%3A-%3ENil%3D-%3Edo%0Aend%29-class-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/stream.cr#L52" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/stream.cr#L52" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -580,7 +624,7 @@ end)-class-method">
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/stream.cr#L77" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/stream.cr#L79" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -605,23 +649,29 @@ end)-class-method">
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/stream.cr#L59" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/stream.cr#L61" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="finish(status:Status,trailers:Metadata=Metadata.new):Nil-instance-method">
+    <div class="entry-detail" id="finish(status_override:Status|Nil=nil):Nil-instance-method">
       <div class="signature">
         
-        def <strong>finish</strong>(status : <a href="../GRPC/Status.html">Status</a>, trailers : <a href="../GRPC/Metadata.html">Metadata</a> = <span class="t">Metadata</span>.new) : Nil
+        def <strong>finish</strong>(status_override : <a href="../GRPC/Status.html">Status</a> | Nil = <span class="n">nil</span>) : Nil
 
-        <a class="method-permalink" href="#finish%28status%3AStatus%2Ctrailers%3AMetadata%3DMetadata.new%29%3ANil-instance-method">#</a>
+        <a class="method-permalink" href="#finish%28status_override%3AStatus%7CNil%3Dnil%29%3ANil-instance-method">#</a>
       </div>
+      
+        <div class="doc">
+          
+          <p>finish signals end of stream.  Pass a status_override only for error
+cases; on the normal path status comes from the transport via @status_proc.</p>
+        </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/stream.cr#L87" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/stream.cr#L91" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -637,7 +687,7 @@ end)-class-method">
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/stream.cr#L83" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/stream.cr#L85" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -653,7 +703,7 @@ end)-class-method">
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/stream.cr#L69" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/stream.cr#L71" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -669,7 +719,7 @@ end)-class-method">
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/stream.cr#L73" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/stream.cr#L75" target="_blank">View source</a>]
         
       </div>
     </div>

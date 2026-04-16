@@ -14,7 +14,7 @@
 <script type="text/javascript" src="../js/doc.js"></script>
 
   <meta name="repository-name" content="grpc">
-  <title>GRPC::ClientContext - grpc main</title>
+  <title>GRPC::RawRequestStream - grpc main</title>
   <script type="text/javascript">
     CrystalDocs.base_path = "../";
   </script>
@@ -102,7 +102,7 @@
       
     </li>
   
-  <li class=" current" data-id="grpc/GRPC/ClientContext" data-name="grpc::clientcontext">
+  <li class=" " data-id="grpc/GRPC/ClientContext" data-name="grpc::clientcontext">
       <a href="../GRPC/ClientContext.html">ClientContext</a>
       
     </li>
@@ -167,7 +167,7 @@
       
     </li>
   
-  <li class=" " data-id="grpc/GRPC/RawRequestStream" data-name="grpc::rawrequeststream">
+  <li class=" current" data-id="grpc/GRPC/RawRequestStream" data-name="grpc::rawrequeststream">
       <a href="../GRPC/RawRequestStream.html">RawRequestStream</a>
       
     </li>
@@ -363,12 +363,12 @@
 
   <span class="kind">
     class
-  </span> GRPC::<wbr>ClientContext
+  </span> GRPC::<wbr>RawRequestStream
 
 </h1>
 
 
-  <ul class="superclass-hierarchy"><li class="superclass"><a href="../GRPC/ClientContext.html">GRPC::ClientContext</a></li><li class="superclass">Reference</li><li class="superclass">Object</li></ul>
+  <ul class="superclass-hierarchy"><li class="superclass"><a href="../GRPC/RawRequestStream.html">GRPC::RawRequestStream</a></li><li class="superclass">Reference</li><li class="superclass">Object</li></ul>
 
 
 
@@ -382,19 +382,28 @@
     Overview
   </h2>
 
-  <p>ClientContext carries per-call options for outbound RPCs.</p>
-<p>Example:
-ctx = GRPC::ClientContext.new(
-metadata: {&quot;authorization&quot; =&gt; &quot;Bearer token&quot;},
-deadline: 5.seconds
-)
-reply = client.say_hello(req, ctx: ctx)</p>
+  <p>RawRequestStream is an untyped variant used by the transport and interceptor layer.
+Generated dispatch methods wrap it in RequestStream(T).</p>
 
 
 
 
 
 
+
+  <h2>
+    <a id="included-modules" class="anchor" href="#included-modules">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Included Modules
+  </h2>
+  <ul class="other-types-list">
+    
+      <li class="other-type">Enumerable(Slice(UInt8))</li>
+    
+  </ul>
 
 
 
@@ -415,8 +424,8 @@ reply = client.say_hello(req, ctx: ctx)</p>
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/call_context.cr#L47" target="_blank">
-        grpc/call_context.cr
+      <a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/service_handler.cr#L22" target="_blank">
+        grpc/service_handler.cr
       </a>
     
     <br/>
@@ -438,7 +447,7 @@ reply = client.say_hello(req, ctx: ctx)</p>
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#new%28metadata%3AHash%28String%2CString%29%7CMetadata%3DMetadata.new%2Cdeadline%3ATime%3A%3ASpan%7CTime%7CNil%3Dnil%29-class-method" class="signature"><strong>.new</strong>(metadata : Hash(String, String) | Metadata = <span class="t">Metadata</span>.new, deadline : Time::Span | Time | Nil = <span class="n">nil</span>)</a>
+        <a href="#new%28ch%3A%3A%3AChannel%28Bytes%7CNil%29%29-class-method" class="signature"><strong>.new</strong>(ch : ::Channel(Bytes | Nil))</a>
         
       </li>
     
@@ -461,36 +470,14 @@ reply = client.say_hello(req, ctx: ctx)</p>
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#deadline%3ATime%7CNil-instance-method" class="signature"><strong>#deadline</strong> : Time | Nil</a>
+        <a href="#ch%3A%3A%3AChannel%28Bytes%7CNil%29-instance-method" class="signature"><strong>#ch</strong> : ::Channel(Bytes | Nil)</a>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#deadline%3D%28deadline%3ATime%7CNil%29-instance-method" class="signature"><strong>#deadline=</strong>(deadline : Time | Nil)</a>
+        <a href="#each%28%26%3ABytes-%3E%29%3ANil-instance-method" class="signature"><strong>#each</strong>(& : Bytes -> ) : Nil</a>
         
-      </li>
-    
-      <li class="entry-summary">
-        <a href="#effective_metadata%3AMetadata-instance-method" class="signature"><strong>#effective_metadata</strong> : Metadata</a>
-        
-          <div class="summary"><p>effective_metadata returns the call metadata including grpc-timeout if a deadline is set.</p></div>
-        
-      </li>
-    
-      <li class="entry-summary">
-        <a href="#metadata%3AMetadata-instance-method" class="signature"><strong>#metadata</strong> : Metadata</a>
-        
-      </li>
-    
-      <li class="entry-summary">
-        <a href="#remaining%3ATime%3A%3ASpan%7CNil-instance-method" class="signature"><strong>#remaining</strong> : Time::Span | Nil</a>
-        
-          <div class="summary"><p>remaining returns how much time is left before the deadline.</p></div>
-        
-      </li>
-    
-      <li class="entry-summary">
-        <a href="#timed_out%3F%3ABool-instance-method" class="signature"><strong>#timed_out?</strong> : Bool</a>
+          <div class="summary"><p>Must yield this collection's elements to the block.</p></div>
         
       </li>
     
@@ -499,6 +486,19 @@ reply = client.say_hello(req, ctx: ctx)</p>
 
 
   <div class="methods-inherited">
+    
+      
+
+
+      
+
+
+      
+
+
+      
+
+
     
       
 
@@ -538,18 +538,18 @@ reply = client.say_hello(req, ctx: ctx)</p>
     Constructor Detail
   </h2>
   
-    <div class="entry-detail" id="new(metadata:Hash(String,String)|Metadata=Metadata.new,deadline:Time::Span|Time|Nil=nil)-class-method">
+    <div class="entry-detail" id="new(ch:::Channel(Bytes|Nil))-class-method">
       <div class="signature">
         
-        def self.<strong>new</strong>(metadata : Hash(String, String) | <a href="../GRPC/Metadata.html">Metadata</a> = <span class="t">Metadata</span>.new, deadline : Time::Span | Time | Nil = <span class="n">nil</span>)
+        def self.<strong>new</strong>(ch : ::Channel(Bytes | Nil))
 
-        <a class="method-permalink" href="#new%28metadata%3AHash%28String%2CString%29%7CMetadata%3DMetadata.new%2Cdeadline%3ATime%3A%3ASpan%7CTime%7CNil%3Dnil%29-class-method">#</a>
+        <a class="method-permalink" href="#new%28ch%3A%3A%3AChannel%28Bytes%7CNil%29%29-class-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/call_context.cr#L51" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/service_handler.cr#L27" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -570,108 +570,43 @@ reply = client.say_hello(req, ctx: ctx)</p>
     Instance Method Detail
   </h2>
   
-    <div class="entry-detail" id="deadline:Time|Nil-instance-method">
+    <div class="entry-detail" id="ch:::Channel(Bytes|Nil)-instance-method">
       <div class="signature">
         
-        def <strong>deadline</strong> : Time | Nil
+        def <strong>ch</strong> : ::Channel(Bytes | Nil)
 
-        <a class="method-permalink" href="#deadline%3ATime%7CNil-instance-method">#</a>
+        <a class="method-permalink" href="#ch%3A%3A%3AChannel%28Bytes%7CNil%29-instance-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/call_context.cr#L49" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/service_handler.cr#L25" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="deadline=(deadline:Time|Nil)-instance-method">
+    <div class="entry-detail" id="each(&amp;:Bytes-&gt;):Nil-instance-method">
       <div class="signature">
         
-        def <strong>deadline=</strong>(deadline : Time | Nil)
+        def <strong>each</strong>(& : Bytes -> ) : Nil
 
-        <a class="method-permalink" href="#deadline%3D%28deadline%3ATime%7CNil%29-instance-method">#</a>
-      </div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/call_context.cr#L49" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
-    <div class="entry-detail" id="effective_metadata:Metadata-instance-method">
-      <div class="signature">
-        
-        def <strong>effective_metadata</strong> : <a href="../GRPC/Metadata.html">Metadata</a>
-
-        <a class="method-permalink" href="#effective_metadata%3AMetadata-instance-method">#</a>
+        <a class="method-permalink" href="#each%28%26%3ABytes-%3E%29%3ANil-instance-method">#</a>
       </div>
       
         <div class="doc">
           
-          <p>effective_metadata returns the call metadata including grpc-timeout if a deadline is set.</p>
+            <div class="doc-inherited">
+              Description copied from module Enumerable(Slice(UInt8))
+            </div>
+          
+          <p>Must yield this collection's elements to the block.</p>
         </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/call_context.cr#L66" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
-    <div class="entry-detail" id="metadata:Metadata-instance-method">
-      <div class="signature">
-        
-        def <strong>metadata</strong> : <a href="../GRPC/Metadata.html">Metadata</a>
-
-        <a class="method-permalink" href="#metadata%3AMetadata-instance-method">#</a>
-      </div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/call_context.cr#L48" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
-    <div class="entry-detail" id="remaining:Time::Span|Nil-instance-method">
-      <div class="signature">
-        
-        def <strong>remaining</strong> : Time::Span | Nil
-
-        <a class="method-permalink" href="#remaining%3ATime%3A%3ASpan%7CNil-instance-method">#</a>
-      </div>
-      
-        <div class="doc">
-          
-          <p>remaining returns how much time is left before the deadline.</p>
-        </div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/call_context.cr#L83" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
-    <div class="entry-detail" id="timed_out?:Bool-instance-method">
-      <div class="signature">
-        
-        def <strong>timed_out?</strong> : Bool
-
-        <a class="method-permalink" href="#timed_out%3F%3ABool-instance-method">#</a>
-      </div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/call_context.cr#L90" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/service_handler.cr#L30" target="_blank">View source</a>]
         
       </div>
     </div>

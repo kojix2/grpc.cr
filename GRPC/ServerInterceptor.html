@@ -142,6 +142,16 @@
       
     </li>
   
+  <li class=" " data-id="grpc/GRPC/LiveBidiStreamClientCall" data-name="grpc::livebidistreamclientcall">
+      <a href="../GRPC/LiveBidiStreamClientCall.html">LiveBidiStreamClientCall</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/LiveClientStreamClientCall" data-name="grpc::liveclientstreamclientcall">
+      <a href="../GRPC/LiveClientStreamClientCall.html">LiveClientStreamClientCall</a>
+      
+    </li>
+  
   <li class=" " data-id="grpc/GRPC/Metadata" data-name="grpc::metadata">
       <a href="../GRPC/Metadata.html">Metadata</a>
       
@@ -157,6 +167,11 @@
       
     </li>
   
+  <li class=" " data-id="grpc/GRPC/RawRequestStream" data-name="grpc::rawrequeststream">
+      <a href="../GRPC/RawRequestStream.html">RawRequestStream</a>
+      
+    </li>
+  
   <li class=" " data-id="grpc/GRPC/RawResponseStream" data-name="grpc::rawresponsestream">
       <a href="../GRPC/RawResponseStream.html">RawResponseStream</a>
       
@@ -164,6 +179,11 @@
   
   <li class=" " data-id="grpc/GRPC/RawServerStream" data-name="grpc::rawserverstream">
       <a href="../GRPC/RawServerStream.html">RawServerStream</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/RequestStream" data-name="grpc::requeststream(t)">
+      <a href="../GRPC/RequestStream.html">RequestStream</a>
       
     </li>
   
@@ -232,6 +252,11 @@
       
         <ul>
   
+  <li class=" " data-id="grpc/GRPC/Transport/ClientTransport" data-name="grpc::transport::clienttransport">
+      <a href="../GRPC/Transport/ClientTransport.html">ClientTransport</a>
+      
+    </li>
+  
   <li class=" " data-id="grpc/GRPC/Transport/Http2ClientConnection" data-name="grpc::transport::http2clientconnection">
       <a href="../GRPC/Transport/Http2ClientConnection.html">Http2ClientConnection</a>
       
@@ -269,6 +294,11 @@
   
   <li class=" " data-id="grpc/GRPC/Transport/SendBuffer" data-name="grpc::transport::sendbuffer">
       <a href="../GRPC/Transport/SendBuffer.html">SendBuffer</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Transport/ServerTransport" data-name="grpc::transport::servertransport">
+      <a href="../GRPC/Transport/ServerTransport.html">ServerTransport</a>
       
     </li>
   
@@ -353,7 +383,7 @@
   </h2>
 
   <p>ServerInterceptor is the base class for server-side interceptors.
-Override <code><a href="../GRPC/ServerInterceptor.html#call%28method%3AString%2Crequest%3ABytes%2Cctx%3AServerContext%2Cnext_call%3AUnaryServerCall%29%3ATuple%28Bytes%2CStatus%29-instance-method">#call</a></code> to wrap unary RPCs.  Override the streaming variants to
+Override <code><a href="../GRPC/ServerInterceptor.html#call%28info%3ACallInfo%2Crequest%3ABytes%2Cctx%3AServerContext%2Cnext_call%3AUnaryServerCall%29%3ATuple%28Bytes%2CStatus%29-instance-method">#call</a></code> to wrap unary RPCs.  Override the streaming variants to
 intercept server-streaming, client-streaming, or bidi-streaming calls.
 Unimplemented streaming methods default to a transparent pass-through.</p>
 <p>Example:
@@ -392,7 +422,7 @@ end</p>
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/interceptor.cr#L128" target="_blank">
+      <a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/interceptor.cr#L148" target="_blank">
         grpc/interceptor.cr
       </a>
     
@@ -421,22 +451,22 @@ end</p>
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#call%28method%3AString%2Crequest%3ABytes%2Cctx%3AServerContext%2Cnext_call%3AUnaryServerCall%29%3ATuple%28Bytes%2CStatus%29-instance-method" class="signature"><strong>#call</strong>(method : String, request : Bytes, ctx : ServerContext, next_call : UnaryServerCall) : Tuple(Bytes, Status)</a>
+        <a href="#call%28info%3ACallInfo%2Crequest%3ABytes%2Cctx%3AServerContext%2Cnext_call%3AUnaryServerCall%29%3ATuple%28Bytes%2CStatus%29-instance-method" class="signature"><strong>#call</strong>(info : CallInfo, request : Bytes, ctx : ServerContext, next_call : UnaryServerCall) : Tuple(Bytes, Status)</a>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#call_bidi_stream%28method%3AString%2Crequests%3AArray%28Bytes%29%2Cctx%3AServerContext%2Cwriter%3ARawResponseStream%2Cnext_call%3ABidiStreamServerCall%29%3AStatus-instance-method" class="signature"><strong>#call_bidi_stream</strong>(method : String, requests : Array(Bytes), ctx : ServerContext, writer : RawResponseStream, next_call : BidiStreamServerCall) : Status</a>
+        <a href="#call_bidi_stream%28info%3ACallInfo%2Crequests%3ARawRequestStream%2Cctx%3AServerContext%2Cwriter%3ARawResponseStream%2Cnext_call%3ABidiStreamServerCall%29%3AStatus-instance-method" class="signature"><strong>#call_bidi_stream</strong>(info : CallInfo, requests : RawRequestStream, ctx : ServerContext, writer : RawResponseStream, next_call : BidiStreamServerCall) : Status</a>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#call_client_stream%28method%3AString%2Crequests%3AArray%28Bytes%29%2Cctx%3AServerContext%2Cnext_call%3AClientStreamServerCall%29%3ATuple%28Bytes%2CStatus%29-instance-method" class="signature"><strong>#call_client_stream</strong>(method : String, requests : Array(Bytes), ctx : ServerContext, next_call : ClientStreamServerCall) : Tuple(Bytes, Status)</a>
+        <a href="#call_client_stream%28info%3ACallInfo%2Crequests%3ARawRequestStream%2Cctx%3AServerContext%2Cnext_call%3AClientStreamServerCall%29%3ATuple%28Bytes%2CStatus%29-instance-method" class="signature"><strong>#call_client_stream</strong>(info : CallInfo, requests : RawRequestStream, ctx : ServerContext, next_call : ClientStreamServerCall) : Tuple(Bytes, Status)</a>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#call_server_stream%28method%3AString%2Crequest%3ABytes%2Cctx%3AServerContext%2Cwriter%3ARawResponseStream%2Cnext_call%3AServerStreamServerCall%29%3AStatus-instance-method" class="signature"><strong>#call_server_stream</strong>(method : String, request : Bytes, ctx : ServerContext, writer : RawResponseStream, next_call : ServerStreamServerCall) : Status</a>
+        <a href="#call_server_stream%28info%3ACallInfo%2Crequest%3ABytes%2Cctx%3AServerContext%2Cwriter%3ARawResponseStream%2Cnext_call%3AServerStreamServerCall%29%3AStatus-instance-method" class="signature"><strong>#call_server_stream</strong>(info : CallInfo, request : Bytes, ctx : ServerContext, writer : RawResponseStream, next_call : ServerStreamServerCall) : Status</a>
         
       </li>
     
@@ -490,66 +520,66 @@ end</p>
     Instance Method Detail
   </h2>
   
-    <div class="entry-detail" id="call(method:String,request:Bytes,ctx:ServerContext,next_call:UnaryServerCall):Tuple(Bytes,Status)-instance-method">
+    <div class="entry-detail" id="call(info:CallInfo,request:Bytes,ctx:ServerContext,next_call:UnaryServerCall):Tuple(Bytes,Status)-instance-method">
       <div class="signature">
         abstract 
-        def <strong>call</strong>(method : String, request : Bytes, ctx : <a href="../GRPC/ServerContext.html">ServerContext</a>, next_call : <a href="../GRPC/UnaryServerCall.html">UnaryServerCall</a>) : Tuple(Bytes, <a href="../GRPC/Status.html">Status</a>)
+        def <strong>call</strong>(info : <a href="../GRPC/CallInfo.html">CallInfo</a>, request : Bytes, ctx : <a href="../GRPC/ServerContext.html">ServerContext</a>, next_call : <a href="../GRPC/UnaryServerCall.html">UnaryServerCall</a>) : Tuple(Bytes, <a href="../GRPC/Status.html">Status</a>)
 
-        <a class="method-permalink" href="#call%28method%3AString%2Crequest%3ABytes%2Cctx%3AServerContext%2Cnext_call%3AUnaryServerCall%29%3ATuple%28Bytes%2CStatus%29-instance-method">#</a>
+        <a class="method-permalink" href="#call%28info%3ACallInfo%2Crequest%3ABytes%2Cctx%3AServerContext%2Cnext_call%3AUnaryServerCall%29%3ATuple%28Bytes%2CStatus%29-instance-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/interceptor.cr#L129" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/interceptor.cr#L149" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="call_bidi_stream(method:String,requests:Array(Bytes),ctx:ServerContext,writer:RawResponseStream,next_call:BidiStreamServerCall):Status-instance-method">
+    <div class="entry-detail" id="call_bidi_stream(info:CallInfo,requests:RawRequestStream,ctx:ServerContext,writer:RawResponseStream,next_call:BidiStreamServerCall):Status-instance-method">
       <div class="signature">
         
-        def <strong>call_bidi_stream</strong>(method : String, requests : Array(Bytes), ctx : <a href="../GRPC/ServerContext.html">ServerContext</a>, writer : <a href="../GRPC/RawResponseStream.html">RawResponseStream</a>, next_call : <a href="../GRPC/BidiStreamServerCall.html">BidiStreamServerCall</a>) : <a href="../GRPC/Status.html">Status</a>
+        def <strong>call_bidi_stream</strong>(info : <a href="../GRPC/CallInfo.html">CallInfo</a>, requests : <a href="../GRPC/RawRequestStream.html">RawRequestStream</a>, ctx : <a href="../GRPC/ServerContext.html">ServerContext</a>, writer : <a href="../GRPC/RawResponseStream.html">RawResponseStream</a>, next_call : <a href="../GRPC/BidiStreamServerCall.html">BidiStreamServerCall</a>) : <a href="../GRPC/Status.html">Status</a>
 
-        <a class="method-permalink" href="#call_bidi_stream%28method%3AString%2Crequests%3AArray%28Bytes%29%2Cctx%3AServerContext%2Cwriter%3ARawResponseStream%2Cnext_call%3ABidiStreamServerCall%29%3AStatus-instance-method">#</a>
+        <a class="method-permalink" href="#call_bidi_stream%28info%3ACallInfo%2Crequests%3ARawRequestStream%2Cctx%3AServerContext%2Cwriter%3ARawResponseStream%2Cnext_call%3ABidiStreamServerCall%29%3AStatus-instance-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/interceptor.cr#L155" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/interceptor.cr#L175" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="call_client_stream(method:String,requests:Array(Bytes),ctx:ServerContext,next_call:ClientStreamServerCall):Tuple(Bytes,Status)-instance-method">
+    <div class="entry-detail" id="call_client_stream(info:CallInfo,requests:RawRequestStream,ctx:ServerContext,next_call:ClientStreamServerCall):Tuple(Bytes,Status)-instance-method">
       <div class="signature">
         
-        def <strong>call_client_stream</strong>(method : String, requests : Array(Bytes), ctx : <a href="../GRPC/ServerContext.html">ServerContext</a>, next_call : <a href="../GRPC/ClientStreamServerCall.html">ClientStreamServerCall</a>) : Tuple(Bytes, <a href="../GRPC/Status.html">Status</a>)
+        def <strong>call_client_stream</strong>(info : <a href="../GRPC/CallInfo.html">CallInfo</a>, requests : <a href="../GRPC/RawRequestStream.html">RawRequestStream</a>, ctx : <a href="../GRPC/ServerContext.html">ServerContext</a>, next_call : <a href="../GRPC/ClientStreamServerCall.html">ClientStreamServerCall</a>) : Tuple(Bytes, <a href="../GRPC/Status.html">Status</a>)
 
-        <a class="method-permalink" href="#call_client_stream%28method%3AString%2Crequests%3AArray%28Bytes%29%2Cctx%3AServerContext%2Cnext_call%3AClientStreamServerCall%29%3ATuple%28Bytes%2CStatus%29-instance-method">#</a>
+        <a class="method-permalink" href="#call_client_stream%28info%3ACallInfo%2Crequests%3ARawRequestStream%2Cctx%3AServerContext%2Cnext_call%3AClientStreamServerCall%29%3ATuple%28Bytes%2CStatus%29-instance-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/interceptor.cr#L146" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/interceptor.cr#L166" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="call_server_stream(method:String,request:Bytes,ctx:ServerContext,writer:RawResponseStream,next_call:ServerStreamServerCall):Status-instance-method">
+    <div class="entry-detail" id="call_server_stream(info:CallInfo,request:Bytes,ctx:ServerContext,writer:RawResponseStream,next_call:ServerStreamServerCall):Status-instance-method">
       <div class="signature">
         
-        def <strong>call_server_stream</strong>(method : String, request : Bytes, ctx : <a href="../GRPC/ServerContext.html">ServerContext</a>, writer : <a href="../GRPC/RawResponseStream.html">RawResponseStream</a>, next_call : <a href="../GRPC/ServerStreamServerCall.html">ServerStreamServerCall</a>) : <a href="../GRPC/Status.html">Status</a>
+        def <strong>call_server_stream</strong>(info : <a href="../GRPC/CallInfo.html">CallInfo</a>, request : Bytes, ctx : <a href="../GRPC/ServerContext.html">ServerContext</a>, writer : <a href="../GRPC/RawResponseStream.html">RawResponseStream</a>, next_call : <a href="../GRPC/ServerStreamServerCall.html">ServerStreamServerCall</a>) : <a href="../GRPC/Status.html">Status</a>
 
-        <a class="method-permalink" href="#call_server_stream%28method%3AString%2Crequest%3ABytes%2Cctx%3AServerContext%2Cwriter%3ARawResponseStream%2Cnext_call%3AServerStreamServerCall%29%3AStatus-instance-method">#</a>
+        <a class="method-permalink" href="#call_server_stream%28info%3ACallInfo%2Crequest%3ABytes%2Cctx%3AServerContext%2Cwriter%3ARawResponseStream%2Cnext_call%3AServerStreamServerCall%29%3AStatus-instance-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/interceptor.cr#L136" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/interceptor.cr#L156" target="_blank">View source</a>]
         
       </div>
     </div>

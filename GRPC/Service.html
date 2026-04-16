@@ -142,6 +142,16 @@
       
     </li>
   
+  <li class=" " data-id="grpc/GRPC/LiveBidiStreamClientCall" data-name="grpc::livebidistreamclientcall">
+      <a href="../GRPC/LiveBidiStreamClientCall.html">LiveBidiStreamClientCall</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/LiveClientStreamClientCall" data-name="grpc::liveclientstreamclientcall">
+      <a href="../GRPC/LiveClientStreamClientCall.html">LiveClientStreamClientCall</a>
+      
+    </li>
+  
   <li class=" " data-id="grpc/GRPC/Metadata" data-name="grpc::metadata">
       <a href="../GRPC/Metadata.html">Metadata</a>
       
@@ -157,6 +167,11 @@
       
     </li>
   
+  <li class=" " data-id="grpc/GRPC/RawRequestStream" data-name="grpc::rawrequeststream">
+      <a href="../GRPC/RawRequestStream.html">RawRequestStream</a>
+      
+    </li>
+  
   <li class=" " data-id="grpc/GRPC/RawResponseStream" data-name="grpc::rawresponsestream">
       <a href="../GRPC/RawResponseStream.html">RawResponseStream</a>
       
@@ -164,6 +179,11 @@
   
   <li class=" " data-id="grpc/GRPC/RawServerStream" data-name="grpc::rawserverstream">
       <a href="../GRPC/RawServerStream.html">RawServerStream</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/RequestStream" data-name="grpc::requeststream(t)">
+      <a href="../GRPC/RequestStream.html">RequestStream</a>
       
     </li>
   
@@ -232,6 +252,11 @@
       
         <ul>
   
+  <li class=" " data-id="grpc/GRPC/Transport/ClientTransport" data-name="grpc::transport::clienttransport">
+      <a href="../GRPC/Transport/ClientTransport.html">ClientTransport</a>
+      
+    </li>
+  
   <li class=" " data-id="grpc/GRPC/Transport/Http2ClientConnection" data-name="grpc::transport::http2clientconnection">
       <a href="../GRPC/Transport/Http2ClientConnection.html">Http2ClientConnection</a>
       
@@ -269,6 +294,11 @@
   
   <li class=" " data-id="grpc/GRPC/Transport/SendBuffer" data-name="grpc::transport::sendbuffer">
       <a href="../GRPC/Transport/SendBuffer.html">SendBuffer</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Transport/ServerTransport" data-name="grpc::transport::servertransport">
+      <a href="../GRPC/Transport/ServerTransport.html">ServerTransport</a>
       
     </li>
   
@@ -407,7 +437,7 @@ SERVICE_NAME = &quot;helloworld.Greeter&quot;</p>
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/service_handler.cr#L34" target="_blank">
+      <a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/service_handler.cr#L71" target="_blank">
         grpc/service_handler.cr
       </a>
     
@@ -457,14 +487,14 @@ SERVICE_NAME = &quot;helloworld.Greeter&quot;</p>
       </li>
     
       <li class="entry-summary">
-        <a href="#dispatch_bidi_stream%28method%3AString%2Crequests%3AArray%28Bytes%29%2Cctx%3AServerContext%2Cwriter%3ARawResponseStream%29%3AStatus-instance-method" class="signature"><strong>#dispatch_bidi_stream</strong>(method : String, requests : Array(Bytes), ctx : ServerContext, writer : RawResponseStream) : Status</a>
+        <a href="#dispatch_bidi_stream%28method%3AString%2Crequests%3ARawRequestStream%2Cctx%3AServerContext%2Cwriter%3ARawResponseStream%29%3AStatus-instance-method" class="signature"><strong>#dispatch_bidi_stream</strong>(method : String, requests : RawRequestStream, ctx : ServerContext, writer : RawResponseStream) : Status</a>
         
           <div class="summary"><p>dispatch_bidi_stream dispatches a bidirectional streaming RPC.</p></div>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#dispatch_client_stream%28method%3AString%2Crequests%3AArray%28Bytes%29%2Cctx%3AServerContext%29%3ATuple%28Bytes%2CStatus%29-instance-method" class="signature"><strong>#dispatch_client_stream</strong>(method : String, requests : Array(Bytes), ctx : ServerContext) : Tuple(Bytes, Status)</a>
+        <a href="#dispatch_client_stream%28method%3AString%2Crequests%3ARawRequestStream%2Cctx%3AServerContext%29%3ATuple%28Bytes%2CStatus%29-instance-method" class="signature"><strong>#dispatch_client_stream</strong>(method : String, requests : RawRequestStream, ctx : ServerContext) : Tuple(Bytes, Status)</a>
         
           <div class="summary"><p>dispatch_client_stream dispatches a client-streaming RPC.</p></div>
         
@@ -558,7 +588,7 @@ Generated service base classes override this; the default is false (unary).</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/service_handler.cr#L73" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/service_handler.cr#L110" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -580,7 +610,7 @@ Generated service base classes override this; the default is false (unary).</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/service_handler.cr#L58" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/service_handler.cr#L95" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -602,23 +632,23 @@ Returns {response_body : Bytes, status : Status}.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/service_handler.cr#L40" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/service_handler.cr#L77" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="dispatch_bidi_stream(method:String,requests:Array(Bytes),ctx:ServerContext,writer:RawResponseStream):Status-instance-method">
+    <div class="entry-detail" id="dispatch_bidi_stream(method:String,requests:RawRequestStream,ctx:ServerContext,writer:RawResponseStream):Status-instance-method">
       <div class="signature">
         
-        def <strong>dispatch_bidi_stream</strong>(method : String, requests : Array(Bytes), ctx : <a href="../GRPC/ServerContext.html">ServerContext</a>, writer : <a href="../GRPC/RawResponseStream.html">RawResponseStream</a>) : <a href="../GRPC/Status.html">Status</a>
+        def <strong>dispatch_bidi_stream</strong>(method : String, requests : <a href="../GRPC/RawRequestStream.html">RawRequestStream</a>, ctx : <a href="../GRPC/ServerContext.html">ServerContext</a>, writer : <a href="../GRPC/RawResponseStream.html">RawResponseStream</a>) : <a href="../GRPC/Status.html">Status</a>
 
-        <a class="method-permalink" href="#dispatch_bidi_stream%28method%3AString%2Crequests%3AArray%28Bytes%29%2Cctx%3AServerContext%2Cwriter%3ARawResponseStream%29%3AStatus-instance-method">#</a>
+        <a class="method-permalink" href="#dispatch_bidi_stream%28method%3AString%2Crequests%3ARawRequestStream%2Cctx%3AServerContext%2Cwriter%3ARawResponseStream%29%3AStatus-instance-method">#</a>
       </div>
       
         <div class="doc">
           
           <p>dispatch_bidi_stream dispatches a bidirectional streaming RPC.
-<em>requests</em> contains all decoded request message bodies in order.
+<em>requests</em> is a RawRequestStream that yields raw message bytes as they arrive.
 The transport passes a RawResponseStream; generated subclasses wrap it in a
 typed ResponseStream(T) before handing off to the user implementation.</p>
         </div>
@@ -626,23 +656,23 @@ typed ResponseStream(T) before handing off to the user implementation.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/service_handler.cr#L81" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/service_handler.cr#L118" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="dispatch_client_stream(method:String,requests:Array(Bytes),ctx:ServerContext):Tuple(Bytes,Status)-instance-method">
+    <div class="entry-detail" id="dispatch_client_stream(method:String,requests:RawRequestStream,ctx:ServerContext):Tuple(Bytes,Status)-instance-method">
       <div class="signature">
         
-        def <strong>dispatch_client_stream</strong>(method : String, requests : Array(Bytes), ctx : <a href="../GRPC/ServerContext.html">ServerContext</a>) : Tuple(Bytes, <a href="../GRPC/Status.html">Status</a>)
+        def <strong>dispatch_client_stream</strong>(method : String, requests : <a href="../GRPC/RawRequestStream.html">RawRequestStream</a>, ctx : <a href="../GRPC/ServerContext.html">ServerContext</a>) : Tuple(Bytes, <a href="../GRPC/Status.html">Status</a>)
 
-        <a class="method-permalink" href="#dispatch_client_stream%28method%3AString%2Crequests%3AArray%28Bytes%29%2Cctx%3AServerContext%29%3ATuple%28Bytes%2CStatus%29-instance-method">#</a>
+        <a class="method-permalink" href="#dispatch_client_stream%28method%3AString%2Crequests%3ARawRequestStream%2Cctx%3AServerContext%29%3ATuple%28Bytes%2CStatus%29-instance-method">#</a>
       </div>
       
         <div class="doc">
           
           <p>dispatch_client_stream dispatches a client-streaming RPC.
-<em>requests</em> contains all decoded request message bodies in order.
+<em>requests</em> is a RawRequestStream that yields raw message bytes as they arrive.
 Returns {response_body : Bytes, status : Status}.
 Generated service base classes override this; the default returns UNIMPLEMENTED.</p>
         </div>
@@ -650,7 +680,7 @@ Generated service base classes override this; the default returns UNIMPLEMENTED.
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/service_handler.cr#L66" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/service_handler.cr#L103" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -673,7 +703,7 @@ typed ResponseStream(T) before handing off to the user implementation.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/service_handler.cr#L51" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/service_handler.cr#L88" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -695,7 +725,7 @@ Generated service base classes override this; the default is false (unary).</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/service_handler.cr#L44" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/service_handler.cr#L81" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -716,7 +746,7 @@ Generated service base classes override this; the default is false (unary).</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/service_handler.cr#L36" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/service_handler.cr#L73" target="_blank">View source</a>]
         
       </div>
     </div>

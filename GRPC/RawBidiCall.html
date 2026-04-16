@@ -142,6 +142,16 @@
       
     </li>
   
+  <li class=" " data-id="grpc/GRPC/LiveBidiStreamClientCall" data-name="grpc::livebidistreamclientcall">
+      <a href="../GRPC/LiveBidiStreamClientCall.html">LiveBidiStreamClientCall</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/LiveClientStreamClientCall" data-name="grpc::liveclientstreamclientcall">
+      <a href="../GRPC/LiveClientStreamClientCall.html">LiveClientStreamClientCall</a>
+      
+    </li>
+  
   <li class=" " data-id="grpc/GRPC/Metadata" data-name="grpc::metadata">
       <a href="../GRPC/Metadata.html">Metadata</a>
       
@@ -157,6 +167,11 @@
       
     </li>
   
+  <li class=" " data-id="grpc/GRPC/RawRequestStream" data-name="grpc::rawrequeststream">
+      <a href="../GRPC/RawRequestStream.html">RawRequestStream</a>
+      
+    </li>
+  
   <li class=" " data-id="grpc/GRPC/RawResponseStream" data-name="grpc::rawresponsestream">
       <a href="../GRPC/RawResponseStream.html">RawResponseStream</a>
       
@@ -164,6 +179,11 @@
   
   <li class=" " data-id="grpc/GRPC/RawServerStream" data-name="grpc::rawserverstream">
       <a href="../GRPC/RawServerStream.html">RawServerStream</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/RequestStream" data-name="grpc::requeststream(t)">
+      <a href="../GRPC/RequestStream.html">RequestStream</a>
       
     </li>
   
@@ -232,6 +252,11 @@
       
         <ul>
   
+  <li class=" " data-id="grpc/GRPC/Transport/ClientTransport" data-name="grpc::transport::clienttransport">
+      <a href="../GRPC/Transport/ClientTransport.html">ClientTransport</a>
+      
+    </li>
+  
   <li class=" " data-id="grpc/GRPC/Transport/Http2ClientConnection" data-name="grpc::transport::http2clientconnection">
       <a href="../GRPC/Transport/Http2ClientConnection.html">Http2ClientConnection</a>
       
@@ -269,6 +294,11 @@
   
   <li class=" " data-id="grpc/GRPC/Transport/SendBuffer" data-name="grpc::transport::sendbuffer">
       <a href="../GRPC/Transport/SendBuffer.html">SendBuffer</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Transport/ServerTransport" data-name="grpc::transport::servertransport">
+      <a href="../GRPC/Transport/ServerTransport.html">ServerTransport</a>
       
     </li>
   
@@ -353,7 +383,8 @@
   </h2>
 
   <p>RawBidiCall is the client-side handle for a full-duplex bidi-streaming RPC.
-It wraps a PendingStream and exposes send_raw / close_send / each / cancel.
+All transport operations are captured as procs so the type is independent
+of any concrete transport implementation.
 Generated client stubs wrap this in a typed BidiCall(Req, Res).</p>
 
 
@@ -395,7 +426,7 @@ Generated client stubs wrap this in a typed BidiCall(Req, Res).</p>
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/stream.cr#L300" target="_blank">
+      <a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/stream.cr#L289" target="_blank">
         grpc/stream.cr
       </a>
     
@@ -418,7 +449,7 @@ Generated client stubs wrap this in a typed BidiCall(Req, Res).</p>
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#new%28ps%3ATransport%3A%3APendingStream%29-class-method" class="signature"><strong>.new</strong>(ps : Transport::PendingStream)</a>
+        <a href="#new%28send_proc%3ABytes-%3ENil%2Cclose_proc%3A-%3ENil%2Cmessages%3A%3A%3AChannel%28Bytes%7CNil%29%2Cstatus_proc%3A-%3EStatus%2Ctrailers_proc%3A-%3EMetadata%2Ccancel_proc%3A-%3ENil%29-class-method" class="signature"><strong>.new</strong>(send_proc : Bytes -> Nil, close_proc :  -> Nil, messages : ::Channel(Bytes | Nil), status_proc :  -> Status, trailers_proc :  -> Metadata, cancel_proc :  -> Nil)</a>
         
       </li>
     
@@ -462,7 +493,7 @@ Generated client stubs wrap this in a typed BidiCall(Req, Res).</p>
       <li class="entry-summary">
         <a href="#send_raw%28message_bytes%3ABytes%29%3ANil-instance-method" class="signature"><strong>#send_raw</strong>(message_bytes : Bytes) : Nil</a>
         
-          <div class="summary"><p>send_raw encodes <em>message_bytes</em> as a gRPC frame and enqueues it for sending.</p></div>
+          <div class="summary"><p>send_raw passes <em>message_bytes</em> (raw protobuf, no gRPC framing) to the transport.</p></div>
         
       </li>
     
@@ -533,18 +564,18 @@ Generated client stubs wrap this in a typed BidiCall(Req, Res).</p>
     Constructor Detail
   </h2>
   
-    <div class="entry-detail" id="new(ps:Transport::PendingStream)-class-method">
+    <div class="entry-detail" id="new(send_proc:Bytes-&gt;Nil,close_proc:-&gt;Nil,messages:::Channel(Bytes|Nil),status_proc:-&gt;Status,trailers_proc:-&gt;Metadata,cancel_proc:-&gt;Nil)-class-method">
       <div class="signature">
         
-        def self.<strong>new</strong>(ps : <a href="../GRPC/Transport/PendingStream.html">Transport::PendingStream</a>)
+        def self.<strong>new</strong>(send_proc : Bytes -> Nil, close_proc :  -> Nil, messages : ::Channel(Bytes | Nil), status_proc :  -> <a href="../GRPC/Status.html">Status</a>, trailers_proc :  -> <a href="../GRPC/Metadata.html">Metadata</a>, cancel_proc :  -> Nil)
 
-        <a class="method-permalink" href="#new%28ps%3ATransport%3A%3APendingStream%29-class-method">#</a>
+        <a class="method-permalink" href="#new%28send_proc%3ABytes-%3ENil%2Cclose_proc%3A-%3ENil%2Cmessages%3A%3A%3AChannel%28Bytes%7CNil%29%2Cstatus_proc%3A-%3EStatus%2Ctrailers_proc%3A-%3EMetadata%2Ccancel_proc%3A-%3ENil%29-class-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/stream.cr#L303" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/stream.cr#L292" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -576,7 +607,7 @@ Generated client stubs wrap this in a typed BidiCall(Req, Res).</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/stream.cr#L324" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/stream.cr#L320" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -597,7 +628,7 @@ Generated client stubs wrap this in a typed BidiCall(Req, Res).</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/stream.cr#L312" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/stream.cr#L308" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -622,7 +653,7 @@ Generated client stubs wrap this in a typed BidiCall(Req, Res).</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/stream.cr#L316" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/stream.cr#L312" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -637,13 +668,13 @@ Generated client stubs wrap this in a typed BidiCall(Req, Res).</p>
       
         <div class="doc">
           
-          <p>send_raw encodes <em>message_bytes</em> as a gRPC frame and enqueues it for sending.</p>
+          <p>send_raw passes <em>message_bytes</em> (raw protobuf, no gRPC framing) to the transport.</p>
         </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/stream.cr#L307" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/stream.cr#L303" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -659,7 +690,7 @@ Generated client stubs wrap this in a typed BidiCall(Req, Res).</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/stream.cr#L328" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/stream.cr#L324" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -675,7 +706,7 @@ Generated client stubs wrap this in a typed BidiCall(Req, Res).</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/stream.cr#L332" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/stream.cr#L328" target="_blank">View source</a>]
         
       </div>
     </div>

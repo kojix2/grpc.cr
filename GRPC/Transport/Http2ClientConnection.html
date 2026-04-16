@@ -142,6 +142,16 @@
       
     </li>
   
+  <li class=" " data-id="grpc/GRPC/LiveBidiStreamClientCall" data-name="grpc::livebidistreamclientcall">
+      <a href="../../GRPC/LiveBidiStreamClientCall.html">LiveBidiStreamClientCall</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/LiveClientStreamClientCall" data-name="grpc::liveclientstreamclientcall">
+      <a href="../../GRPC/LiveClientStreamClientCall.html">LiveClientStreamClientCall</a>
+      
+    </li>
+  
   <li class=" " data-id="grpc/GRPC/Metadata" data-name="grpc::metadata">
       <a href="../../GRPC/Metadata.html">Metadata</a>
       
@@ -157,6 +167,11 @@
       
     </li>
   
+  <li class=" " data-id="grpc/GRPC/RawRequestStream" data-name="grpc::rawrequeststream">
+      <a href="../../GRPC/RawRequestStream.html">RawRequestStream</a>
+      
+    </li>
+  
   <li class=" " data-id="grpc/GRPC/RawResponseStream" data-name="grpc::rawresponsestream">
       <a href="../../GRPC/RawResponseStream.html">RawResponseStream</a>
       
@@ -164,6 +179,11 @@
   
   <li class=" " data-id="grpc/GRPC/RawServerStream" data-name="grpc::rawserverstream">
       <a href="../../GRPC/RawServerStream.html">RawServerStream</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/RequestStream" data-name="grpc::requeststream(t)">
+      <a href="../../GRPC/RequestStream.html">RequestStream</a>
       
     </li>
   
@@ -232,6 +252,11 @@
       
         <ul>
   
+  <li class=" " data-id="grpc/GRPC/Transport/ClientTransport" data-name="grpc::transport::clienttransport">
+      <a href="../../GRPC/Transport/ClientTransport.html">ClientTransport</a>
+      
+    </li>
+  
   <li class=" current" data-id="grpc/GRPC/Transport/Http2ClientConnection" data-name="grpc::transport::http2clientconnection">
       <a href="../../GRPC/Transport/Http2ClientConnection.html">Http2ClientConnection</a>
       
@@ -269,6 +294,11 @@
   
   <li class=" " data-id="grpc/GRPC/Transport/SendBuffer" data-name="grpc::transport::sendbuffer">
       <a href="../../GRPC/Transport/SendBuffer.html">SendBuffer</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Transport/ServerTransport" data-name="grpc::transport::servertransport">
+      <a href="../../GRPC/Transport/ServerTransport.html">ServerTransport</a>
       
     </li>
   
@@ -360,6 +390,20 @@
 
 
 
+  <h2>
+    <a id="included-modules" class="anchor" href="#included-modules">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Included Modules
+  </h2>
+  <ul class="other-types-list">
+    
+      <li class="other-type"><a href="../../GRPC/Transport/ClientTransport.html">GRPC::Transport::ClientTransport</a></li>
+    
+  </ul>
+
 
 
 
@@ -379,7 +423,7 @@
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/transport/http2_client_connection.cr#L235" target="_blank">
+      <a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/transport/http2_client_connection.cr#L236" target="_blank">
         grpc/transport/http2_client_connection.cr
       </a>
     
@@ -492,30 +536,30 @@
       </li>
     
       <li class="entry-summary">
-        <a href="#open_bidi_stream%28service%3AString%2Cmethod%3AString%2Crequest_messages%3AArray%28Bytes%29%2Cmetadata%3AMetadata%3DMetadata.new%29%3APendingStream-instance-method" class="signature"><strong>#open_bidi_stream</strong>(service : String, method : String, request_messages : Array(Bytes), metadata : Metadata = <span class="t">Metadata</span>.new) : PendingStream</a>
+        <a href="#open_bidi_stream%28service%3AString%2Cmethod%3AString%2Crequest_messages%3AArray%28Bytes%29%2Cmetadata%3AMetadata%3DMetadata.new%29%3ARawServerStream-instance-method" class="signature"><strong>#open_bidi_stream</strong>(service : String, method : String, request_messages : Array(Bytes), metadata : Metadata = <span class="t">Metadata</span>.new) : RawServerStream</a>
         
-          <div class="summary"><p>open_bidi_stream sends multiple gRPC request messages (buffered) and returns a PendingStream that delivers server-pushed response messages as they arrive.</p></div>
+          <div class="summary"><p>open_bidi_stream sends multiple gRPC request messages (buffered) and returns a RawServerStream that delivers server-pushed response messages as they arrive.</p></div>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#open_bidi_stream_live%28service%3AString%2Cmethod%3AString%2Cmetadata%3AMetadata%3DMetadata.new%29%3APendingStream-instance-method" class="signature"><strong>#open_bidi_stream_live</strong>(service : String, method : String, metadata : Metadata = <span class="t">Metadata</span>.new) : PendingStream</a>
+        <a href="#open_bidi_stream_live%28service%3AString%2Cmethod%3AString%2Cmetadata%3AMetadata%3DMetadata.new%29%3ARawBidiCall-instance-method" class="signature"><strong>#open_bidi_stream_live</strong>(service : String, method : String, metadata : Metadata = <span class="t">Metadata</span>.new) : RawBidiCall</a>
         
           <div class="summary"><p>open_bidi_stream_live opens a true full-duplex bidi stream.</p></div>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#open_client_stream_live%28service%3AString%2Cmethod%3AString%2Cmetadata%3AMetadata%3DMetadata.new%29%3APendingStream-instance-method" class="signature"><strong>#open_client_stream_live</strong>(service : String, method : String, metadata : Metadata = <span class="t">Metadata</span>.new) : PendingStream</a>
+        <a href="#open_client_stream_live%28service%3AString%2Cmethod%3AString%2Cmetadata%3AMetadata%3DMetadata.new%29%3ARawClientCall-instance-method" class="signature"><strong>#open_client_stream_live</strong>(service : String, method : String, metadata : Metadata = <span class="t">Metadata</span>.new) : RawClientCall</a>
         
           <div class="summary"><p>open_client_stream_live opens a live client-streaming RPC.</p></div>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#open_server_stream%28service%3AString%2Cmethod%3AString%2Crequest_bytes%3ABytes%2Cmetadata%3AMetadata%3DMetadata.new%29%3APendingStream-instance-method" class="signature"><strong>#open_server_stream</strong>(service : String, method : String, request_bytes : Bytes, metadata : Metadata = <span class="t">Metadata</span>.new) : PendingStream</a>
+        <a href="#open_server_stream%28service%3AString%2Cmethod%3AString%2Crequest_bytes%3ABytes%2Cmetadata%3AMetadata%3DMetadata.new%29%3ARawServerStream-instance-method" class="signature"><strong>#open_server_stream</strong>(service : String, method : String, request_bytes : Bytes, metadata : Metadata = <span class="t">Metadata</span>.new) : RawServerStream</a>
         
-          <div class="summary"><p>open_server_stream sends one gRPC request and returns a PendingStream that delivers server-pushed messages as they arrive.</p></div>
+          <div class="summary"><p>open_server_stream sends one gRPC request and returns a RawServerStream that delivers server-pushed messages as they arrive.</p></div>
         
       </li>
     
@@ -531,6 +575,63 @@
 
 
   <div class="methods-inherited">
+    
+      
+
+  <h3>Instance methods inherited from module <code><a href="../../GRPC/Transport/ClientTransport.html">GRPC::Transport::ClientTransport</a></code></h3>
+  
+  
+    <a href="../../GRPC/Transport/ClientTransport.html#client_stream_call%28service%3AString%2Cmethod%3AString%2Crequest_messages%3AArray%28Bytes%29%2Cmetadata%3AMetadata%29%3ATuple%28Bytes%2CStatus%29-instance-method" class="tooltip">
+      <span>client_stream_call(service : String, method : String, request_messages : Array(Bytes), metadata : Metadata) : Tuple(Bytes, Status)</span>
+    client_stream_call</a>, 
+    
+  
+    <a href="../../GRPC/Transport/ClientTransport.html#close%3ANil-instance-method" class="tooltip">
+      <span>close : Nil</span>
+    close</a>, 
+    
+  
+    <a href="../../GRPC/Transport/ClientTransport.html#closed%3F%3ABool-instance-method" class="tooltip">
+      <span>closed? : Bool</span>
+    closed?</a>, 
+    
+  
+    <a href="../../GRPC/Transport/ClientTransport.html#open_bidi_stream%28service%3AString%2Cmethod%3AString%2Crequest_messages%3AArray%28Bytes%29%2Cmetadata%3AMetadata%29%3ARawServerStream-instance-method" class="tooltip">
+      <span>open_bidi_stream(service : String, method : String, request_messages : Array(Bytes), metadata : Metadata) : RawServerStream</span>
+    open_bidi_stream</a>, 
+    
+  
+    <a href="../../GRPC/Transport/ClientTransport.html#open_bidi_stream_live%28service%3AString%2Cmethod%3AString%2Cmetadata%3AMetadata%29%3ARawBidiCall-instance-method" class="tooltip">
+      <span>open_bidi_stream_live(service : String, method : String, metadata : Metadata) : RawBidiCall</span>
+    open_bidi_stream_live</a>, 
+    
+  
+    <a href="../../GRPC/Transport/ClientTransport.html#open_client_stream_live%28service%3AString%2Cmethod%3AString%2Cmetadata%3AMetadata%29%3ARawClientCall-instance-method" class="tooltip">
+      <span>open_client_stream_live(service : String, method : String, metadata : Metadata) : RawClientCall</span>
+    open_client_stream_live</a>, 
+    
+  
+    <a href="../../GRPC/Transport/ClientTransport.html#open_server_stream%28service%3AString%2Cmethod%3AString%2Crequest_bytes%3ABytes%2Cmetadata%3AMetadata%29%3ARawServerStream-instance-method" class="tooltip">
+      <span>open_server_stream(service : String, method : String, request_bytes : Bytes, metadata : Metadata) : RawServerStream</span>
+    open_server_stream</a>, 
+    
+  
+    <a href="../../GRPC/Transport/ClientTransport.html#unary_call%28service%3AString%2Cmethod%3AString%2Crequest_body%3ABytes%2Cmetadata%3AMetadata%29%3ATuple%28Bytes%2CStatus%29-instance-method" class="tooltip">
+      <span>unary_call(service : String, method : String, request_body : Bytes, metadata : Metadata) : Tuple(Bytes, Status)</span>
+    unary_call</a>
+    
+  
+
+
+      
+
+
+      
+
+
+      
+
+
     
       
 
@@ -647,7 +748,7 @@
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/transport/http2_client_connection.cr#L264" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/transport/http2_client_connection.cr#L266" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -685,7 +786,7 @@ until the server returns its single response.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/transport/http2_client_connection.cr#L309" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/transport/http2_client_connection.cr#L311" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -701,7 +802,7 @@ until the server returns its single response.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/transport/http2_client_connection.cr#L514" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/transport/http2_client_connection.cr#L551" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -717,7 +818,7 @@ until the server returns its single response.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/transport/http2_client_connection.cr#L523" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/transport/http2_client_connection.cr#L560" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -733,7 +834,7 @@ until the server returns its single response.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/transport/http2_client_connection.cr#L495" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/transport/http2_client_connection.cr#L531" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -749,98 +850,98 @@ until the server returns its single response.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/transport/http2_client_connection.cr#L535" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/transport/http2_client_connection.cr#L572" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="open_bidi_stream(service:String,method:String,request_messages:Array(Bytes),metadata:Metadata=Metadata.new):PendingStream-instance-method">
+    <div class="entry-detail" id="open_bidi_stream(service:String,method:String,request_messages:Array(Bytes),metadata:Metadata=Metadata.new):RawServerStream-instance-method">
       <div class="signature">
         
-        def <strong>open_bidi_stream</strong>(service : String, method : String, request_messages : Array(Bytes), metadata : <a href="../../GRPC/Metadata.html">Metadata</a> = <span class="t">Metadata</span>.new) : <a href="../../GRPC/Transport/PendingStream.html">PendingStream</a>
+        def <strong>open_bidi_stream</strong>(service : String, method : String, request_messages : Array(Bytes), metadata : <a href="../../GRPC/Metadata.html">Metadata</a> = <span class="t">Metadata</span>.new) : <a href="../../GRPC/RawServerStream.html">RawServerStream</a>
 
-        <a class="method-permalink" href="#open_bidi_stream%28service%3AString%2Cmethod%3AString%2Crequest_messages%3AArray%28Bytes%29%2Cmetadata%3AMetadata%3DMetadata.new%29%3APendingStream-instance-method">#</a>
+        <a class="method-permalink" href="#open_bidi_stream%28service%3AString%2Cmethod%3AString%2Crequest_messages%3AArray%28Bytes%29%2Cmetadata%3AMetadata%3DMetadata.new%29%3ARawServerStream-instance-method">#</a>
       </div>
       
         <div class="doc">
           
           <p>open_bidi_stream sends multiple gRPC request messages (buffered) and returns a
-PendingStream that delivers server-pushed response messages as they arrive.</p>
+RawServerStream that delivers server-pushed response messages as they arrive.</p>
         </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/transport/http2_client_connection.cr#L325" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/transport/http2_client_connection.cr#L327" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="open_bidi_stream_live(service:String,method:String,metadata:Metadata=Metadata.new):PendingStream-instance-method">
+    <div class="entry-detail" id="open_bidi_stream_live(service:String,method:String,metadata:Metadata=Metadata.new):RawBidiCall-instance-method">
       <div class="signature">
         
-        def <strong>open_bidi_stream_live</strong>(service : String, method : String, metadata : <a href="../../GRPC/Metadata.html">Metadata</a> = <span class="t">Metadata</span>.new) : <a href="../../GRPC/Transport/PendingStream.html">PendingStream</a>
+        def <strong>open_bidi_stream_live</strong>(service : String, method : String, metadata : <a href="../../GRPC/Metadata.html">Metadata</a> = <span class="t">Metadata</span>.new) : <a href="../../GRPC/RawBidiCall.html">RawBidiCall</a>
 
-        <a class="method-permalink" href="#open_bidi_stream_live%28service%3AString%2Cmethod%3AString%2Cmetadata%3AMetadata%3DMetadata.new%29%3APendingStream-instance-method">#</a>
+        <a class="method-permalink" href="#open_bidi_stream_live%28service%3AString%2Cmethod%3AString%2Cmetadata%3AMetadata%3DMetadata.new%29%3ARawBidiCall-instance-method">#</a>
       </div>
       
         <div class="doc">
           
           <p>open_bidi_stream_live opens a true full-duplex bidi stream.
-Returns a PendingStream whose send_outgoing / close_send methods let the
+Returns a RawBidiCall whose send_raw / close_send / each methods let the
 caller interleave sends and receives freely.</p>
         </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/transport/http2_client_connection.cr#L335" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/transport/http2_client_connection.cr#L337" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="open_client_stream_live(service:String,method:String,metadata:Metadata=Metadata.new):PendingStream-instance-method">
+    <div class="entry-detail" id="open_client_stream_live(service:String,method:String,metadata:Metadata=Metadata.new):RawClientCall-instance-method">
       <div class="signature">
         
-        def <strong>open_client_stream_live</strong>(service : String, method : String, metadata : <a href="../../GRPC/Metadata.html">Metadata</a> = <span class="t">Metadata</span>.new) : <a href="../../GRPC/Transport/PendingStream.html">PendingStream</a>
+        def <strong>open_client_stream_live</strong>(service : String, method : String, metadata : <a href="../../GRPC/Metadata.html">Metadata</a> = <span class="t">Metadata</span>.new) : <a href="../../GRPC/RawClientCall.html">RawClientCall</a>
 
-        <a class="method-permalink" href="#open_client_stream_live%28service%3AString%2Cmethod%3AString%2Cmetadata%3AMetadata%3DMetadata.new%29%3APendingStream-instance-method">#</a>
+        <a class="method-permalink" href="#open_client_stream_live%28service%3AString%2Cmethod%3AString%2Cmetadata%3AMetadata%3DMetadata.new%29%3ARawClientCall-instance-method">#</a>
       </div>
       
         <div class="doc">
           
           <p>open_client_stream_live opens a live client-streaming RPC.
-Returns a PendingStream whose send_outgoing / close_send methods let the
+Returns a RawClientCall whose send_raw / close_and_recv methods let the
 caller send messages incrementally; the server's single response arrives
-via the messages channel after close_send is called.</p>
+after close_and_recv returns.</p>
         </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/transport/http2_client_connection.cr#L344" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/transport/http2_client_connection.cr#L346" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="open_server_stream(service:String,method:String,request_bytes:Bytes,metadata:Metadata=Metadata.new):PendingStream-instance-method">
+    <div class="entry-detail" id="open_server_stream(service:String,method:String,request_bytes:Bytes,metadata:Metadata=Metadata.new):RawServerStream-instance-method">
       <div class="signature">
         
-        def <strong>open_server_stream</strong>(service : String, method : String, request_bytes : Bytes, metadata : <a href="../../GRPC/Metadata.html">Metadata</a> = <span class="t">Metadata</span>.new) : <a href="../../GRPC/Transport/PendingStream.html">PendingStream</a>
+        def <strong>open_server_stream</strong>(service : String, method : String, request_bytes : Bytes, metadata : <a href="../../GRPC/Metadata.html">Metadata</a> = <span class="t">Metadata</span>.new) : <a href="../../GRPC/RawServerStream.html">RawServerStream</a>
 
-        <a class="method-permalink" href="#open_server_stream%28service%3AString%2Cmethod%3AString%2Crequest_bytes%3ABytes%2Cmetadata%3AMetadata%3DMetadata.new%29%3APendingStream-instance-method">#</a>
+        <a class="method-permalink" href="#open_server_stream%28service%3AString%2Cmethod%3AString%2Crequest_bytes%3ABytes%2Cmetadata%3AMetadata%3DMetadata.new%29%3ARawServerStream-instance-method">#</a>
       </div>
       
         <div class="doc">
           
-          <p>open_server_stream sends one gRPC request and returns a PendingStream that
+          <p>open_server_stream sends one gRPC request and returns a RawServerStream that
 delivers server-pushed messages as they arrive.</p>
         </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/transport/http2_client_connection.cr#L318" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/transport/http2_client_connection.cr#L320" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -861,7 +962,7 @@ delivers server-pushed messages as they arrive.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/transport/http2_client_connection.cr#L302" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/transport/http2_client_connection.cr#L304" target="_blank">View source</a>]
         
       </div>
     </div>

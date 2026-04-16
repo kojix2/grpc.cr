@@ -14,7 +14,7 @@
 <script type="text/javascript" src="../js/doc.js"></script>
 
   <meta name="repository-name" content="grpc">
-  <title>GRPC::ClientContext - grpc main</title>
+  <title>GRPC::LiveBidiStreamClientCall - grpc main</title>
   <script type="text/javascript">
     CrystalDocs.base_path = "../";
   </script>
@@ -102,7 +102,7 @@
       
     </li>
   
-  <li class=" current" data-id="grpc/GRPC/ClientContext" data-name="grpc::clientcontext">
+  <li class=" " data-id="grpc/GRPC/ClientContext" data-name="grpc::clientcontext">
       <a href="../GRPC/ClientContext.html">ClientContext</a>
       
     </li>
@@ -142,7 +142,7 @@
       
     </li>
   
-  <li class=" " data-id="grpc/GRPC/LiveBidiStreamClientCall" data-name="grpc::livebidistreamclientcall">
+  <li class=" current" data-id="grpc/GRPC/LiveBidiStreamClientCall" data-name="grpc::livebidistreamclientcall">
       <a href="../GRPC/LiveBidiStreamClientCall.html">LiveBidiStreamClientCall</a>
       
     </li>
@@ -362,35 +362,26 @@
 <h1 class="type-name">
 
   <span class="kind">
-    class
-  </span> GRPC::<wbr>ClientContext
+    alias
+  </span> GRPC::<wbr>LiveBidiStreamClientCall
 
 </h1>
 
 
-  <ul class="superclass-hierarchy"><li class="superclass"><a href="../GRPC/ClientContext.html">GRPC::ClientContext</a></li><li class="superclass">Reference</li><li class="superclass">Object</li></ul>
+
 
 
 
 
   <h2>
-    <a id="overview" class="anchor" href="#overview">
+    <a id="alias-definition" class="anchor" href="#alias-definition">
   <svg class="octicon-link" aria-hidden="true">
     <use href="#octicon-link"/>
   </svg>
 </a>
-    Overview
+    Alias Definition
   </h2>
-
-  <p>ClientContext carries per-call options for outbound RPCs.</p>
-<p>Example:
-ctx = GRPC::ClientContext.new(
-metadata: {&quot;authorization&quot; =&gt; &quot;Bearer token&quot;},
-deadline: 5.seconds
-)
-reply = client.say_hello(req, ctx: ctx)</p>
-
-
+  <code>String, <a href="../GRPC/ClientContext.html">GRPC::ClientContext</a> -> <a href="../GRPC/RawBidiCall.html">GRPC::RawBidiCall</a></code>
 
 
 
@@ -415,8 +406,8 @@ reply = client.say_hello(req, ctx: ctx)</p>
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/call_context.cr#L47" target="_blank">
-        grpc/call_context.cr
+      <a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/interceptor.cr#L61" target="_blank">
+        grpc/interceptor.cr
       </a>
     
     <br/>
@@ -427,256 +418,25 @@ reply = client.say_hello(req, ctx: ctx)</p>
 
 
   
-  <h2>
-    <a id="constructors" class="anchor" href="#constructors">
-  <svg class="octicon-link" aria-hidden="true">
-    <use href="#octicon-link"/>
-  </svg>
-</a>
-    Constructors
-  </h2>
-  <ul class="list-summary">
-    
-      <li class="entry-summary">
-        <a href="#new%28metadata%3AHash%28String%2CString%29%7CMetadata%3DMetadata.new%2Cdeadline%3ATime%3A%3ASpan%7CTime%7CNil%3Dnil%29-class-method" class="signature"><strong>.new</strong>(metadata : Hash(String, String) | Metadata = <span class="t">Metadata</span>.new, deadline : Time::Span | Time | Nil = <span class="n">nil</span>)</a>
-        
-      </li>
-    
-  </ul>
-
 
   
 
   
 
   
-  <h2>
-    <a id="instance-method-summary" class="anchor" href="#instance-method-summary">
-  <svg class="octicon-link" aria-hidden="true">
-    <use href="#octicon-link"/>
-  </svg>
-</a>
-    Instance Method Summary
-  </h2>
-  <ul class="list-summary">
-    
-      <li class="entry-summary">
-        <a href="#deadline%3ATime%7CNil-instance-method" class="signature"><strong>#deadline</strong> : Time | Nil</a>
-        
-      </li>
-    
-      <li class="entry-summary">
-        <a href="#deadline%3D%28deadline%3ATime%7CNil%29-instance-method" class="signature"><strong>#deadline=</strong>(deadline : Time | Nil)</a>
-        
-      </li>
-    
-      <li class="entry-summary">
-        <a href="#effective_metadata%3AMetadata-instance-method" class="signature"><strong>#effective_metadata</strong> : Metadata</a>
-        
-          <div class="summary"><p>effective_metadata returns the call metadata including grpc-timeout if a deadline is set.</p></div>
-        
-      </li>
-    
-      <li class="entry-summary">
-        <a href="#metadata%3AMetadata-instance-method" class="signature"><strong>#metadata</strong> : Metadata</a>
-        
-      </li>
-    
-      <li class="entry-summary">
-        <a href="#remaining%3ATime%3A%3ASpan%7CNil-instance-method" class="signature"><strong>#remaining</strong> : Time::Span | Nil</a>
-        
-          <div class="summary"><p>remaining returns how much time is left before the deadline.</p></div>
-        
-      </li>
-    
-      <li class="entry-summary">
-        <a href="#timed_out%3F%3ABool-instance-method" class="signature"><strong>#timed_out?</strong> : Bool</a>
-        
-      </li>
-    
-  </ul>
-
 
 
   <div class="methods-inherited">
     
-      
-
-
-      
-
-
-      
-
-
-      
-
-
-    
-      
-
-
-      
-
-
-      
-
-
-      
-
-
-    
   </div>
 
   
-  <h2>
-    <a id="constructor-detail" class="anchor" href="#constructor-detail">
-  <svg class="octicon-link" aria-hidden="true">
-    <use href="#octicon-link"/>
-  </svg>
-</a>
-    Constructor Detail
-  </h2>
-  
-    <div class="entry-detail" id="new(metadata:Hash(String,String)|Metadata=Metadata.new,deadline:Time::Span|Time|Nil=nil)-class-method">
-      <div class="signature">
-        
-        def self.<strong>new</strong>(metadata : Hash(String, String) | <a href="../GRPC/Metadata.html">Metadata</a> = <span class="t">Metadata</span>.new, deadline : Time::Span | Time | Nil = <span class="n">nil</span>)
-
-        <a class="method-permalink" href="#new%28metadata%3AHash%28String%2CString%29%7CMetadata%3DMetadata.new%2Cdeadline%3ATime%3A%3ASpan%7CTime%7CNil%3Dnil%29-class-method">#</a>
-      </div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/call_context.cr#L51" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
-
 
   
 
   
 
   
-  <h2>
-    <a id="instance-method-detail" class="anchor" href="#instance-method-detail">
-  <svg class="octicon-link" aria-hidden="true">
-    <use href="#octicon-link"/>
-  </svg>
-</a>
-    Instance Method Detail
-  </h2>
-  
-    <div class="entry-detail" id="deadline:Time|Nil-instance-method">
-      <div class="signature">
-        
-        def <strong>deadline</strong> : Time | Nil
-
-        <a class="method-permalink" href="#deadline%3ATime%7CNil-instance-method">#</a>
-      </div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/call_context.cr#L49" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
-    <div class="entry-detail" id="deadline=(deadline:Time|Nil)-instance-method">
-      <div class="signature">
-        
-        def <strong>deadline=</strong>(deadline : Time | Nil)
-
-        <a class="method-permalink" href="#deadline%3D%28deadline%3ATime%7CNil%29-instance-method">#</a>
-      </div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/call_context.cr#L49" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
-    <div class="entry-detail" id="effective_metadata:Metadata-instance-method">
-      <div class="signature">
-        
-        def <strong>effective_metadata</strong> : <a href="../GRPC/Metadata.html">Metadata</a>
-
-        <a class="method-permalink" href="#effective_metadata%3AMetadata-instance-method">#</a>
-      </div>
-      
-        <div class="doc">
-          
-          <p>effective_metadata returns the call metadata including grpc-timeout if a deadline is set.</p>
-        </div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/call_context.cr#L66" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
-    <div class="entry-detail" id="metadata:Metadata-instance-method">
-      <div class="signature">
-        
-        def <strong>metadata</strong> : <a href="../GRPC/Metadata.html">Metadata</a>
-
-        <a class="method-permalink" href="#metadata%3AMetadata-instance-method">#</a>
-      </div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/call_context.cr#L48" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
-    <div class="entry-detail" id="remaining:Time::Span|Nil-instance-method">
-      <div class="signature">
-        
-        def <strong>remaining</strong> : Time::Span | Nil
-
-        <a class="method-permalink" href="#remaining%3ATime%3A%3ASpan%7CNil-instance-method">#</a>
-      </div>
-      
-        <div class="doc">
-          
-          <p>remaining returns how much time is left before the deadline.</p>
-        </div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/call_context.cr#L83" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
-    <div class="entry-detail" id="timed_out?:Bool-instance-method">
-      <div class="signature">
-        
-        def <strong>timed_out?</strong> : Bool
-
-        <a class="method-permalink" href="#timed_out%3F%3ABool-instance-method">#</a>
-      </div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/kojix2/grpc.cr/blob/b45880f49dda4b9962dcf03f2123162de3b1341a/src/grpc/call_context.cr#L90" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
-
 
 
 </div>
