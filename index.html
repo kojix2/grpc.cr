@@ -455,8 +455,9 @@ reply <span class="o">=</span> client.say_hello(req, ctx: ctx)</code></pre>
   </svg>
 </a>Streaming</h2>
 <p>Generated stubs expose typed stream objects for all four RPC variants.
-Client-streaming and bidirectional-streaming request bodies are delivered to
-the server incrementally (fully live), not buffered until END_STREAM.</p>
+Client-streaming and bidirectional-streaming request messages are decoded
+and delivered to the server handler incrementally as HTTP/2 DATA frames
+arrive, without buffering the entire request body first.</p>
 <pre><code class="language-crystal"><span class="c"># Server streaming — iterate typed responses</span>
 stream <span class="o">=</span> client.range(<span class="t">Numbers</span><span class="t">::</span><span class="t">Number</span>.new(<span class="n">5</span>))
 stream.each { <span class="o">|</span>num<span class="o">|</span> puts num.value }
@@ -543,10 +544,12 @@ crystal run examples/helloworld/client.cr -- localhost 50051 Alice
 crystal run examples/streaming/client.cr
 # Square(7)    = 49
 # Range(5)     = 1 2 3 4 5
-# Sum(1..5)    = 15
 # [server] sum recv: 1
 # [server] sum recv: 2
-# ...
+# [server] sum recv: 3
+# [server] sum recv: 4
+# [server] sum recv: 5
+# Sum(1..5)    = 15
 # Transform([2,3,4]²) = 4 9 16</code></pre>
 <h3><a id="interceptors-logging-auth" class="anchor" href="#interceptors-logging-auth">
   <svg class="octicon-link" aria-hidden="true">
