@@ -92,6 +92,11 @@
       
     </li>
   
+  <li class=" " data-id="grpc/GRPC/CallInfo" data-name="grpc::callinfo">
+      <a href="../GRPC/CallInfo.html">CallInfo</a>
+      
+    </li>
+  
   <li class=" " data-id="grpc/GRPC/Channel" data-name="grpc::channel">
       <a href="../GRPC/Channel.html">Channel</a>
       
@@ -142,13 +147,23 @@
       
     </li>
   
+  <li class=" " data-id="grpc/GRPC/RawResponseStream" data-name="grpc::rawresponsestream">
+      <a href="../GRPC/RawResponseStream.html">RawResponseStream</a>
+      
+    </li>
+  
   <li class=" current" data-id="grpc/GRPC/RawServerStream" data-name="grpc::rawserverstream">
       <a href="../GRPC/RawServerStream.html">RawServerStream</a>
       
     </li>
   
-  <li class=" " data-id="grpc/GRPC/ResponseStream" data-name="grpc::responsestream">
+  <li class=" " data-id="grpc/GRPC/ResponseStream" data-name="grpc::responsestream(t)">
       <a href="../GRPC/ResponseStream.html">ResponseStream</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/RPCKind" data-name="grpc::rpckind">
+      <a href="../GRPC/RPCKind.html">RPCKind</a>
       
     </li>
   
@@ -365,7 +380,7 @@ Generated client stubs wrap this in a typed ServerStream(T) for ergonomic use.</
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/stream.cr#L5" target="_blank">
+      <a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/stream.cr#L5" target="_blank">
         grpc/stream.cr
       </a>
     
@@ -388,7 +403,10 @@ Generated client stubs wrap this in a typed ServerStream(T) for ergonomic use.</
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#new%28messages%3A%3A%3AChannel%28Bytes%7CNil%29%2Cstatus_proc%3A-%3EStatus%29-class-method" class="signature"><strong>.new</strong>(messages : ::Channel(Bytes | Nil), status_proc :  -> Status)</a>
+        <a href="#new%28messages%3A%3A%3AChannel%28Bytes%7CNil%29%2Cstatus_proc%3A-%3EStatus%2Ctrailers_proc%3A-%3EMetadata%3D-%3Edo%0AMetadata.new%0Aend%2Ccancel_proc%3A-%3ENil%3D-%3Edo%0Aend%29-class-method" class="signature"><strong>.new</strong>(messages : ::Channel(Bytes | Nil), status_proc :  -> Status, trailers_proc :  -> Metadata = <span class="o">-&gt;</span> <span class="k">do</span>
+  <span class="t">Metadata</span>.new
+<span class="k">end</span>, cancel_proc :  -> Nil = <span class="o">-&gt;</span> <span class="k">do</span>
+<span class="k">end</span>)</a>
         
       </li>
     
@@ -409,6 +427,11 @@ Generated client stubs wrap this in a typed ServerStream(T) for ergonomic use.</
     Instance Method Summary
   </h2>
   <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#cancel%3ANil-instance-method" class="signature"><strong>#cancel</strong> : Nil</a>
+        
+      </li>
     
       <li class="entry-summary">
         <a href="#each%28%26%3ABytes-%3E%29%3ANil-instance-method" class="signature"><strong>#each</strong>(& : Bytes -> ) : Nil</a>
@@ -484,18 +507,24 @@ Generated client stubs wrap this in a typed ServerStream(T) for ergonomic use.</
     Constructor Detail
   </h2>
   
-    <div class="entry-detail" id="new(messages:::Channel(Bytes|Nil),status_proc:-&gt;Status)-class-method">
+    <div class="entry-detail" id="new(messages:::Channel(Bytes|Nil),status_proc:-&gt;Status,trailers_proc:-&gt;Metadata=-&gt;do
+Metadata.new
+end,cancel_proc:-&gt;Nil=-&gt;do
+end)-class-method">
       <div class="signature">
         
-        def self.<strong>new</strong>(messages : ::Channel(Bytes | Nil), status_proc :  -> <a href="../GRPC/Status.html">Status</a>)
+        def self.<strong>new</strong>(messages : ::Channel(Bytes | Nil), status_proc :  -> <a href="../GRPC/Status.html">Status</a>, trailers_proc :  -> <a href="../GRPC/Metadata.html">Metadata</a> = <span class="o">-&gt;</span> <span class="k">do</span>
+  <span class="t">Metadata</span>.new
+<span class="k">end</span>, cancel_proc :  -> Nil = <span class="o">-&gt;</span> <span class="k">do</span>
+<span class="k">end</span>)
 
-        <a class="method-permalink" href="#new%28messages%3A%3A%3AChannel%28Bytes%7CNil%29%2Cstatus_proc%3A-%3EStatus%29-class-method">#</a>
+        <a class="method-permalink" href="#new%28messages%3A%3A%3AChannel%28Bytes%7CNil%29%2Cstatus_proc%3A-%3EStatus%2Ctrailers_proc%3A-%3EMetadata%3D-%3Edo%0AMetadata.new%0Aend%2Ccancel_proc%3A-%3ENil%3D-%3Edo%0Aend%29-class-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/stream.cr#L8" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/stream.cr#L8" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -515,6 +544,22 @@ Generated client stubs wrap this in a typed ServerStream(T) for ergonomic use.</
 </a>
     Instance Method Detail
   </h2>
+  
+    <div class="entry-detail" id="cancel:Nil-instance-method">
+      <div class="signature">
+        
+        def <strong>cancel</strong> : Nil
+
+        <a class="method-permalink" href="#cancel%3ANil-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/stream.cr#L29" target="_blank">View source</a>]
+        
+      </div>
+    </div>
   
     <div class="entry-detail" id="each(&amp;:Bytes-&gt;):Nil-instance-method">
       <div class="signature">
@@ -536,7 +581,7 @@ Generated client stubs wrap this in a typed ServerStream(T) for ergonomic use.</
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/stream.cr#L11" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/stream.cr#L13" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -552,7 +597,7 @@ Generated client stubs wrap this in a typed ServerStream(T) for ergonomic use.</
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/stream.cr#L19" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/stream.cr#L21" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -568,7 +613,7 @@ Generated client stubs wrap this in a typed ServerStream(T) for ergonomic use.</
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/stream.cr#L23" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/stream.cr#L25" target="_blank">View source</a>]
         
       </div>
     </div>

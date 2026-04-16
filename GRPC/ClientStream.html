@@ -92,6 +92,11 @@
       
     </li>
   
+  <li class=" " data-id="grpc/GRPC/CallInfo" data-name="grpc::callinfo">
+      <a href="../GRPC/CallInfo.html">CallInfo</a>
+      
+    </li>
+  
   <li class=" " data-id="grpc/GRPC/Channel" data-name="grpc::channel">
       <a href="../GRPC/Channel.html">Channel</a>
       
@@ -142,13 +147,23 @@
       
     </li>
   
+  <li class=" " data-id="grpc/GRPC/RawResponseStream" data-name="grpc::rawresponsestream">
+      <a href="../GRPC/RawResponseStream.html">RawResponseStream</a>
+      
+    </li>
+  
   <li class=" " data-id="grpc/GRPC/RawServerStream" data-name="grpc::rawserverstream">
       <a href="../GRPC/RawServerStream.html">RawServerStream</a>
       
     </li>
   
-  <li class=" " data-id="grpc/GRPC/ResponseStream" data-name="grpc::responsestream">
+  <li class=" " data-id="grpc/GRPC/ResponseStream" data-name="grpc::responsestream(t)">
       <a href="../GRPC/ResponseStream.html">ResponseStream</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/RPCKind" data-name="grpc::rpckind">
+      <a href="../GRPC/RPCKind.html">RPCKind</a>
       
     </li>
   
@@ -354,7 +369,7 @@ summary = call.close_and_recv</p>
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/stream.cr#L94" target="_blank">
+      <a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/stream.cr#L102" target="_blank">
         grpc/stream.cr
       </a>
     
@@ -377,7 +392,8 @@ summary = call.close_and_recv</p>
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#new%28send_proc%3AReq-%3E_%2Cclose_proc%3A-%3E_%2Cresult%3A%3A%3AChannel%28Exception%7CRes%29%29-class-method" class="signature"><strong>.new</strong>(send_proc : Req -> _, close_proc :  -> _, result : ::Channel(Exception | Res))</a>
+        <a href="#new%28send_proc%3AReq-%3E_%2Cclose_proc%3A-%3E_%2Cresult%3A%3A%3AChannel%28Exception%7CRes%29%2Ccancel_proc%3A-%3ENil%3D-%3Edo%0Aend%29-class-method" class="signature"><strong>.new</strong>(send_proc : Req -> _, close_proc :  -> _, result : ::Channel(Exception | Res), cancel_proc :  -> Nil = <span class="o">-&gt;</span> <span class="k">do</span>
+<span class="k">end</span>)</a>
         
       </li>
     
@@ -424,7 +440,17 @@ summary = call.close_and_recv</p>
       </li>
     
       <li class="entry-summary">
+        <a href="#status%3D%28s%3AStatus%29%3ANil-instance-method" class="signature"><strong>#status=</strong>(s : Status) : Nil</a>
+        
+      </li>
+    
+      <li class="entry-summary">
         <a href="#trailers%3AMetadata-instance-method" class="signature"><strong>#trailers</strong> : Metadata</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#trailers%3D%28t%3AMetadata%29%3ANil-instance-method" class="signature"><strong>#trailers=</strong>(t : Metadata) : Nil</a>
         
       </li>
     
@@ -472,18 +498,20 @@ summary = call.close_and_recv</p>
     Constructor Detail
   </h2>
   
-    <div class="entry-detail" id="new(send_proc:Req-&gt;_,close_proc:-&gt;_,result:::Channel(Exception|Res))-class-method">
+    <div class="entry-detail" id="new(send_proc:Req-&gt;_,close_proc:-&gt;_,result:::Channel(Exception|Res),cancel_proc:-&gt;Nil=-&gt;do
+end)-class-method">
       <div class="signature">
         
-        def self.<strong>new</strong>(send_proc : Req -> _, close_proc :  -> _, result : ::Channel(Exception | Res))
+        def self.<strong>new</strong>(send_proc : Req -> _, close_proc :  -> _, result : ::Channel(Exception | Res), cancel_proc :  -> Nil = <span class="o">-&gt;</span> <span class="k">do</span>
+<span class="k">end</span>)
 
-        <a class="method-permalink" href="#new%28send_proc%3AReq-%3E_%2Cclose_proc%3A-%3E_%2Cresult%3A%3A%3AChannel%28Exception%7CRes%29%29-class-method">#</a>
+        <a class="method-permalink" href="#new%28send_proc%3AReq-%3E_%2Cclose_proc%3A-%3E_%2Cresult%3A%3A%3AChannel%28Exception%7CRes%29%2Ccancel_proc%3A-%3ENil%3D-%3Edo%0Aend%29-class-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/stream.cr#L100" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/stream.cr#L111" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -515,7 +543,7 @@ summary = call.close_and_recv</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/stream.cr#L122" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/stream.cr#L136" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -536,7 +564,7 @@ summary = call.close_and_recv</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/stream.cr#L110" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/stream.cr#L124" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -557,7 +585,7 @@ summary = call.close_and_recv</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/stream.cr#L105" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/stream.cr#L119" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -573,7 +601,23 @@ summary = call.close_and_recv</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/stream.cr#L125" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/stream.cr#L140" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="status=(s:Status):Nil-instance-method">
+      <div class="signature">
+        
+        def <strong>status=</strong>(s : <a href="../GRPC/Status.html">Status</a>) : Nil
+
+        <a class="method-permalink" href="#status%3D%28s%3AStatus%29%3ANil-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/stream.cr#L150" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -589,7 +633,23 @@ summary = call.close_and_recv</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/stream.cr#L129" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/stream.cr#L144" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="trailers=(t:Metadata):Nil-instance-method">
+      <div class="signature">
+        
+        def <strong>trailers=</strong>(t : <a href="../GRPC/Metadata.html">Metadata</a>) : Nil
+
+        <a class="method-permalink" href="#trailers%3D%28t%3AMetadata%29%3ANil-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/stream.cr#L154" target="_blank">View source</a>]
         
       </div>
     </div>

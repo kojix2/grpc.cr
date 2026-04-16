@@ -92,6 +92,11 @@
       
     </li>
   
+  <li class=" " data-id="grpc/GRPC/CallInfo" data-name="grpc::callinfo">
+      <a href="../GRPC/CallInfo.html">CallInfo</a>
+      
+    </li>
+  
   <li class=" current" data-id="grpc/GRPC/Channel" data-name="grpc::channel">
       <a href="../GRPC/Channel.html">Channel</a>
       
@@ -142,13 +147,23 @@
       
     </li>
   
+  <li class=" " data-id="grpc/GRPC/RawResponseStream" data-name="grpc::rawresponsestream">
+      <a href="../GRPC/RawResponseStream.html">RawResponseStream</a>
+      
+    </li>
+  
   <li class=" " data-id="grpc/GRPC/RawServerStream" data-name="grpc::rawserverstream">
       <a href="../GRPC/RawServerStream.html">RawServerStream</a>
       
     </li>
   
-  <li class=" " data-id="grpc/GRPC/ResponseStream" data-name="grpc::responsestream">
+  <li class=" " data-id="grpc/GRPC/ResponseStream" data-name="grpc::responsestream(t)">
       <a href="../GRPC/ResponseStream.html">ResponseStream</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/RPCKind" data-name="grpc::rpckind">
+      <a href="../GRPC/RPCKind.html">RPCKind</a>
       
     </li>
   
@@ -358,7 +373,7 @@ channel = GRPC::Channel.new(&quot;https://localhost:50051&quot;, tls_context: ct
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/channel.cr#L16" target="_blank">
+      <a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/channel.cr#L16" target="_blank">
         grpc/channel.cr
       </a>
     
@@ -406,21 +421,7 @@ channel = GRPC::Channel.new(&quot;https://localhost:50051&quot;, tls_context: ct
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#client_stream_call%28service%3AString%2Cmethod%3AString%2Crequest_messages%3AArray%28Bytes%29%2Cctx%3AClientContext%3DClientContext.new%29%3ATuple%28Bytes%2CStatus%29-instance-method" class="signature"><strong>#client_stream_call</strong>(service : String, method : String, request_messages : Array(Bytes), ctx : ClientContext = <span class="t">ClientContext</span>.new) : Tuple(Bytes, Status)</a>
-        
-          <div class="summary"><p>client_stream_call sends multiple request messages and returns the single server response.</p></div>
-        
-      </li>
-    
-      <li class="entry-summary">
         <a href="#close%3ANil-instance-method" class="signature"><strong>#close</strong> : Nil</a>
-        
-      </li>
-    
-      <li class="entry-summary">
-        <a href="#open_bidi_stream%28service%3AString%2Cmethod%3AString%2Crequest_messages%3AArray%28Bytes%29%2Cctx%3AClientContext%3DClientContext.new%29%3ARawServerStream-instance-method" class="signature"><strong>#open_bidi_stream</strong>(service : String, method : String, request_messages : Array(Bytes), ctx : ClientContext = <span class="t">ClientContext</span>.new) : RawServerStream</a>
-        
-          <div class="summary"><p>open_bidi_stream sends multiple request messages (buffered) and returns a RawServerStream that delivers the server's streamed responses.</p></div>
         
       </li>
     
@@ -508,7 +509,7 @@ HTTPS triggers TLS; use <em>tls_context</em> to supply a custom OpenSSL context
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/channel.cr#L30" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/channel.cr#L30" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -529,29 +530,6 @@ HTTPS triggers TLS; use <em>tls_context</em> to supply a custom OpenSSL context
     Instance Method Detail
   </h2>
   
-    <div class="entry-detail" id="client_stream_call(service:String,method:String,request_messages:Array(Bytes),ctx:ClientContext=ClientContext.new):Tuple(Bytes,Status)-instance-method">
-      <div class="signature">
-        
-        def <strong>client_stream_call</strong>(service : String, method : String, request_messages : Array(Bytes), ctx : <a href="../GRPC/ClientContext.html">ClientContext</a> = <span class="t">ClientContext</span>.new) : Tuple(Bytes, <a href="../GRPC/Status.html">Status</a>)
-
-        <a class="method-permalink" href="#client_stream_call%28service%3AString%2Cmethod%3AString%2Crequest_messages%3AArray%28Bytes%29%2Cctx%3AClientContext%3DClientContext.new%29%3ATuple%28Bytes%2CStatus%29-instance-method">#</a>
-      </div>
-      
-        <div class="doc">
-          
-          <p>client_stream_call sends multiple request messages and returns the single
-server response.  Messages are buffered and submitted together.
-This is the internal API used by generated client stubs.</p>
-        </div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/channel.cr#L101" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
     <div class="entry-detail" id="close:Nil-instance-method">
       <div class="signature">
         
@@ -563,30 +541,7 @@ This is the internal API used by generated client stubs.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/channel.cr#L144" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
-    <div class="entry-detail" id="open_bidi_stream(service:String,method:String,request_messages:Array(Bytes),ctx:ClientContext=ClientContext.new):RawServerStream-instance-method">
-      <div class="signature">
-        
-        def <strong>open_bidi_stream</strong>(service : String, method : String, request_messages : Array(Bytes), ctx : <a href="../GRPC/ClientContext.html">ClientContext</a> = <span class="t">ClientContext</span>.new) : <a href="../GRPC/RawServerStream.html">RawServerStream</a>
-
-        <a class="method-permalink" href="#open_bidi_stream%28service%3AString%2Cmethod%3AString%2Crequest_messages%3AArray%28Bytes%29%2Cctx%3AClientContext%3DClientContext.new%29%3ARawServerStream-instance-method">#</a>
-      </div>
-      
-        <div class="doc">
-          
-          <p>open_bidi_stream sends multiple request messages (buffered) and returns a
-RawServerStream that delivers the server's streamed responses.
-This is the internal API used by generated client stubs.</p>
-        </div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/channel.cr#L122" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/channel.cr#L145" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -609,7 +564,7 @@ This is the internal API used by generated client stubs.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/channel.cr#L76" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/channel.cr#L76" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -633,7 +588,7 @@ If client interceptors are registered they wrap this call outermost-first.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/channel.cr#L44" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/channel.cr#L44" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -655,7 +610,7 @@ Interceptors are NOT applied on this low-level overload.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/channel.cr#L64" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/channel.cr#L64" target="_blank">View source</a>]
         
       </div>
     </div>

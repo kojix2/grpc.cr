@@ -92,6 +92,11 @@
       
     </li>
   
+  <li class=" " data-id="grpc/GRPC/CallInfo" data-name="grpc::callinfo">
+      <a href="../GRPC/CallInfo.html">CallInfo</a>
+      
+    </li>
+  
   <li class=" " data-id="grpc/GRPC/Channel" data-name="grpc::channel">
       <a href="../GRPC/Channel.html">Channel</a>
       
@@ -142,13 +147,23 @@
       
     </li>
   
+  <li class=" " data-id="grpc/GRPC/RawResponseStream" data-name="grpc::rawresponsestream">
+      <a href="../GRPC/RawResponseStream.html">RawResponseStream</a>
+      
+    </li>
+  
   <li class=" " data-id="grpc/GRPC/RawServerStream" data-name="grpc::rawserverstream">
       <a href="../GRPC/RawServerStream.html">RawServerStream</a>
       
     </li>
   
-  <li class=" " data-id="grpc/GRPC/ResponseStream" data-name="grpc::responsestream">
+  <li class=" " data-id="grpc/GRPC/ResponseStream" data-name="grpc::responsestream(t)">
       <a href="../GRPC/ResponseStream.html">ResponseStream</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/RPCKind" data-name="grpc::rpckind">
+      <a href="../GRPC/RPCKind.html">RPCKind</a>
       
     </li>
   
@@ -370,7 +385,7 @@ puts stream.status</p>
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/stream.cr#L37" target="_blank">
+      <a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/stream.cr#L43" target="_blank">
         grpc/stream.cr
       </a>
     
@@ -393,7 +408,8 @@ puts stream.status</p>
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#new-class-method" class="signature"><strong>.new</strong></a>
+        <a href="#new%28cancel_proc%3A-%3ENil%3D-%3Edo%0Aend%29-class-method" class="signature"><strong>.new</strong>(cancel_proc :  -> Nil = <span class="o">-&gt;</span> <span class="k">do</span>
+<span class="k">end</span>)</a>
         
       </li>
     
@@ -504,18 +520,20 @@ puts stream.status</p>
     Constructor Detail
   </h2>
   
-    <div class="entry-detail" id="new-class-method">
+    <div class="entry-detail" id="new(cancel_proc:-&gt;Nil=-&gt;do
+end)-class-method">
       <div class="signature">
         
-        def self.<strong>new</strong>
+        def self.<strong>new</strong>(cancel_proc :  -> Nil = <span class="o">-&gt;</span> <span class="k">do</span>
+<span class="k">end</span>)
 
-        <a class="method-permalink" href="#new-class-method">#</a>
+        <a class="method-permalink" href="#new%28cancel_proc%3A-%3ENil%3D-%3Edo%0Aend%29-class-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/stream.cr#L45" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/stream.cr#L52" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -547,7 +565,7 @@ puts stream.status</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/stream.cr#L70" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/stream.cr#L77" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -572,7 +590,7 @@ puts stream.status</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/stream.cr#L52" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/stream.cr#L59" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -588,7 +606,7 @@ puts stream.status</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/stream.cr#L79" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/stream.cr#L87" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -604,7 +622,7 @@ puts stream.status</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/stream.cr#L75" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/stream.cr#L83" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -620,7 +638,7 @@ puts stream.status</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/stream.cr#L62" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/stream.cr#L69" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -636,7 +654,7 @@ puts stream.status</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/stream.cr#L66" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/stream.cr#L73" target="_blank">View source</a>]
         
       </div>
     </div>

@@ -14,7 +14,7 @@
 <script type="text/javascript" src="../js/doc.js"></script>
 
   <meta name="repository-name" content="grpc">
-  <title>GRPC::BidiStreamServerCall - grpc main</title>
+  <title>GRPC::RPCKind - grpc main</title>
   <script type="text/javascript">
     CrystalDocs.base_path = "../";
   </script>
@@ -87,7 +87,7 @@
       
     </li>
   
-  <li class=" current" data-id="grpc/GRPC/BidiStreamServerCall" data-name="grpc::bidistreamservercall">
+  <li class=" " data-id="grpc/GRPC/BidiStreamServerCall" data-name="grpc::bidistreamservercall">
       <a href="../GRPC/BidiStreamServerCall.html">BidiStreamServerCall</a>
       
     </li>
@@ -162,7 +162,7 @@
       
     </li>
   
-  <li class=" " data-id="grpc/GRPC/RPCKind" data-name="grpc::rpckind">
+  <li class=" current" data-id="grpc/GRPC/RPCKind" data-name="grpc::rpckind">
       <a href="../GRPC/RPCKind.html">RPCKind</a>
       
     </li>
@@ -317,8 +317,8 @@
 <h1 class="type-name">
 
   <span class="kind">
-    alias
-  </span> GRPC::<wbr>BidiStreamServerCall
+    enum
+  </span> GRPC::<wbr>RPCKind
 
 </h1>
 
@@ -326,17 +326,19 @@
 
 
 
-
-
   <h2>
-    <a id="alias-definition" class="anchor" href="#alias-definition">
+    <a id="overview" class="anchor" href="#overview">
   <svg class="octicon-link" aria-hidden="true">
     <use href="#octicon-link"/>
   </svg>
 </a>
-    Alias Definition
+    Overview
   </h2>
-  <code>String, Array(Slice(UInt8)), <a href="../GRPC/ServerContext.html">GRPC::ServerContext</a>, <a href="../GRPC/RawResponseStream.html">GRPC::RawResponseStream</a> -> <a href="../GRPC/Status.html">GRPC::Status</a></code>
+
+  <p>RPCKind enumerates the four gRPC streaming variants.
+Available via CallInfo#kind so interceptors can branch on call type.</p>
+
+
 
 
 
@@ -361,7 +363,7 @@
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/interceptor.cr#L57" target="_blank">
+      <a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/interceptor.cr#L4" target="_blank">
         grpc/interceptor.cr
       </a>
     
@@ -370,6 +372,40 @@
 
 
 
+  
+    <h2>
+      <a id="enum-members" class="anchor" href="#enum-members">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+      Enum Members
+    </h2>
+  
+  <dl>
+    
+      <dt class="entry-const" id="Unary">
+        <strong>Unary</strong> = <code><span class="n">0</span></code>
+      </dt>
+      
+    
+      <dt class="entry-const" id="ServerStreaming">
+        <strong>ServerStreaming</strong> = <code><span class="n">1</span></code>
+      </dt>
+      
+    
+      <dt class="entry-const" id="ClientStreaming">
+        <strong>ClientStreaming</strong> = <code><span class="n">2</span></code>
+      </dt>
+      
+    
+      <dt class="entry-const" id="Bidi">
+        <strong>Bidi</strong> = <code><span class="n">3</span></code>
+      </dt>
+      
+    
+  </dl>
+
 
 
   
@@ -379,9 +415,101 @@
   
 
   
+  <h2>
+    <a id="instance-method-summary" class="anchor" href="#instance-method-summary">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Instance Method Summary
+  </h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#bidi%3F-instance-method" class="signature"><strong>#bidi?</strong></a>
+        
+          <div class="summary"><p>Returns <code>true</code> if this enum value equals <code><a href="../GRPC/RPCKind.html#Bidi">Bidi</a></code></p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#client_streaming%3F-instance-method" class="signature"><strong>#client_streaming?</strong></a>
+        
+          <div class="summary"><p>Returns <code>true</code> if this enum value equals <code><a href="../GRPC/RPCKind.html#ClientStreaming">ClientStreaming</a></code></p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#server_streaming%3F-instance-method" class="signature"><strong>#server_streaming?</strong></a>
+        
+          <div class="summary"><p>Returns <code>true</code> if this enum value equals <code><a href="../GRPC/RPCKind.html#ServerStreaming">ServerStreaming</a></code></p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#unary%3F-instance-method" class="signature"><strong>#unary?</strong></a>
+        
+          <div class="summary"><p>Returns <code>true</code> if this enum value equals <code><a href="../GRPC/RPCKind.html#Unary">Unary</a></code></p></div>
+        
+      </li>
+    
+  </ul>
+
 
 
   <div class="methods-inherited">
+    
+      
+
+
+      
+
+
+      
+
+
+      
+
+
+    
+      
+
+
+      
+
+
+      
+
+
+      
+
+
+    
+      
+
+
+      
+
+
+      
+
+
+      
+
+
+    
+      
+
+
+      
+
+
+      
+
+
+      
+
+
     
   </div>
 
@@ -392,6 +520,100 @@
   
 
   
+  <h2>
+    <a id="instance-method-detail" class="anchor" href="#instance-method-detail">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Instance Method Detail
+  </h2>
+  
+    <div class="entry-detail" id="bidi?-instance-method">
+      <div class="signature">
+        
+        def <strong>bidi?</strong>
+
+        <a class="method-permalink" href="#bidi%3F-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>Returns <code>true</code> if this enum value equals <code><a href="../GRPC/RPCKind.html#Bidi">Bidi</a></code></p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/interceptor.cr#L8" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="client_streaming?-instance-method">
+      <div class="signature">
+        
+        def <strong>client_streaming?</strong>
+
+        <a class="method-permalink" href="#client_streaming%3F-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>Returns <code>true</code> if this enum value equals <code><a href="../GRPC/RPCKind.html#ClientStreaming">ClientStreaming</a></code></p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/interceptor.cr#L7" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="server_streaming?-instance-method">
+      <div class="signature">
+        
+        def <strong>server_streaming?</strong>
+
+        <a class="method-permalink" href="#server_streaming%3F-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>Returns <code>true</code> if this enum value equals <code><a href="../GRPC/RPCKind.html#ServerStreaming">ServerStreaming</a></code></p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/interceptor.cr#L6" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="unary?-instance-method">
+      <div class="signature">
+        
+        def <strong>unary?</strong>
+
+        <a class="method-permalink" href="#unary%3F-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>Returns <code>true</code> if this enum value equals <code><a href="../GRPC/RPCKind.html#Unary">Unary</a></code></p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/interceptor.cr#L5" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
 
 
 </div>

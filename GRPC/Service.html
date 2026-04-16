@@ -92,6 +92,11 @@
       
     </li>
   
+  <li class=" " data-id="grpc/GRPC/CallInfo" data-name="grpc::callinfo">
+      <a href="../GRPC/CallInfo.html">CallInfo</a>
+      
+    </li>
+  
   <li class=" " data-id="grpc/GRPC/Channel" data-name="grpc::channel">
       <a href="../GRPC/Channel.html">Channel</a>
       
@@ -142,13 +147,23 @@
       
     </li>
   
+  <li class=" " data-id="grpc/GRPC/RawResponseStream" data-name="grpc::rawresponsestream">
+      <a href="../GRPC/RawResponseStream.html">RawResponseStream</a>
+      
+    </li>
+  
   <li class=" " data-id="grpc/GRPC/RawServerStream" data-name="grpc::rawserverstream">
       <a href="../GRPC/RawServerStream.html">RawServerStream</a>
       
     </li>
   
-  <li class=" " data-id="grpc/GRPC/ResponseStream" data-name="grpc::responsestream">
+  <li class=" " data-id="grpc/GRPC/ResponseStream" data-name="grpc::responsestream(t)">
       <a href="../GRPC/ResponseStream.html">ResponseStream</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/RPCKind" data-name="grpc::rpckind">
+      <a href="../GRPC/RPCKind.html">RPCKind</a>
       
     </li>
   
@@ -377,7 +392,7 @@ SERVICE_NAME = &quot;helloworld.Greeter&quot;</p>
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/service_handler.cr#L34" target="_blank">
+      <a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/service_handler.cr#L34" target="_blank">
         grpc/service_handler.cr
       </a>
     
@@ -427,7 +442,7 @@ SERVICE_NAME = &quot;helloworld.Greeter&quot;</p>
       </li>
     
       <li class="entry-summary">
-        <a href="#dispatch_bidi_stream%28method%3AString%2Crequests%3AArray%28Bytes%29%2Cctx%3AServerContext%2Cwriter%3AResponseStream%29%3AStatus-instance-method" class="signature"><strong>#dispatch_bidi_stream</strong>(method : String, requests : Array(Bytes), ctx : ServerContext, writer : ResponseStream) : Status</a>
+        <a href="#dispatch_bidi_stream%28method%3AString%2Crequests%3AArray%28Bytes%29%2Cctx%3AServerContext%2Cwriter%3ARawResponseStream%29%3AStatus-instance-method" class="signature"><strong>#dispatch_bidi_stream</strong>(method : String, requests : Array(Bytes), ctx : ServerContext, writer : RawResponseStream) : Status</a>
         
           <div class="summary"><p>dispatch_bidi_stream dispatches a bidirectional streaming RPC.</p></div>
         
@@ -441,7 +456,7 @@ SERVICE_NAME = &quot;helloworld.Greeter&quot;</p>
       </li>
     
       <li class="entry-summary">
-        <a href="#dispatch_server_stream%28method%3AString%2Crequest_body%3ABytes%2Cctx%3AServerContext%2Cwriter%3AResponseStream%29%3AStatus-instance-method" class="signature"><strong>#dispatch_server_stream</strong>(method : String, request_body : Bytes, ctx : ServerContext, writer : ResponseStream) : Status</a>
+        <a href="#dispatch_server_stream%28method%3AString%2Crequest_body%3ABytes%2Cctx%3AServerContext%2Cwriter%3ARawResponseStream%29%3AStatus-instance-method" class="signature"><strong>#dispatch_server_stream</strong>(method : String, request_body : Bytes, ctx : ServerContext, writer : RawResponseStream) : Status</a>
         
           <div class="summary"><p>dispatch_server_stream dispatches a server-streaming RPC.</p></div>
         
@@ -528,7 +543,7 @@ Generated service base classes override this; the default is false (unary).</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/service_handler.cr#L73" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/service_handler.cr#L73" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -550,7 +565,7 @@ Generated service base classes override this; the default is false (unary).</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/service_handler.cr#L58" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/service_handler.cr#L58" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -572,31 +587,31 @@ Returns {response_body : Bytes, status : Status}.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/service_handler.cr#L40" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/service_handler.cr#L40" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="dispatch_bidi_stream(method:String,requests:Array(Bytes),ctx:ServerContext,writer:ResponseStream):Status-instance-method">
+    <div class="entry-detail" id="dispatch_bidi_stream(method:String,requests:Array(Bytes),ctx:ServerContext,writer:RawResponseStream):Status-instance-method">
       <div class="signature">
         
-        def <strong>dispatch_bidi_stream</strong>(method : String, requests : Array(Bytes), ctx : <a href="../GRPC/ServerContext.html">ServerContext</a>, writer : <a href="../GRPC/ResponseStream.html">ResponseStream</a>) : <a href="../GRPC/Status.html">Status</a>
+        def <strong>dispatch_bidi_stream</strong>(method : String, requests : Array(Bytes), ctx : <a href="../GRPC/ServerContext.html">ServerContext</a>, writer : <a href="../GRPC/RawResponseStream.html">RawResponseStream</a>) : <a href="../GRPC/Status.html">Status</a>
 
-        <a class="method-permalink" href="#dispatch_bidi_stream%28method%3AString%2Crequests%3AArray%28Bytes%29%2Cctx%3AServerContext%2Cwriter%3AResponseStream%29%3AStatus-instance-method">#</a>
+        <a class="method-permalink" href="#dispatch_bidi_stream%28method%3AString%2Crequests%3AArray%28Bytes%29%2Cctx%3AServerContext%2Cwriter%3ARawResponseStream%29%3AStatus-instance-method">#</a>
       </div>
       
         <div class="doc">
           
           <p>dispatch_bidi_stream dispatches a bidirectional streaming RPC.
 <em>requests</em> contains all decoded request message bodies in order.
-The service writes response messages via <em>writer</em> and returns the final Status.
-Generated service base classes override this; the default returns UNIMPLEMENTED.</p>
+The transport passes a RawResponseStream; generated subclasses wrap it in a
+typed ResponseStream(T) before handing off to the user implementation.</p>
         </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/service_handler.cr#L81" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/service_handler.cr#L81" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -620,30 +635,30 @@ Generated service base classes override this; the default returns UNIMPLEMENTED.
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/service_handler.cr#L66" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/service_handler.cr#L66" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="dispatch_server_stream(method:String,request_body:Bytes,ctx:ServerContext,writer:ResponseStream):Status-instance-method">
+    <div class="entry-detail" id="dispatch_server_stream(method:String,request_body:Bytes,ctx:ServerContext,writer:RawResponseStream):Status-instance-method">
       <div class="signature">
         
-        def <strong>dispatch_server_stream</strong>(method : String, request_body : Bytes, ctx : <a href="../GRPC/ServerContext.html">ServerContext</a>, writer : <a href="../GRPC/ResponseStream.html">ResponseStream</a>) : <a href="../GRPC/Status.html">Status</a>
+        def <strong>dispatch_server_stream</strong>(method : String, request_body : Bytes, ctx : <a href="../GRPC/ServerContext.html">ServerContext</a>, writer : <a href="../GRPC/RawResponseStream.html">RawResponseStream</a>) : <a href="../GRPC/Status.html">Status</a>
 
-        <a class="method-permalink" href="#dispatch_server_stream%28method%3AString%2Crequest_body%3ABytes%2Cctx%3AServerContext%2Cwriter%3AResponseStream%29%3AStatus-instance-method">#</a>
+        <a class="method-permalink" href="#dispatch_server_stream%28method%3AString%2Crequest_body%3ABytes%2Cctx%3AServerContext%2Cwriter%3ARawResponseStream%29%3AStatus-instance-method">#</a>
       </div>
       
         <div class="doc">
           
           <p>dispatch_server_stream dispatches a server-streaming RPC.
-The service writes response messages via <em>writer</em> and returns the final Status.
-Generated service base classes override this; the default returns UNIMPLEMENTED.</p>
+The transport passes a RawResponseStream; generated subclasses wrap it in a
+typed ResponseStream(T) before handing off to the user implementation.</p>
         </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/service_handler.cr#L51" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/service_handler.cr#L51" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -665,7 +680,7 @@ Generated service base classes override this; the default is false (unary).</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/service_handler.cr#L44" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/service_handler.cr#L44" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -686,7 +701,7 @@ Generated service base classes override this; the default is false (unary).</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/service_handler.cr#L36" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/service_handler.cr#L36" target="_blank">View source</a>]
         
       </div>
     </div>

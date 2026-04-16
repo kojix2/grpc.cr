@@ -14,7 +14,7 @@
 <script type="text/javascript" src="../js/doc.js"></script>
 
   <meta name="repository-name" content="grpc">
-  <title>GRPC::BidiStreamServerCall - grpc main</title>
+  <title>GRPC::RawResponseStream - grpc main</title>
   <script type="text/javascript">
     CrystalDocs.base_path = "../";
   </script>
@@ -87,7 +87,7 @@
       
     </li>
   
-  <li class=" current" data-id="grpc/GRPC/BidiStreamServerCall" data-name="grpc::bidistreamservercall">
+  <li class=" " data-id="grpc/GRPC/BidiStreamServerCall" data-name="grpc::bidistreamservercall">
       <a href="../GRPC/BidiStreamServerCall.html">BidiStreamServerCall</a>
       
     </li>
@@ -147,7 +147,7 @@
       
     </li>
   
-  <li class=" " data-id="grpc/GRPC/RawResponseStream" data-name="grpc::rawresponsestream">
+  <li class=" current" data-id="grpc/GRPC/RawResponseStream" data-name="grpc::rawresponsestream">
       <a href="../GRPC/RawResponseStream.html">RawResponseStream</a>
       
     </li>
@@ -317,26 +317,31 @@
 <h1 class="type-name">
 
   <span class="kind">
-    alias
-  </span> GRPC::<wbr>BidiStreamServerCall
+    class
+  </span> GRPC::<wbr>RawResponseStream
 
 </h1>
 
 
-
+  <ul class="superclass-hierarchy"><li class="superclass"><a href="../GRPC/RawResponseStream.html">GRPC::RawResponseStream</a></li><li class="superclass">Reference</li><li class="superclass">Object</li></ul>
 
 
 
 
   <h2>
-    <a id="alias-definition" class="anchor" href="#alias-definition">
+    <a id="overview" class="anchor" href="#overview">
   <svg class="octicon-link" aria-hidden="true">
     <use href="#octicon-link"/>
   </svg>
 </a>
-    Alias Definition
+    Overview
   </h2>
-  <code>String, Array(Slice(UInt8)), <a href="../GRPC/ServerContext.html">GRPC::ServerContext</a>, <a href="../GRPC/RawResponseStream.html">GRPC::RawResponseStream</a> -> <a href="../GRPC/Status.html">GRPC::Status</a></code>
+
+  <p>RawResponseStream is the internal transport-level handle for sending streaming
+responses. It operates on raw Bytes and is used by the transport and interceptor
+layers. Service implementations receive the typed ResponseStream(T) instead.</p>
+
+
 
 
 
@@ -361,8 +366,8 @@
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/interceptor.cr#L57" target="_blank">
-        grpc/interceptor.cr
+      <a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/stream.cr#L235" target="_blank">
+        grpc/stream.cr
       </a>
     
     <br/>
@@ -373,25 +378,144 @@
 
 
   
+  <h2>
+    <a id="constructors" class="anchor" href="#constructors">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Constructors
+  </h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#new%28send_proc%3ABytes-%3ENil%29-class-method" class="signature"><strong>.new</strong>(send_proc : Bytes -> Nil)</a>
+        
+      </li>
+    
+  </ul>
+
 
   
 
   
 
   
+  <h2>
+    <a id="instance-method-summary" class="anchor" href="#instance-method-summary">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Instance Method Summary
+  </h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#send_raw%28message_bytes%3ABytes%29%3ANil-instance-method" class="signature"><strong>#send_raw</strong>(message_bytes : Bytes) : Nil</a>
+        
+          <div class="summary"><p>send_raw encodes one message body and pushes it to the HTTP/2 stream.</p></div>
+        
+      </li>
+    
+  </ul>
+
 
 
   <div class="methods-inherited">
     
+      
+
+
+      
+
+
+      
+
+
+      
+
+
+    
+      
+
+
+      
+
+
+      
+
+
+      
+
+
+    
   </div>
 
   
+  <h2>
+    <a id="constructor-detail" class="anchor" href="#constructor-detail">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Constructor Detail
+  </h2>
+  
+    <div class="entry-detail" id="new(send_proc:Bytes-&gt;Nil)-class-method">
+      <div class="signature">
+        
+        def self.<strong>new</strong>(send_proc : Bytes -> Nil)
+
+        <a class="method-permalink" href="#new%28send_proc%3ABytes-%3ENil%29-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/stream.cr#L236" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
 
   
 
   
 
   
+  <h2>
+    <a id="instance-method-detail" class="anchor" href="#instance-method-detail">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Instance Method Detail
+  </h2>
+  
+    <div class="entry-detail" id="send_raw(message_bytes:Bytes):Nil-instance-method">
+      <div class="signature">
+        
+        def <strong>send_raw</strong>(message_bytes : Bytes) : Nil
+
+        <a class="method-permalink" href="#send_raw%28message_bytes%3ABytes%29%3ANil-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>send_raw encodes one message body and pushes it to the HTTP/2 stream.</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/stream.cr#L240" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
 
 
 </div>

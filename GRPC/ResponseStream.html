@@ -14,7 +14,7 @@
 <script type="text/javascript" src="../js/doc.js"></script>
 
   <meta name="repository-name" content="grpc">
-  <title>GRPC::ResponseStream - grpc main</title>
+  <title>GRPC::ResponseStream(T) - grpc main</title>
   <script type="text/javascript">
     CrystalDocs.base_path = "../";
   </script>
@@ -92,6 +92,11 @@
       
     </li>
   
+  <li class=" " data-id="grpc/GRPC/CallInfo" data-name="grpc::callinfo">
+      <a href="../GRPC/CallInfo.html">CallInfo</a>
+      
+    </li>
+  
   <li class=" " data-id="grpc/GRPC/Channel" data-name="grpc::channel">
       <a href="../GRPC/Channel.html">Channel</a>
       
@@ -142,13 +147,23 @@
       
     </li>
   
+  <li class=" " data-id="grpc/GRPC/RawResponseStream" data-name="grpc::rawresponsestream">
+      <a href="../GRPC/RawResponseStream.html">RawResponseStream</a>
+      
+    </li>
+  
   <li class=" " data-id="grpc/GRPC/RawServerStream" data-name="grpc::rawserverstream">
       <a href="../GRPC/RawServerStream.html">RawServerStream</a>
       
     </li>
   
-  <li class=" current" data-id="grpc/GRPC/ResponseStream" data-name="grpc::responsestream">
+  <li class=" current" data-id="grpc/GRPC/ResponseStream" data-name="grpc::responsestream(t)">
       <a href="../GRPC/ResponseStream.html">ResponseStream</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/RPCKind" data-name="grpc::rpckind">
+      <a href="../GRPC/RPCKind.html">RPCKind</a>
       
     </li>
   
@@ -303,12 +318,12 @@
 
   <span class="kind">
     class
-  </span> GRPC::<wbr>ResponseStream
+  </span> GRPC::<wbr>ResponseStream(T)
 
 </h1>
 
 
-  <ul class="superclass-hierarchy"><li class="superclass"><a href="../GRPC/ResponseStream.html">GRPC::ResponseStream</a></li><li class="superclass">Reference</li><li class="superclass">Object</li></ul>
+  <ul class="superclass-hierarchy"><li class="superclass"><a href="../GRPC/ResponseStream.html">GRPC::ResponseStream(T)</a></li><li class="superclass">Reference</li><li class="superclass">Object</li></ul>
 
 
 
@@ -322,8 +337,15 @@
     Overview
   </h2>
 
-  <p>ResponseStream is the server-side handle for sending streaming responses.
-Used internally by server dispatch for server-streaming and bidi RPCs.</p>
+  <p>ResponseStream(T) is the public server-side handle for sending typed streaming
+responses. Service implementations receive this in server-streaming and bidi RPCs.
+The framework handles protobuf encoding internally.</p>
+<p>Example (server streaming handler):
+def range(req : Numbers::Number, writer : GRPC::ResponseStream(Numbers::Number),
+ctx : GRPC::ServerContext) : GRPC::Status
+(1..req.value).each { |i| writer.send(Numbers::Number.new(i)) }
+GRPC::Status.ok
+end</p>
 
 
 
@@ -350,7 +372,7 @@ Used internally by server dispatch for server-streaming and bidi RPCs.</p>
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/stream.cr#L192" target="_blank">
+      <a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/stream.cr#L255" target="_blank">
         grpc/stream.cr
       </a>
     
@@ -373,7 +395,7 @@ Used internally by server dispatch for server-streaming and bidi RPCs.</p>
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#new%28send_proc%3ABytes-%3ENil%29-class-method" class="signature"><strong>.new</strong>(send_proc : Bytes -> Nil)</a>
+        <a href="#new%28raw%3ARawResponseStream%29-class-method" class="signature"><strong>.new</strong>(raw : RawResponseStream)</a>
         
       </li>
     
@@ -396,9 +418,9 @@ Used internally by server dispatch for server-streaming and bidi RPCs.</p>
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#send%28message_bytes%3ABytes%29%3ANil-instance-method" class="signature"><strong>#send</strong>(message_bytes : Bytes) : Nil</a>
+        <a href="#send%28message%3AT%29%3ANil-instance-method" class="signature"><strong>#send</strong>(message : T) : Nil</a>
         
-          <div class="summary"><p>send encodes and transmits one response message to the client.</p></div>
+          <div class="summary"><p>send serialises <em>message</em> to protobuf and transmits it to the client.</p></div>
         
       </li>
     
@@ -446,18 +468,18 @@ Used internally by server dispatch for server-streaming and bidi RPCs.</p>
     Constructor Detail
   </h2>
   
-    <div class="entry-detail" id="new(send_proc:Bytes-&gt;Nil)-class-method">
+    <div class="entry-detail" id="new(raw:RawResponseStream)-class-method">
       <div class="signature">
         
-        def self.<strong>new</strong>(send_proc : Bytes -> Nil)
+        def self.<strong>new</strong>(raw : <a href="../GRPC/RawResponseStream.html">RawResponseStream</a>)
 
-        <a class="method-permalink" href="#new%28send_proc%3ABytes-%3ENil%29-class-method">#</a>
+        <a class="method-permalink" href="#new%28raw%3ARawResponseStream%29-class-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/stream.cr#L193" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/stream.cr#L256" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -478,23 +500,23 @@ Used internally by server dispatch for server-streaming and bidi RPCs.</p>
     Instance Method Detail
   </h2>
   
-    <div class="entry-detail" id="send(message_bytes:Bytes):Nil-instance-method">
+    <div class="entry-detail" id="send(message:T):Nil-instance-method">
       <div class="signature">
         
-        def <strong>send</strong>(message_bytes : Bytes) : Nil
+        def <strong>send</strong>(message : T) : Nil
 
-        <a class="method-permalink" href="#send%28message_bytes%3ABytes%29%3ANil-instance-method">#</a>
+        <a class="method-permalink" href="#send%28message%3AT%29%3ANil-instance-method">#</a>
       </div>
       
         <div class="doc">
           
-          <p>send encodes and transmits one response message to the client.</p>
+          <p>send serialises <em>message</em> to protobuf and transmits it to the client.</p>
         </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/e25ee6346cf490e8bf7d1d8f4f760b80e6a707af/src/grpc/stream.cr#L197" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/stream.cr#L260" target="_blank">View source</a>]
         
       </div>
     </div>

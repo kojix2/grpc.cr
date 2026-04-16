@@ -14,7 +14,7 @@
 <script type="text/javascript" src="../js/doc.js"></script>
 
   <meta name="repository-name" content="grpc">
-  <title>GRPC::BidiStreamServerCall - grpc main</title>
+  <title>GRPC::CallInfo - grpc main</title>
   <script type="text/javascript">
     CrystalDocs.base_path = "../";
   </script>
@@ -87,12 +87,12 @@
       
     </li>
   
-  <li class=" current" data-id="grpc/GRPC/BidiStreamServerCall" data-name="grpc::bidistreamservercall">
+  <li class=" " data-id="grpc/GRPC/BidiStreamServerCall" data-name="grpc::bidistreamservercall">
       <a href="../GRPC/BidiStreamServerCall.html">BidiStreamServerCall</a>
       
     </li>
   
-  <li class=" " data-id="grpc/GRPC/CallInfo" data-name="grpc::callinfo">
+  <li class=" current" data-id="grpc/GRPC/CallInfo" data-name="grpc::callinfo">
       <a href="../GRPC/CallInfo.html">CallInfo</a>
       
     </li>
@@ -317,26 +317,35 @@
 <h1 class="type-name">
 
   <span class="kind">
-    alias
-  </span> GRPC::<wbr>BidiStreamServerCall
+    struct
+  </span> GRPC::<wbr>CallInfo
 
 </h1>
 
 
-
+  <ul class="superclass-hierarchy"><li class="superclass"><a href="../GRPC/CallInfo.html">GRPC::CallInfo</a></li><li class="superclass">Struct</li><li class="superclass">Value</li><li class="superclass">Object</li></ul>
 
 
 
 
   <h2>
-    <a id="alias-definition" class="anchor" href="#alias-definition">
+    <a id="overview" class="anchor" href="#overview">
   <svg class="octicon-link" aria-hidden="true">
     <use href="#octicon-link"/>
   </svg>
 </a>
-    Alias Definition
+    Overview
   </h2>
-  <code>String, Array(Slice(UInt8)), <a href="../GRPC/ServerContext.html">GRPC::ServerContext</a>, <a href="../GRPC/RawResponseStream.html">GRPC::RawResponseStream</a> -> <a href="../GRPC/Status.html">GRPC::Status</a></code>
+
+  <p>CallInfo carries metadata about an in-flight RPC call passed to interceptors.
+Interceptors should use this instead of parsing raw strings.</p>
+<p>Example:
+def call(info : GRPC::CallInfo, request, ctx, next_call)
+STDERR.puts &quot;→ #{info.method_path} (#{info.kind})&quot;
+next_call.call(info.method_path, request, ctx)
+end</p>
+
+
 
 
 
@@ -361,7 +370,7 @@
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/interceptor.cr#L57" target="_blank">
+      <a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/interceptor.cr#L19" target="_blank">
         grpc/interceptor.cr
       </a>
     
@@ -373,25 +382,241 @@
 
 
   
+  <h2>
+    <a id="constructors" class="anchor" href="#constructors">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Constructors
+  </h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#new%28method_path%3AString%2Ckind%3ARPCKind%29-class-method" class="signature"><strong>.new</strong>(method_path : String, kind : RPCKind)</a>
+        
+      </li>
+    
+  </ul>
+
 
   
 
   
 
   
+  <h2>
+    <a id="instance-method-summary" class="anchor" href="#instance-method-summary">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Instance Method Summary
+  </h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#kind%3ARPCKind-instance-method" class="signature"><strong>#kind</strong> : RPCKind</a>
+        
+          <div class="summary"><p>Streaming kind of this RPC</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#method%3AString-instance-method" class="signature"><strong>#method</strong> : String</a>
+        
+          <div class="summary"><p>method returns the method name portion of the path, e.g.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#method_path%3AString-instance-method" class="signature"><strong>#method_path</strong> : String</a>
+        
+          <div class="summary"><p>Full gRPC method path, e.g.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#service%3AString-instance-method" class="signature"><strong>#service</strong> : String</a>
+        
+          <div class="summary"><p>service returns the service portion of the path, e.g.</p></div>
+        
+      </li>
+    
+  </ul>
+
 
 
   <div class="methods-inherited">
     
+      
+
+
+      
+
+
+      
+
+
+      
+
+
+    
+      
+
+
+      
+
+
+      
+
+
+      
+
+
+    
+      
+
+
+      
+
+
+      
+
+
+      
+
+
+    
   </div>
 
   
+  <h2>
+    <a id="constructor-detail" class="anchor" href="#constructor-detail">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Constructor Detail
+  </h2>
+  
+    <div class="entry-detail" id="new(method_path:String,kind:RPCKind)-class-method">
+      <div class="signature">
+        
+        def self.<strong>new</strong>(method_path : String, kind : <a href="../GRPC/RPCKind.html">RPCKind</a>)
+
+        <a class="method-permalink" href="#new%28method_path%3AString%2Ckind%3ARPCKind%29-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/interceptor.cr#L25" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
 
   
 
   
 
   
+  <h2>
+    <a id="instance-method-detail" class="anchor" href="#instance-method-detail">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Instance Method Detail
+  </h2>
+  
+    <div class="entry-detail" id="kind:RPCKind-instance-method">
+      <div class="signature">
+        
+        def <strong>kind</strong> : <a href="../GRPC/RPCKind.html">RPCKind</a>
+
+        <a class="method-permalink" href="#kind%3ARPCKind-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>Streaming kind of this RPC</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/interceptor.cr#L23" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="method:String-instance-method">
+      <div class="signature">
+        
+        def <strong>method</strong> : String
+
+        <a class="method-permalink" href="#method%3AString-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>method returns the method name portion of the path, e.g. &quot;SayHello&quot;</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/interceptor.cr#L35" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="method_path:String-instance-method">
+      <div class="signature">
+        
+        def <strong>method_path</strong> : String
+
+        <a class="method-permalink" href="#method_path%3AString-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>Full gRPC method path, e.g. &quot;/helloworld.Greeter/SayHello&quot;</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/interceptor.cr#L21" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="service:String-instance-method">
+      <div class="signature">
+        
+        def <strong>service</strong> : String
+
+        <a class="method-permalink" href="#service%3AString-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>service returns the service portion of the path, e.g. &quot;helloworld.Greeter&quot;</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/6410ff0671beb0a1b05171fd965e29ef1cc47cb8/src/grpc/interceptor.cr#L29" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
 
 
 </div>
