@@ -399,18 +399,25 @@ reply <span class="o">=</span> client.say_hello(req, ctx: ctx)</code></pre>
     <use href="#octicon-link"/>
   </svg>
 </a>Streaming</h2>
-<p>Generated stubs handle all four RPC variants. The raw channel API:</p>
-<pre><code class="language-crystal"><span class="c"># Server streaming</span>
-stream <span class="o">=</span> channel.open_server_stream(<span class="s">&quot;pkg.Svc&quot;</span>, <span class="s">&quot;Method&quot;</span>, req.to_protobuf)
-stream.each { <span class="o">|</span>bytes<span class="o">|</span> ... }
+<p>Generated stubs expose typed stream objects for all four RPC variants.</p>
+<pre><code class="language-crystal"><span class="c"># Server streaming — iterate typed responses</span>
+stream <span class="o">=</span> client.range(<span class="t">Numbers</span><span class="t">::</span><span class="t">Number</span>.new(<span class="n">5</span>))
+stream.each { <span class="o">|</span>num<span class="o">|</span> puts num.value }
+puts stream.status   <span class="c"># GRPC::Status after iteration</span>
 
-<span class="c"># Client streaming</span>
-body, status <span class="o">=</span> channel.client_stream_call(<span class="s">&quot;pkg.Svc&quot;</span>, <span class="s">&quot;Method&quot;</span>, messages)
+<span class="c"># Client streaming — send then receive</span>
+call <span class="o">=</span> client.sum
+(<span class="n">1</span>..<span class="n">5</span>).each { <span class="o">|</span>i<span class="o">|</span> call.send(<span class="t">Numbers</span><span class="t">::</span><span class="t">Number</span>.new(i)) }
+total <span class="o">=</span> call.close_and_recv   <span class="c"># flushes and returns the server response</span>
 
 <span class="c"># Bidirectional streaming</span>
-stream <span class="o">=</span> channel.open_bidi_stream(<span class="s">&quot;pkg.Svc&quot;</span>, <span class="s">&quot;Method&quot;</span>, messages)
-stream.each { <span class="o">|</span>bytes<span class="o">|</span> ... }</code></pre>
-<p>Bidirectional streaming is currently half-duplex (client sends all messages first, then server streams responses).</p>
+bidi <span class="o">=</span> client.transform
+[<span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>].each { <span class="o">|</span>i<span class="o">|</span> bidi.send(<span class="t">Numbers</span><span class="t">::</span><span class="t">Number</span>.new(i)) }
+bidi.close_send
+bidi.each { <span class="o">|</span>num<span class="o">|</span> puts num.value }</code></pre>
+<p>You can also cancel a stream early:</p>
+<pre><code class="language-crystal">stream <span class="o">=</span> client.range(req)
+stream.cancel   <span class="c"># sends RST_STREAM to the server</span></code></pre>
 <h2><a id="tls" class="anchor" href="#tls">
   <svg class="octicon-link" aria-hidden="true">
     <use href="#octicon-link"/>
