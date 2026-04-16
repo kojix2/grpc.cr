@@ -453,7 +453,7 @@ All methods return public stream types; PendingStream stays internal.</p>
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc.cr/blob/4124c12c034f8542c7561d8e0b204f380bef4db6/src/grpc/transport/interface.cr#L6" target="_blank">
+      <a href="https://github.com/kojix2/grpc.cr/blob/a5f4da490065c8025153016da3cfe4362bf39f76/src/grpc/transport/interface.cr#L6" target="_blank">
         grpc/transport/interface.cr
       </a>
     
@@ -492,12 +492,12 @@ All methods return public stream types; PendingStream stays internal.</p>
       </li>
     
       <li class="entry-summary">
-        <a href="#open_bidi_stream_live%28service%3AString%2Cmethod%3AString%2Cmetadata%3AMetadata%29%3ARawBidiCall-instance-method" class="signature"><strong>#open_bidi_stream_live</strong>(service : String, method : String, metadata : Metadata) : RawBidiCall</a>
+        <a href="#open_bidi_stream_live%28service%3AString%2Cmethod%3AString%2Cmetadata%3AMetadata%2Csend_queue_size%3AInt32%29%3ARawBidiCall-instance-method" class="signature"><strong>#open_bidi_stream_live</strong>(service : String, method : String, metadata : Metadata, send_queue_size : Int32) : RawBidiCall</a>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#open_client_stream_live%28service%3AString%2Cmethod%3AString%2Cmetadata%3AMetadata%29%3ARawClientCall-instance-method" class="signature"><strong>#open_client_stream_live</strong>(service : String, method : String, metadata : Metadata) : RawClientCall</a>
+        <a href="#open_client_stream_live%28service%3AString%2Cmethod%3AString%2Cmetadata%3AMetadata%2Csend_queue_size%3AInt32%29%3ARawClientCall-instance-method" class="signature"><strong>#open_client_stream_live</strong>(service : String, method : String, metadata : Metadata, send_queue_size : Int32) : RawClientCall</a>
         
       </li>
     
@@ -546,7 +546,7 @@ All methods return public stream types; PendingStream stays internal.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/4124c12c034f8542c7561d8e0b204f380bef4db6/src/grpc/transport/interface.cr#L21" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/a5f4da490065c8025153016da3cfe4362bf39f76/src/grpc/transport/interface.cr#L23" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -562,39 +562,39 @@ All methods return public stream types; PendingStream stays internal.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/4124c12c034f8542c7561d8e0b204f380bef4db6/src/grpc/transport/interface.cr#L20" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/a5f4da490065c8025153016da3cfe4362bf39f76/src/grpc/transport/interface.cr#L22" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="open_bidi_stream_live(service:String,method:String,metadata:Metadata):RawBidiCall-instance-method">
+    <div class="entry-detail" id="open_bidi_stream_live(service:String,method:String,metadata:Metadata,send_queue_size:Int32):RawBidiCall-instance-method">
       <div class="signature">
         abstract 
-        def <strong>open_bidi_stream_live</strong>(service : String, method : String, metadata : <a href="../../GRPC/Metadata.html">Metadata</a>) : <a href="../../GRPC/RawBidiCall.html">RawBidiCall</a>
+        def <strong>open_bidi_stream_live</strong>(service : String, method : String, metadata : <a href="../../GRPC/Metadata.html">Metadata</a>, send_queue_size : Int32) : <a href="../../GRPC/RawBidiCall.html">RawBidiCall</a>
 
-        <a class="method-permalink" href="#open_bidi_stream_live%28service%3AString%2Cmethod%3AString%2Cmetadata%3AMetadata%29%3ARawBidiCall-instance-method">#</a>
+        <a class="method-permalink" href="#open_bidi_stream_live%28service%3AString%2Cmethod%3AString%2Cmetadata%3AMetadata%2Csend_queue_size%3AInt32%29%3ARawBidiCall-instance-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/4124c12c034f8542c7561d8e0b204f380bef4db6/src/grpc/transport/interface.cr#L14" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/a5f4da490065c8025153016da3cfe4362bf39f76/src/grpc/transport/interface.cr#L14" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="open_client_stream_live(service:String,method:String,metadata:Metadata):RawClientCall-instance-method">
+    <div class="entry-detail" id="open_client_stream_live(service:String,method:String,metadata:Metadata,send_queue_size:Int32):RawClientCall-instance-method">
       <div class="signature">
         abstract 
-        def <strong>open_client_stream_live</strong>(service : String, method : String, metadata : <a href="../../GRPC/Metadata.html">Metadata</a>) : <a href="../../GRPC/RawClientCall.html">RawClientCall</a>
+        def <strong>open_client_stream_live</strong>(service : String, method : String, metadata : <a href="../../GRPC/Metadata.html">Metadata</a>, send_queue_size : Int32) : <a href="../../GRPC/RawClientCall.html">RawClientCall</a>
 
-        <a class="method-permalink" href="#open_client_stream_live%28service%3AString%2Cmethod%3AString%2Cmetadata%3AMetadata%29%3ARawClientCall-instance-method">#</a>
+        <a class="method-permalink" href="#open_client_stream_live%28service%3AString%2Cmethod%3AString%2Cmetadata%3AMetadata%2Csend_queue_size%3AInt32%29%3ARawClientCall-instance-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/4124c12c034f8542c7561d8e0b204f380bef4db6/src/grpc/transport/interface.cr#L17" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/a5f4da490065c8025153016da3cfe4362bf39f76/src/grpc/transport/interface.cr#L18" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -610,7 +610,7 @@ All methods return public stream types; PendingStream stays internal.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/4124c12c034f8542c7561d8e0b204f380bef4db6/src/grpc/transport/interface.cr#L10" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/a5f4da490065c8025153016da3cfe4362bf39f76/src/grpc/transport/interface.cr#L10" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -626,7 +626,7 @@ All methods return public stream types; PendingStream stays internal.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/4124c12c034f8542c7561d8e0b204f380bef4db6/src/grpc/transport/interface.cr#L7" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/a5f4da490065c8025153016da3cfe4362bf39f76/src/grpc/transport/interface.cr#L7" target="_blank">View source</a>]
         
       </div>
     </div>

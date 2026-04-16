@@ -415,6 +415,9 @@
   <p>LiveSendBuffer is an on-demand queue for full-duplex bidi streaming.
 DATA_READ_CB_LIVE returns NGHTTP2_ERR_DEFERRED when the queue is empty,
 and the caller must call session_resume_data after pushing new data.</p>
+<p>When <em>capacity</em> &gt; 0 the buffer is bounded: push blocks the calling fiber
+until a slot is available, providing backpressure to the sender.
+capacity == 0 (default) means unbounded.</p>
 <p>Lock ordering: callers must NOT hold @lsb_mutex while acquiring the
 connection @mutex.  read_into is called from inside the connection @mutex,
 so it acquires @lsb_mutex as an inner lock — which is safe because push/close
@@ -446,7 +449,7 @@ always release @lsb_mutex before the caller acquires the connection @mutex
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc.cr/blob/4124c12c034f8542c7561d8e0b204f380bef4db6/src/grpc/transport/http2_client_connection.cr#L179" target="_blank">
+      <a href="https://github.com/kojix2/grpc.cr/blob/a5f4da490065c8025153016da3cfe4362bf39f76/src/grpc/transport/http2_client_connection.cr#L183" target="_blank">
         grpc/transport/http2_client_connection.cr
       </a>
     
@@ -469,7 +472,7 @@ always release @lsb_mutex before the caller acquires the connection @mutex
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#new-class-method" class="signature"><strong>.new</strong></a>
+        <a href="#new%28capacity%3AInt32%3D0%29-class-method" class="signature"><strong>.new</strong>(capacity : Int32 = <span class="n">0</span>)</a>
         
       </li>
     
@@ -557,18 +560,18 @@ always release @lsb_mutex before the caller acquires the connection @mutex
     Constructor Detail
   </h2>
   
-    <div class="entry-detail" id="new-class-method">
+    <div class="entry-detail" id="new(capacity:Int32=0)-class-method">
       <div class="signature">
         
-        def self.<strong>new</strong>
+        def self.<strong>new</strong>(capacity : Int32 = <span class="n">0</span>)
 
-        <a class="method-permalink" href="#new-class-method">#</a>
+        <a class="method-permalink" href="#new%28capacity%3AInt32%3D0%29-class-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/4124c12c034f8542c7561d8e0b204f380bef4db6/src/grpc/transport/http2_client_connection.cr#L185" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/a5f4da490065c8025153016da3cfe4362bf39f76/src/grpc/transport/http2_client_connection.cr#L192" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -600,7 +603,7 @@ always release @lsb_mutex before the caller acquires the connection @mutex
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/4124c12c034f8542c7561d8e0b204f380bef4db6/src/grpc/transport/http2_client_connection.cr#L196" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/a5f4da490065c8025153016da3cfe4362bf39f76/src/grpc/transport/http2_client_connection.cr#L212" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -616,7 +619,7 @@ always release @lsb_mutex before the caller acquires the connection @mutex
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/4124c12c034f8542c7561d8e0b204f380bef4db6/src/grpc/transport/http2_client_connection.cr#L200" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/a5f4da490065c8025153016da3cfe4362bf39f76/src/grpc/transport/http2_client_connection.cr#L216" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -632,7 +635,7 @@ always release @lsb_mutex before the caller acquires the connection @mutex
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/4124c12c034f8542c7561d8e0b204f380bef4db6/src/grpc/transport/http2_client_connection.cr#L192" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/a5f4da490065c8025153016da3cfe4362bf39f76/src/grpc/transport/http2_client_connection.cr#L206" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -656,7 +659,7 @@ Called from DATA_READ_CB_LIVE while the connection @mutex is held.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/4124c12c034f8542c7561d8e0b204f380bef4db6/src/grpc/transport/http2_client_connection.cr#L208" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/a5f4da490065c8025153016da3cfe4362bf39f76/src/grpc/transport/http2_client_connection.cr#L224" target="_blank">View source</a>]
         
       </div>
     </div>

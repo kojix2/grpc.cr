@@ -448,7 +448,7 @@ channel = GRPC::Channel.new(&quot;https://localhost:50051&quot;, tls_context: ct
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc.cr/blob/4124c12c034f8542c7561d8e0b204f380bef4db6/src/grpc/channel.cr#L16" target="_blank">
+      <a href="https://github.com/kojix2/grpc.cr/blob/a5f4da490065c8025153016da3cfe4362bf39f76/src/grpc/channel.cr#L16" target="_blank">
         grpc/channel.cr
       </a>
     
@@ -501,14 +501,14 @@ channel = GRPC::Channel.new(&quot;https://localhost:50051&quot;, tls_context: ct
       </li>
     
       <li class="entry-summary">
-        <a href="#open_bidi_stream_live%28service%3AString%2Cmethod%3AString%2Cctx%3AClientContext%3DClientContext.new%29%3ARawBidiCall-instance-method" class="signature"><strong>#open_bidi_stream_live</strong>(service : String, method : String, ctx : ClientContext = <span class="t">ClientContext</span>.new) : RawBidiCall</a>
+        <a href="#open_bidi_stream_live%28service%3AString%2Cmethod%3AString%2Cctx%3AClientContext%3DClientContext.new%2Csend_queue_size%3AInt32%3D0%29%3ARawBidiCall-instance-method" class="signature"><strong>#open_bidi_stream_live</strong>(service : String, method : String, ctx : ClientContext = <span class="t">ClientContext</span>.new, send_queue_size : Int32 = <span class="n">0</span>) : RawBidiCall</a>
         
           <div class="summary"><p>open_bidi_stream_live opens a true full-duplex bidi-streaming RPC.</p></div>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#open_client_stream_live%28service%3AString%2Cmethod%3AString%2Cctx%3AClientContext%3DClientContext.new%29%3ARawClientCall-instance-method" class="signature"><strong>#open_client_stream_live</strong>(service : String, method : String, ctx : ClientContext = <span class="t">ClientContext</span>.new) : RawClientCall</a>
+        <a href="#open_client_stream_live%28service%3AString%2Cmethod%3AString%2Cctx%3AClientContext%3DClientContext.new%2Csend_queue_size%3AInt32%3D0%29%3ARawClientCall-instance-method" class="signature"><strong>#open_client_stream_live</strong>(service : String, method : String, ctx : ClientContext = <span class="t">ClientContext</span>.new, send_queue_size : Int32 = <span class="n">0</span>) : RawClientCall</a>
         
           <div class="summary"><p>open_client_stream_live opens a live client-streaming RPC.</p></div>
         
@@ -598,7 +598,7 @@ HTTPS triggers TLS; use <em>tls_context</em> to supply a custom OpenSSL context
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/4124c12c034f8542c7561d8e0b204f380bef4db6/src/grpc/channel.cr#L33" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/a5f4da490065c8025153016da3cfe4362bf39f76/src/grpc/channel.cr#L33" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -630,53 +630,57 @@ HTTPS triggers TLS; use <em>tls_context</em> to supply a custom OpenSSL context
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/4124c12c034f8542c7561d8e0b204f380bef4db6/src/grpc/channel.cr#L147" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/a5f4da490065c8025153016da3cfe4362bf39f76/src/grpc/channel.cr#L153" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="open_bidi_stream_live(service:String,method:String,ctx:ClientContext=ClientContext.new):RawBidiCall-instance-method">
+    <div class="entry-detail" id="open_bidi_stream_live(service:String,method:String,ctx:ClientContext=ClientContext.new,send_queue_size:Int32=0):RawBidiCall-instance-method">
       <div class="signature">
         
-        def <strong>open_bidi_stream_live</strong>(service : String, method : String, ctx : <a href="../GRPC/ClientContext.html">ClientContext</a> = <span class="t">ClientContext</span>.new) : <a href="../GRPC/RawBidiCall.html">RawBidiCall</a>
+        def <strong>open_bidi_stream_live</strong>(service : String, method : String, ctx : <a href="../GRPC/ClientContext.html">ClientContext</a> = <span class="t">ClientContext</span>.new, send_queue_size : Int32 = <span class="n">0</span>) : <a href="../GRPC/RawBidiCall.html">RawBidiCall</a>
 
-        <a class="method-permalink" href="#open_bidi_stream_live%28service%3AString%2Cmethod%3AString%2Cctx%3AClientContext%3DClientContext.new%29%3ARawBidiCall-instance-method">#</a>
+        <a class="method-permalink" href="#open_bidi_stream_live%28service%3AString%2Cmethod%3AString%2Cctx%3AClientContext%3DClientContext.new%2Csend_queue_size%3AInt32%3D0%29%3ARawBidiCall-instance-method">#</a>
       </div>
       
         <div class="doc">
           
           <p>open_bidi_stream_live opens a true full-duplex bidi-streaming RPC.
 Returns a RawBidiCall whose send_raw / close_send / each methods let the
-caller interleave request messages and response messages freely.</p>
+caller interleave request messages and response messages freely.
+<em>send_queue_size</em> limits how many outgoing frames may be buffered before
+send_raw blocks the calling fiber (0 = unbounded).</p>
         </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/4124c12c034f8542c7561d8e0b204f380bef4db6/src/grpc/channel.cr#L110" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/a5f4da490065c8025153016da3cfe4362bf39f76/src/grpc/channel.cr#L112" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="open_client_stream_live(service:String,method:String,ctx:ClientContext=ClientContext.new):RawClientCall-instance-method">
+    <div class="entry-detail" id="open_client_stream_live(service:String,method:String,ctx:ClientContext=ClientContext.new,send_queue_size:Int32=0):RawClientCall-instance-method">
       <div class="signature">
         
-        def <strong>open_client_stream_live</strong>(service : String, method : String, ctx : <a href="../GRPC/ClientContext.html">ClientContext</a> = <span class="t">ClientContext</span>.new) : <a href="../GRPC/RawClientCall.html">RawClientCall</a>
+        def <strong>open_client_stream_live</strong>(service : String, method : String, ctx : <a href="../GRPC/ClientContext.html">ClientContext</a> = <span class="t">ClientContext</span>.new, send_queue_size : Int32 = <span class="n">0</span>) : <a href="../GRPC/RawClientCall.html">RawClientCall</a>
 
-        <a class="method-permalink" href="#open_client_stream_live%28service%3AString%2Cmethod%3AString%2Cctx%3AClientContext%3DClientContext.new%29%3ARawClientCall-instance-method">#</a>
+        <a class="method-permalink" href="#open_client_stream_live%28service%3AString%2Cmethod%3AString%2Cctx%3AClientContext%3DClientContext.new%2Csend_queue_size%3AInt32%3D0%29%3ARawClientCall-instance-method">#</a>
       </div>
       
         <div class="doc">
           
           <p>open_client_stream_live opens a live client-streaming RPC.
 Returns a RawClientCall whose send_raw / close_and_recv methods let the
-caller send messages incrementally then receive the server's single response.</p>
+caller send messages incrementally then receive the server's single response.
+<em>send_queue_size</em> limits how many outgoing frames may be buffered before
+send_raw blocks the calling fiber (0 = unbounded).</p>
         </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/4124c12c034f8542c7561d8e0b204f380bef4db6/src/grpc/channel.cr#L130" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/a5f4da490065c8025153016da3cfe4362bf39f76/src/grpc/channel.cr#L135" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -699,7 +703,7 @@ This is the internal API used by generated client stubs.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/4124c12c034f8542c7561d8e0b204f380bef4db6/src/grpc/channel.cr#L87" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/a5f4da490065c8025153016da3cfe4362bf39f76/src/grpc/channel.cr#L87" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -723,7 +727,7 @@ If client interceptors are registered they wrap this call outermost-first.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/4124c12c034f8542c7561d8e0b204f380bef4db6/src/grpc/channel.cr#L51" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/a5f4da490065c8025153016da3cfe4362bf39f76/src/grpc/channel.cr#L51" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -745,7 +749,7 @@ Interceptors are NOT applied on this low-level overload.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/4124c12c034f8542c7561d8e0b204f380bef4db6/src/grpc/channel.cr#L75" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/a5f4da490065c8025153016da3cfe4362bf39f76/src/grpc/channel.cr#L75" target="_blank">View source</a>]
         
       </div>
     </div>
