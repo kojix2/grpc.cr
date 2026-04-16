@@ -152,6 +152,11 @@
       
     </li>
   
+  <li class=" " data-id="grpc/GRPC/RawClientCall" data-name="grpc::rawclientcall">
+      <a href="../../GRPC/RawClientCall.html">RawClientCall</a>
+      
+    </li>
+  
   <li class=" " data-id="grpc/GRPC/RawResponseStream" data-name="grpc::rawresponsestream">
       <a href="../../GRPC/RawResponseStream.html">RawResponseStream</a>
       
@@ -374,7 +379,7 @@
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc.cr/blob/f291bf70b8c4e1212c46e230cad4b1bc6cb24595/src/grpc/transport/http2_client_connection.cr#L235" target="_blank">
+      <a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/transport/http2_client_connection.cr#L235" target="_blank">
         grpc/transport/http2_client_connection.cr
       </a>
     
@@ -497,6 +502,13 @@
         <a href="#open_bidi_stream_live%28service%3AString%2Cmethod%3AString%2Cmetadata%3AMetadata%3DMetadata.new%29%3APendingStream-instance-method" class="signature"><strong>#open_bidi_stream_live</strong>(service : String, method : String, metadata : Metadata = <span class="t">Metadata</span>.new) : PendingStream</a>
         
           <div class="summary"><p>open_bidi_stream_live opens a true full-duplex bidi stream.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#open_client_stream_live%28service%3AString%2Cmethod%3AString%2Cmetadata%3AMetadata%3DMetadata.new%29%3APendingStream-instance-method" class="signature"><strong>#open_client_stream_live</strong>(service : String, method : String, metadata : Metadata = <span class="t">Metadata</span>.new) : PendingStream</a>
+        
+          <div class="summary"><p>open_client_stream_live opens a live client-streaming RPC.</p></div>
         
       </li>
     
@@ -635,7 +647,7 @@
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/f291bf70b8c4e1212c46e230cad4b1bc6cb24595/src/grpc/transport/http2_client_connection.cr#L264" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/transport/http2_client_connection.cr#L264" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -673,7 +685,7 @@ until the server returns its single response.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/f291bf70b8c4e1212c46e230cad4b1bc6cb24595/src/grpc/transport/http2_client_connection.cr#L309" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/transport/http2_client_connection.cr#L309" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -689,7 +701,7 @@ until the server returns its single response.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/f291bf70b8c4e1212c46e230cad4b1bc6cb24595/src/grpc/transport/http2_client_connection.cr#L505" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/transport/http2_client_connection.cr#L514" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -705,7 +717,7 @@ until the server returns its single response.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/f291bf70b8c4e1212c46e230cad4b1bc6cb24595/src/grpc/transport/http2_client_connection.cr#L514" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/transport/http2_client_connection.cr#L523" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -721,7 +733,7 @@ until the server returns its single response.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/f291bf70b8c4e1212c46e230cad4b1bc6cb24595/src/grpc/transport/http2_client_connection.cr#L486" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/transport/http2_client_connection.cr#L495" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -737,7 +749,7 @@ until the server returns its single response.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/f291bf70b8c4e1212c46e230cad4b1bc6cb24595/src/grpc/transport/http2_client_connection.cr#L526" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/transport/http2_client_connection.cr#L535" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -759,7 +771,7 @@ PendingStream that delivers server-pushed response messages as they arrive.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/f291bf70b8c4e1212c46e230cad4b1bc6cb24595/src/grpc/transport/http2_client_connection.cr#L325" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/transport/http2_client_connection.cr#L325" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -782,7 +794,31 @@ caller interleave sends and receives freely.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/f291bf70b8c4e1212c46e230cad4b1bc6cb24595/src/grpc/transport/http2_client_connection.cr#L335" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/transport/http2_client_connection.cr#L335" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="open_client_stream_live(service:String,method:String,metadata:Metadata=Metadata.new):PendingStream-instance-method">
+      <div class="signature">
+        
+        def <strong>open_client_stream_live</strong>(service : String, method : String, metadata : <a href="../../GRPC/Metadata.html">Metadata</a> = <span class="t">Metadata</span>.new) : <a href="../../GRPC/Transport/PendingStream.html">PendingStream</a>
+
+        <a class="method-permalink" href="#open_client_stream_live%28service%3AString%2Cmethod%3AString%2Cmetadata%3AMetadata%3DMetadata.new%29%3APendingStream-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>open_client_stream_live opens a live client-streaming RPC.
+Returns a PendingStream whose send_outgoing / close_send methods let the
+caller send messages incrementally; the server's single response arrives
+via the messages channel after close_send is called.</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/transport/http2_client_connection.cr#L344" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -804,7 +840,7 @@ delivers server-pushed messages as they arrive.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/f291bf70b8c4e1212c46e230cad4b1bc6cb24595/src/grpc/transport/http2_client_connection.cr#L318" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/transport/http2_client_connection.cr#L318" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -825,7 +861,7 @@ delivers server-pushed messages as they arrive.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/f291bf70b8c4e1212c46e230cad4b1bc6cb24595/src/grpc/transport/http2_client_connection.cr#L302" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/756eb2e086f5f5bf2a740d546d3cecf7c9a542f1/src/grpc/transport/http2_client_connection.cr#L302" target="_blank">View source</a>]
         
       </div>
     </div>
