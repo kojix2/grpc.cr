@@ -441,7 +441,9 @@ pacman -S nghttp2             # Arch</code></pre>
 <p>Run the default spec suite (auto-discovers <code>spec/**/*_spec.cr</code>):</p>
 <pre><code class="language-sh">crystal spec</code></pre>
 <p>Run grpcurl E2E tests explicitly via the non-auto entry file:</p>
-<pre><code class="language-sh">crystal spec spec/e2e.cr</code></pre>
+<pre><code class="language-sh">crystal spec spec/grpcurl.cr</code></pre>
+<p>Run GripMock client E2E tests (requires GripMock at <code>127.0.0.1:4770</code> and admin API at <code>127.0.0.1:4771</code>):</p>
+<pre><code class="language-sh">crystal spec spec/gripmock.cr</code></pre>
 <h2><a id="code-generation" class="anchor" href="#code-generation">
   <svg class="octicon-link" aria-hidden="true">
     <use href="#octicon-link"/>
