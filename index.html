@@ -433,6 +433,15 @@ This library was generated using an AI agent.</p>
 <pre><code class="language-sh">brew install nghttp2          # macOS
 apt install libnghttp2-dev    # Debian/Ubuntu
 pacman -S nghttp2             # Arch</code></pre>
+<h2><a id="testing" class="anchor" href="#testing">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Testing</h2>
+<p>Run the default spec suite (auto-discovers <code>spec/**/*_spec.cr</code>):</p>
+<pre><code class="language-sh">crystal spec</code></pre>
+<p>Run grpcurl E2E tests explicitly via the non-auto entry file:</p>
+<pre><code class="language-sh">crystal spec spec/e2e.cr</code></pre>
 <h2><a id="code-generation" class="anchor" href="#code-generation">
   <svg class="octicon-link" aria-hidden="true">
     <use href="#octicon-link"/>
