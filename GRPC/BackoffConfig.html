@@ -14,7 +14,7 @@
 <script type="text/javascript" src="../js/doc.js"></script>
 
   <meta name="repository-name" content="grpc">
-  <title>GRPC::Interceptors - grpc main</title>
+  <title>GRPC::BackoffConfig - grpc main</title>
   <script type="text/javascript">
     CrystalDocs.base_path = "../";
   </script>
@@ -77,7 +77,7 @@
       
         <ul>
   
-  <li class=" " data-id="grpc/GRPC/BackoffConfig" data-name="grpc::backoffconfig">
+  <li class=" current" data-id="grpc/GRPC/BackoffConfig" data-name="grpc::backoffconfig">
       <a href="../GRPC/BackoffConfig.html">BackoffConfig</a>
       
     </li>
@@ -152,7 +152,7 @@
       
     </li>
   
-  <li class=" current" data-id="grpc/GRPC/Interceptors" data-name="grpc::interceptors">
+  <li class=" " data-id="grpc/GRPC/Interceptors" data-name="grpc::interceptors">
       <a href="../GRPC/Interceptors.html">Interceptors</a>
       
     </li>
@@ -417,11 +417,13 @@
 <h1 class="type-name">
 
   <span class="kind">
-    module
-  </span> GRPC::<wbr>Interceptors
+    class
+  </span> GRPC::<wbr>BackoffConfig
 
 </h1>
 
+
+  <ul class="superclass-hierarchy"><li class="superclass"><a href="../GRPC/BackoffConfig.html">GRPC::BackoffConfig</a></li><li class="superclass">Reference</li><li class="superclass">Object</li></ul>
 
 
 
@@ -435,9 +437,7 @@
     Overview
   </h2>
 
-  <p>Interceptors contains helpers for building interceptor chains.
-The first interceptor in the array executes outermost (first on the way in,
-last on the way out).</p>
+  <p>BackoffConfig defines reconnect delay strategy.</p>
 
 
 
@@ -464,8 +464,8 @@ last on the way out).</p>
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc.cr/blob/47d0e2def021b42f88cbf9fad848ab516af5fe28/src/grpc/interceptor.cr#L202" target="_blank">
-        grpc/interceptor.cr
+      <a href="https://github.com/kojix2/grpc.cr/blob/47d0e2def021b42f88cbf9fad848ab516af5fe28/src/grpc/endpoint.cr#L64" target="_blank">
+        grpc/endpoint.cr
       </a>
     
     <br/>
@@ -476,59 +476,18 @@ last on the way out).</p>
 
 
   
-
-  
   <h2>
-    <a id="class-method-summary" class="anchor" href="#class-method-summary">
+    <a id="constructors" class="anchor" href="#constructors">
   <svg class="octicon-link" aria-hidden="true">
     <use href="#octicon-link"/>
   </svg>
 </a>
-    Class Method Summary
+    Constructors
   </h2>
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#build_client_chain%28interceptors%3AArray%28ClientInterceptor%29%2Cbase%3AUnaryClientCall%29%3AUnaryClientCall-class-method" class="signature"><strong>.build_client_chain</strong>(interceptors : Array(ClientInterceptor), base : UnaryClientCall) : UnaryClientCall</a>
-        
-          <div class="summary"><p>build_client_chain wraps <em>base</em> with <em>interceptors</em>.</p></div>
-        
-      </li>
-    
-      <li class="entry-summary">
-        <a href="#build_client_chain%28interceptors%3AArray%28ClientInterceptor%29%2Cbase%3AServerStreamClientCall%29%3AServerStreamClientCall-class-method" class="signature"><strong>.build_client_chain</strong>(interceptors : Array(ClientInterceptor), base : ServerStreamClientCall) : ServerStreamClientCall</a>
-        
-      </li>
-    
-      <li class="entry-summary">
-        <a href="#build_client_chain%28interceptors%3AArray%28ClientInterceptor%29%2Cbase%3ALiveClientStreamClientCall%29%3ALiveClientStreamClientCall-class-method" class="signature"><strong>.build_client_chain</strong>(interceptors : Array(ClientInterceptor), base : LiveClientStreamClientCall) : LiveClientStreamClientCall</a>
-        
-      </li>
-    
-      <li class="entry-summary">
-        <a href="#build_client_chain%28interceptors%3AArray%28ClientInterceptor%29%2Cbase%3ALiveBidiStreamClientCall%29%3ALiveBidiStreamClientCall-class-method" class="signature"><strong>.build_client_chain</strong>(interceptors : Array(ClientInterceptor), base : LiveBidiStreamClientCall) : LiveBidiStreamClientCall</a>
-        
-      </li>
-    
-      <li class="entry-summary">
-        <a href="#build_server_chain%28interceptors%3AArray%28ServerInterceptor%29%2Cbase%3AUnaryServerCall%29%3AUnaryServerCall-class-method" class="signature"><strong>.build_server_chain</strong>(interceptors : Array(ServerInterceptor), base : UnaryServerCall) : UnaryServerCall</a>
-        
-          <div class="summary"><p>build_server_chain wraps <em>base</em> with <em>interceptors</em>.</p></div>
-        
-      </li>
-    
-      <li class="entry-summary">
-        <a href="#build_server_chain%28interceptors%3AArray%28ServerInterceptor%29%2Cbase%3AServerStreamServerCall%29%3AServerStreamServerCall-class-method" class="signature"><strong>.build_server_chain</strong>(interceptors : Array(ServerInterceptor), base : ServerStreamServerCall) : ServerStreamServerCall</a>
-        
-      </li>
-    
-      <li class="entry-summary">
-        <a href="#build_server_chain%28interceptors%3AArray%28ServerInterceptor%29%2Cbase%3AClientStreamServerCall%29%3AClientStreamServerCall-class-method" class="signature"><strong>.build_server_chain</strong>(interceptors : Array(ServerInterceptor), base : ClientStreamServerCall) : ClientStreamServerCall</a>
-        
-      </li>
-    
-      <li class="entry-summary">
-        <a href="#build_server_chain%28interceptors%3AArray%28ServerInterceptor%29%2Cbase%3ABidiStreamServerCall%29%3ABidiStreamServerCall-class-method" class="signature"><strong>.build_server_chain</strong>(interceptors : Array(ServerInterceptor), base : BidiStreamServerCall) : BidiStreamServerCall</a>
+        <a href="#new%28base_delay%3ATime%3A%3ASpan%3D1.second%2Cmultiplier%3AFloat64%3D1.6%2Cjitter%3AFloat64%3D0.2%2Cmax_delay%3ATime%3A%3ASpan%3D120.seconds%29-class-method" class="signature"><strong>.new</strong>(base_delay : Time::Span = <span class="n">1</span>.second, multiplier : Float64 = <span class="n">1.6</span>, jitter : Float64 = <span class="n">0.2</span>, max_delay : Time::Span = <span class="n">120</span>.seconds)</a>
         
       </li>
     
@@ -539,168 +498,262 @@ last on the way out).</p>
 
   
 
+  
+  <h2>
+    <a id="instance-method-summary" class="anchor" href="#instance-method-summary">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Instance Method Summary
+  </h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#base_delay%3ATime%3A%3ASpan-instance-method" class="signature"><strong>#base_delay</strong> : Time::Span</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#base_delay%3D%28base_delay%3ATime%3A%3ASpan%29-instance-method" class="signature"><strong>#base_delay=</strong>(base_delay : Time::Span)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#jitter%3AFloat64-instance-method" class="signature"><strong>#jitter</strong> : Float64</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#jitter%3D%28jitter%3AFloat64%29-instance-method" class="signature"><strong>#jitter=</strong>(jitter : Float64)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#max_delay%3ATime%3A%3ASpan-instance-method" class="signature"><strong>#max_delay</strong> : Time::Span</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#max_delay%3D%28max_delay%3ATime%3A%3ASpan%29-instance-method" class="signature"><strong>#max_delay=</strong>(max_delay : Time::Span)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#multiplier%3AFloat64-instance-method" class="signature"><strong>#multiplier</strong> : Float64</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#multiplier%3D%28multiplier%3AFloat64%29-instance-method" class="signature"><strong>#multiplier=</strong>(multiplier : Float64)</a>
+        
+      </li>
+    
+  </ul>
+
+
 
   <div class="methods-inherited">
     
+      
+
+
+      
+
+
+      
+
+
+      
+
+
+    
+      
+
+
+      
+
+
+      
+
+
+      
+
+
+    
   </div>
+
+  
+  <h2>
+    <a id="constructor-detail" class="anchor" href="#constructor-detail">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Constructor Detail
+  </h2>
+  
+    <div class="entry-detail" id="new(base_delay:Time::Span=1.second,multiplier:Float64=1.6,jitter:Float64=0.2,max_delay:Time::Span=120.seconds)-class-method">
+      <div class="signature">
+        
+        def self.<strong>new</strong>(base_delay : Time::Span = <span class="n">1</span>.second, multiplier : Float64 = <span class="n">1.6</span>, jitter : Float64 = <span class="n">0.2</span>, max_delay : Time::Span = <span class="n">120</span>.seconds)
+
+        <a class="method-permalink" href="#new%28base_delay%3ATime%3A%3ASpan%3D1.second%2Cmultiplier%3AFloat64%3D1.6%2Cjitter%3AFloat64%3D0.2%2Cmax_delay%3ATime%3A%3ASpan%3D120.seconds%29-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/47d0e2def021b42f88cbf9fad848ab516af5fe28/src/grpc/endpoint.cr#L70" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
+
+  
 
   
 
   
   <h2>
-    <a id="class-method-detail" class="anchor" href="#class-method-detail">
+    <a id="instance-method-detail" class="anchor" href="#instance-method-detail">
   <svg class="octicon-link" aria-hidden="true">
     <use href="#octicon-link"/>
   </svg>
 </a>
-    Class Method Detail
+    Instance Method Detail
   </h2>
   
-    <div class="entry-detail" id="build_client_chain(interceptors:Array(ClientInterceptor),base:UnaryClientCall):UnaryClientCall-class-method">
+    <div class="entry-detail" id="base_delay:Time::Span-instance-method">
       <div class="signature">
         
-        def self.<strong>build_client_chain</strong>(interceptors : Array(<a href="../GRPC/ClientInterceptor.html">ClientInterceptor</a>), base : <a href="../GRPC/UnaryClientCall.html">UnaryClientCall</a>) : <a href="../GRPC/UnaryClientCall.html">UnaryClientCall</a>
+        def <strong>base_delay</strong> : Time::Span
 
-        <a class="method-permalink" href="#build_client_chain%28interceptors%3AArray%28ClientInterceptor%29%2Cbase%3AUnaryClientCall%29%3AUnaryClientCall-class-method">#</a>
-      </div>
-      
-        <div class="doc">
-          
-          <p>build_client_chain wraps <em>base</em> with <em>interceptors</em>.
-Returns a single UnaryClientCall that runs interceptors[0] first.</p>
-        </div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/kojix2/grpc.cr/blob/47d0e2def021b42f88cbf9fad848ab516af5fe28/src/grpc/interceptor.cr#L205" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
-    <div class="entry-detail" id="build_client_chain(interceptors:Array(ClientInterceptor),base:ServerStreamClientCall):ServerStreamClientCall-class-method">
-      <div class="signature">
-        
-        def self.<strong>build_client_chain</strong>(interceptors : Array(<a href="../GRPC/ClientInterceptor.html">ClientInterceptor</a>), base : <a href="../GRPC/ServerStreamClientCall.html">ServerStreamClientCall</a>) : <a href="../GRPC/ServerStreamClientCall.html">ServerStreamClientCall</a>
-
-        <a class="method-permalink" href="#build_client_chain%28interceptors%3AArray%28ClientInterceptor%29%2Cbase%3AServerStreamClientCall%29%3AServerStreamClientCall-class-method">#</a>
+        <a class="method-permalink" href="#base_delay%3ATime%3A%3ASpan-instance-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/47d0e2def021b42f88cbf9fad848ab516af5fe28/src/grpc/interceptor.cr#L222" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/47d0e2def021b42f88cbf9fad848ab516af5fe28/src/grpc/endpoint.cr#L65" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="build_client_chain(interceptors:Array(ClientInterceptor),base:LiveClientStreamClientCall):LiveClientStreamClientCall-class-method">
+    <div class="entry-detail" id="base_delay=(base_delay:Time::Span)-instance-method">
       <div class="signature">
         
-        def self.<strong>build_client_chain</strong>(interceptors : Array(<a href="../GRPC/ClientInterceptor.html">ClientInterceptor</a>), base : <a href="../GRPC/LiveClientStreamClientCall.html">LiveClientStreamClientCall</a>) : <a href="../GRPC/LiveClientStreamClientCall.html">LiveClientStreamClientCall</a>
+        def <strong>base_delay=</strong>(base_delay : Time::Span)
 
-        <a class="method-permalink" href="#build_client_chain%28interceptors%3AArray%28ClientInterceptor%29%2Cbase%3ALiveClientStreamClientCall%29%3ALiveClientStreamClientCall-class-method">#</a>
+        <a class="method-permalink" href="#base_delay%3D%28base_delay%3ATime%3A%3ASpan%29-instance-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/47d0e2def021b42f88cbf9fad848ab516af5fe28/src/grpc/interceptor.cr#L239" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/47d0e2def021b42f88cbf9fad848ab516af5fe28/src/grpc/endpoint.cr#L65" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="build_client_chain(interceptors:Array(ClientInterceptor),base:LiveBidiStreamClientCall):LiveBidiStreamClientCall-class-method">
+    <div class="entry-detail" id="jitter:Float64-instance-method">
       <div class="signature">
         
-        def self.<strong>build_client_chain</strong>(interceptors : Array(<a href="../GRPC/ClientInterceptor.html">ClientInterceptor</a>), base : <a href="../GRPC/LiveBidiStreamClientCall.html">LiveBidiStreamClientCall</a>) : <a href="../GRPC/LiveBidiStreamClientCall.html">LiveBidiStreamClientCall</a>
+        def <strong>jitter</strong> : Float64
 
-        <a class="method-permalink" href="#build_client_chain%28interceptors%3AArray%28ClientInterceptor%29%2Cbase%3ALiveBidiStreamClientCall%29%3ALiveBidiStreamClientCall-class-method">#</a>
+        <a class="method-permalink" href="#jitter%3AFloat64-instance-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/47d0e2def021b42f88cbf9fad848ab516af5fe28/src/grpc/interceptor.cr#L255" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/47d0e2def021b42f88cbf9fad848ab516af5fe28/src/grpc/endpoint.cr#L67" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="build_server_chain(interceptors:Array(ServerInterceptor),base:UnaryServerCall):UnaryServerCall-class-method">
+    <div class="entry-detail" id="jitter=(jitter:Float64)-instance-method">
       <div class="signature">
         
-        def self.<strong>build_server_chain</strong>(interceptors : Array(<a href="../GRPC/ServerInterceptor.html">ServerInterceptor</a>), base : <a href="../GRPC/UnaryServerCall.html">UnaryServerCall</a>) : <a href="../GRPC/UnaryServerCall.html">UnaryServerCall</a>
+        def <strong>jitter=</strong>(jitter : Float64)
 
-        <a class="method-permalink" href="#build_server_chain%28interceptors%3AArray%28ServerInterceptor%29%2Cbase%3AUnaryServerCall%29%3AUnaryServerCall-class-method">#</a>
-      </div>
-      
-        <div class="doc">
-          
-          <p>build_server_chain wraps <em>base</em> with <em>interceptors</em>.
-Returns a single call proc that runs interceptors[0] first.</p>
-        </div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/kojix2/grpc.cr/blob/47d0e2def021b42f88cbf9fad848ab516af5fe28/src/grpc/interceptor.cr#L273" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
-    <div class="entry-detail" id="build_server_chain(interceptors:Array(ServerInterceptor),base:ServerStreamServerCall):ServerStreamServerCall-class-method">
-      <div class="signature">
-        
-        def self.<strong>build_server_chain</strong>(interceptors : Array(<a href="../GRPC/ServerInterceptor.html">ServerInterceptor</a>), base : <a href="../GRPC/ServerStreamServerCall.html">ServerStreamServerCall</a>) : <a href="../GRPC/ServerStreamServerCall.html">ServerStreamServerCall</a>
-
-        <a class="method-permalink" href="#build_server_chain%28interceptors%3AArray%28ServerInterceptor%29%2Cbase%3AServerStreamServerCall%29%3AServerStreamServerCall-class-method">#</a>
+        <a class="method-permalink" href="#jitter%3D%28jitter%3AFloat64%29-instance-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/47d0e2def021b42f88cbf9fad848ab516af5fe28/src/grpc/interceptor.cr#L290" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/47d0e2def021b42f88cbf9fad848ab516af5fe28/src/grpc/endpoint.cr#L67" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="build_server_chain(interceptors:Array(ServerInterceptor),base:ClientStreamServerCall):ClientStreamServerCall-class-method">
+    <div class="entry-detail" id="max_delay:Time::Span-instance-method">
       <div class="signature">
         
-        def self.<strong>build_server_chain</strong>(interceptors : Array(<a href="../GRPC/ServerInterceptor.html">ServerInterceptor</a>), base : <a href="../GRPC/ClientStreamServerCall.html">ClientStreamServerCall</a>) : <a href="../GRPC/ClientStreamServerCall.html">ClientStreamServerCall</a>
+        def <strong>max_delay</strong> : Time::Span
 
-        <a class="method-permalink" href="#build_server_chain%28interceptors%3AArray%28ServerInterceptor%29%2Cbase%3AClientStreamServerCall%29%3AClientStreamServerCall-class-method">#</a>
+        <a class="method-permalink" href="#max_delay%3ATime%3A%3ASpan-instance-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/47d0e2def021b42f88cbf9fad848ab516af5fe28/src/grpc/interceptor.cr#L307" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/47d0e2def021b42f88cbf9fad848ab516af5fe28/src/grpc/endpoint.cr#L68" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="build_server_chain(interceptors:Array(ServerInterceptor),base:BidiStreamServerCall):BidiStreamServerCall-class-method">
+    <div class="entry-detail" id="max_delay=(max_delay:Time::Span)-instance-method">
       <div class="signature">
         
-        def self.<strong>build_server_chain</strong>(interceptors : Array(<a href="../GRPC/ServerInterceptor.html">ServerInterceptor</a>), base : <a href="../GRPC/BidiStreamServerCall.html">BidiStreamServerCall</a>) : <a href="../GRPC/BidiStreamServerCall.html">BidiStreamServerCall</a>
+        def <strong>max_delay=</strong>(max_delay : Time::Span)
 
-        <a class="method-permalink" href="#build_server_chain%28interceptors%3AArray%28ServerInterceptor%29%2Cbase%3ABidiStreamServerCall%29%3ABidiStreamServerCall-class-method">#</a>
+        <a class="method-permalink" href="#max_delay%3D%28max_delay%3ATime%3A%3ASpan%29-instance-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/47d0e2def021b42f88cbf9fad848ab516af5fe28/src/grpc/interceptor.cr#L323" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/47d0e2def021b42f88cbf9fad848ab516af5fe28/src/grpc/endpoint.cr#L68" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="multiplier:Float64-instance-method">
+      <div class="signature">
+        
+        def <strong>multiplier</strong> : Float64
+
+        <a class="method-permalink" href="#multiplier%3AFloat64-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/47d0e2def021b42f88cbf9fad848ab516af5fe28/src/grpc/endpoint.cr#L66" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="multiplier=(multiplier:Float64)-instance-method">
+      <div class="signature">
+        
+        def <strong>multiplier=</strong>(multiplier : Float64)
+
+        <a class="method-permalink" href="#multiplier%3D%28multiplier%3AFloat64%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/47d0e2def021b42f88cbf9fad848ab516af5fe28/src/grpc/endpoint.cr#L66" target="_blank">View source</a>]
         
       </div>
     </div>
   
 
-
-  
-
-  
 
 
 </div>

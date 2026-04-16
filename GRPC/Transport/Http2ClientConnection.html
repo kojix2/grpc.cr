@@ -77,6 +77,11 @@
       
         <ul>
   
+  <li class=" " data-id="grpc/GRPC/BackoffConfig" data-name="grpc::backoffconfig">
+      <a href="../../GRPC/BackoffConfig.html">BackoffConfig</a>
+      
+    </li>
+  
   <li class=" " data-id="grpc/GRPC/BidiCall" data-name="grpc::bidicall(req, res)">
       <a href="../../GRPC/BidiCall.html">BidiCall</a>
       
@@ -137,8 +142,23 @@
       
     </li>
   
+  <li class=" " data-id="grpc/GRPC/Endpoint" data-name="grpc::endpoint">
+      <a href="../../GRPC/Endpoint.html">Endpoint</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/EndpointConfig" data-name="grpc::endpointconfig">
+      <a href="../../GRPC/EndpointConfig.html">EndpointConfig</a>
+      
+    </li>
+  
   <li class=" " data-id="grpc/GRPC/Interceptors" data-name="grpc::interceptors">
       <a href="../../GRPC/Interceptors.html">Interceptors</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/KeepaliveParams" data-name="grpc::keepaliveparams">
+      <a href="../../GRPC/KeepaliveParams.html">KeepaliveParams</a>
       
     </li>
   
@@ -154,6 +174,11 @@
   
   <li class=" " data-id="grpc/GRPC/Metadata" data-name="grpc::metadata">
       <a href="../../GRPC/Metadata.html">Metadata</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/RateLimitConfig" data-name="grpc::ratelimitconfig">
+      <a href="../../GRPC/RateLimitConfig.html">RateLimitConfig</a>
       
     </li>
   
@@ -453,7 +478,7 @@
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc.cr/blob/2dcc0a824126c2ec60b52bcfd78cd8831b7989f4/src/grpc/transport/http2_client_connection.cr#L274" target="_blank">
+      <a href="https://github.com/kojix2/grpc.cr/blob/47d0e2def021b42f88cbf9fad848ab516af5fe28/src/grpc/transport/http2_client_connection.cr#L275" target="_blank">
         grpc/transport/http2_client_connection.cr
       </a>
     
@@ -516,7 +541,7 @@
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#new%28host%3AString%2Cport%3AInt32%2Cuse_tls%3ABool%3Dfalse%2Ctls_context%3AOpenSSL%3A%3ASSL%3A%3AContext%3A%3AClient%7CNil%3Dnil%29-class-method" class="signature"><strong>.new</strong>(host : String, port : Int32, use_tls : Bool = <span class="n">false</span>, tls_context : OpenSSL::SSL::Context::Client | Nil = <span class="n">nil</span>)</a>
+        <a href="#new%28host%3AString%2Cport%3AInt32%2Cuse_tls%3ABool%3Dfalse%2Ctls_context%3AOpenSSL%3A%3ASSL%3A%3AContext%3A%3AClient%7CNil%3Dnil%2Cendpoint_config%3AEndpointConfig%3DEndpointConfig.new%29-class-method" class="signature"><strong>.new</strong>(host : String, port : Int32, use_tls : Bool = <span class="n">false</span>, tls_context : OpenSSL::SSL::Context::Client | Nil = <span class="n">nil</span>, endpoint_config : EndpointConfig = <span class="t">EndpointConfig</span>.new)</a>
         
       </li>
     
@@ -743,18 +768,18 @@
     Constructor Detail
   </h2>
   
-    <div class="entry-detail" id="new(host:String,port:Int32,use_tls:Bool=false,tls_context:OpenSSL::SSL::Context::Client|Nil=nil)-class-method">
+    <div class="entry-detail" id="new(host:String,port:Int32,use_tls:Bool=false,tls_context:OpenSSL::SSL::Context::Client|Nil=nil,endpoint_config:EndpointConfig=EndpointConfig.new)-class-method">
       <div class="signature">
         
-        def self.<strong>new</strong>(host : String, port : Int32, use_tls : Bool = <span class="n">false</span>, tls_context : OpenSSL::SSL::Context::Client | Nil = <span class="n">nil</span>)
+        def self.<strong>new</strong>(host : String, port : Int32, use_tls : Bool = <span class="n">false</span>, tls_context : OpenSSL::SSL::Context::Client | Nil = <span class="n">nil</span>, endpoint_config : <a href="../../GRPC/EndpointConfig.html">EndpointConfig</a> = <span class="t">EndpointConfig</span>.new)
 
-        <a class="method-permalink" href="#new%28host%3AString%2Cport%3AInt32%2Cuse_tls%3ABool%3Dfalse%2Ctls_context%3AOpenSSL%3A%3ASSL%3A%3AContext%3A%3AClient%7CNil%3Dnil%29-class-method">#</a>
+        <a class="method-permalink" href="#new%28host%3AString%2Cport%3AInt32%2Cuse_tls%3ABool%3Dfalse%2Ctls_context%3AOpenSSL%3A%3ASSL%3A%3AContext%3A%3AClient%7CNil%3Dnil%2Cendpoint_config%3AEndpointConfig%3DEndpointConfig.new%29-class-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/2dcc0a824126c2ec60b52bcfd78cd8831b7989f4/src/grpc/transport/http2_client_connection.cr#L305" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/47d0e2def021b42f88cbf9fad848ab516af5fe28/src/grpc/transport/http2_client_connection.cr#L307" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -786,7 +811,7 @@
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/2dcc0a824126c2ec60b52bcfd78cd8831b7989f4/src/grpc/transport/http2_client_connection.cr#L587" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/47d0e2def021b42f88cbf9fad848ab516af5fe28/src/grpc/transport/http2_client_connection.cr#L606" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -802,7 +827,7 @@
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/2dcc0a824126c2ec60b52bcfd78cd8831b7989f4/src/grpc/transport/http2_client_connection.cr#L596" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/47d0e2def021b42f88cbf9fad848ab516af5fe28/src/grpc/transport/http2_client_connection.cr#L615" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -818,7 +843,7 @@
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/2dcc0a824126c2ec60b52bcfd78cd8831b7989f4/src/grpc/transport/http2_client_connection.cr#L567" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/47d0e2def021b42f88cbf9fad848ab516af5fe28/src/grpc/transport/http2_client_connection.cr#L586" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -834,7 +859,7 @@
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/2dcc0a824126c2ec60b52bcfd78cd8831b7989f4/src/grpc/transport/http2_client_connection.cr#L608" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/47d0e2def021b42f88cbf9fad848ab516af5fe28/src/grpc/transport/http2_client_connection.cr#L627" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -859,7 +884,7 @@ send_raw blocks the calling fiber (0 = unbounded).</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/2dcc0a824126c2ec60b52bcfd78cd8831b7989f4/src/grpc/transport/http2_client_connection.cr#L361" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/47d0e2def021b42f88cbf9fad848ab516af5fe28/src/grpc/transport/http2_client_connection.cr#L380" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -885,7 +910,7 @@ send_raw blocks the calling fiber (0 = unbounded).</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/2dcc0a824126c2ec60b52bcfd78cd8831b7989f4/src/grpc/transport/http2_client_connection.cr#L373" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/47d0e2def021b42f88cbf9fad848ab516af5fe28/src/grpc/transport/http2_client_connection.cr#L392" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -907,7 +932,7 @@ delivers server-pushed messages as they arrive.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/2dcc0a824126c2ec60b52bcfd78cd8831b7989f4/src/grpc/transport/http2_client_connection.cr#L351" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/47d0e2def021b42f88cbf9fad848ab516af5fe28/src/grpc/transport/http2_client_connection.cr#L370" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -928,7 +953,7 @@ delivers server-pushed messages as they arrive.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc.cr/blob/2dcc0a824126c2ec60b52bcfd78cd8831b7989f4/src/grpc/transport/http2_client_connection.cr#L344" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc.cr/blob/47d0e2def021b42f88cbf9fad848ab516af5fe28/src/grpc/transport/http2_client_connection.cr#L363" target="_blank">View source</a>]
         
       </div>
     </div>

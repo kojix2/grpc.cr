@@ -77,6 +77,11 @@
       
         <ul>
   
+  <li class=" " data-id="grpc/GRPC/BackoffConfig" data-name="grpc::backoffconfig">
+      <a href="GRPC/BackoffConfig.html">BackoffConfig</a>
+      
+    </li>
+  
   <li class=" " data-id="grpc/GRPC/BidiCall" data-name="grpc::bidicall(req, res)">
       <a href="GRPC/BidiCall.html">BidiCall</a>
       
@@ -137,8 +142,23 @@
       
     </li>
   
+  <li class=" " data-id="grpc/GRPC/Endpoint" data-name="grpc::endpoint">
+      <a href="GRPC/Endpoint.html">Endpoint</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/EndpointConfig" data-name="grpc::endpointconfig">
+      <a href="GRPC/EndpointConfig.html">EndpointConfig</a>
+      
+    </li>
+  
   <li class=" " data-id="grpc/GRPC/Interceptors" data-name="grpc::interceptors">
       <a href="GRPC/Interceptors.html">Interceptors</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/KeepaliveParams" data-name="grpc::keepaliveparams">
+      <a href="GRPC/KeepaliveParams.html">KeepaliveParams</a>
       
     </li>
   
@@ -154,6 +174,11 @@
   
   <li class=" " data-id="grpc/GRPC/Metadata" data-name="grpc::metadata">
       <a href="GRPC/Metadata.html">Metadata</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/RateLimitConfig" data-name="grpc::ratelimitconfig">
+      <a href="GRPC/RateLimitConfig.html">RateLimitConfig</a>
       
     </li>
   
@@ -552,8 +577,12 @@ channel <span class="o">=</span> <span class="t">GRPC</span><span class="t">::</
   </svg>
 </a>Transport factory injection</h2>
 <p><code>Channel</code> and <code>Server</code> accept optional factory procs so transport creation can be swapped without changing call sites.</p>
-<pre><code class="language-crystal">client_factory <span class="o">=</span> <span class="o">-&gt;</span>(host : <span class="t">String</span>, port : <span class="t">Int32</span>, use_tls : <span class="t">Bool</span>, tls_ctx : <span class="t">OpenSSL</span><span class="t">::</span><span class="t">SSL</span><span class="t">::</span><span class="t">Context</span><span class="t">::</span><span class="t">Client</span>?) {
-  <span class="t">GRPC</span><span class="t">::</span><span class="t">Transport</span><span class="t">::</span><span class="t">Http2ClientConnection</span>.new(host, port, use_tls, tls_ctx).<span class="k">as</span>(<span class="t">GRPC</span><span class="t">::</span><span class="t">Transport</span><span class="t">::</span><span class="t">ClientTransport</span>)
+<p>Note: the client factory receives an <code>EndpointConfig</code> as its fifth argument.</p>
+<pre><code class="language-crystal">client_factory <span class="o">=</span> <span class="o">-&gt;</span>(host : <span class="t">String</span>, port : <span class="t">Int32</span>, use_tls : <span class="t">Bool</span>,
+                    tls_ctx : <span class="t">OpenSSL</span><span class="t">::</span><span class="t">SSL</span><span class="t">::</span><span class="t">Context</span><span class="t">::</span><span class="t">Client</span>?,
+                    config : <span class="t">GRPC</span><span class="t">::</span><span class="t">EndpointConfig</span>) {
+  <span class="t">GRPC</span><span class="t">::</span><span class="t">Transport</span><span class="t">::</span><span class="t">Http2ClientConnection</span>.new(host, port, use_tls, tls_ctx, config)
+    .<span class="k">as</span>(<span class="t">GRPC</span><span class="t">::</span><span class="t">Transport</span><span class="t">::</span><span class="t">ClientTransport</span>)
 }
 
 server_factory <span class="o">=</span> <span class="o">-&gt;</span>(io : <span class="t">IO</span>,
@@ -561,11 +590,83 @@ server_factory <span class="o">=</span> <span class="o">-&gt;</span>(io : <span 
                     interceptors : <span class="t">Array</span>(<span class="t">GRPC</span><span class="t">::</span><span class="t">ServerInterceptor</span>),
                     peer : <span class="t">String</span>,
                     tls_sock : <span class="t">OpenSSL</span><span class="t">::</span><span class="t">SSL</span><span class="t">::</span><span class="t">Socket</span><span class="t">::</span><span class="t">Server</span>?) {
-  <span class="t">GRPC</span><span class="t">::</span><span class="t">Transport</span><span class="t">::</span><span class="t">Http2ServerConnection</span>.new(io, services, interceptors, peer, tls_sock).<span class="k">as</span>(<span class="t">GRPC</span><span class="t">::</span><span class="t">Transport</span><span class="t">::</span><span class="t">ServerTransport</span>)
+  <span class="t">GRPC</span><span class="t">::</span><span class="t">Transport</span><span class="t">::</span><span class="t">Http2ServerConnection</span>.new(io, services, interceptors, peer, tls_sock)
+    .<span class="k">as</span>(<span class="t">GRPC</span><span class="t">::</span><span class="t">Transport</span><span class="t">::</span><span class="t">ServerTransport</span>)
 }
 
 channel <span class="o">=</span> <span class="t">GRPC</span><span class="t">::</span><span class="t">Channel</span>.new(<span class="s">&quot;localhost:50051&quot;</span>, transport_factory: client_factory)
 server <span class="o">=</span> <span class="t">GRPC</span><span class="t">::</span><span class="t">Server</span>.new(transport_factory: server_factory)</code></pre>
+<h2><a id="channel-configuration" class="anchor" href="#channel-configuration">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Channel configuration</h2>
+<p><code>EndpointConfig</code> groups all transport and lifecycle settings for a channel.
+Pass it as <code>endpoint_config:</code> when creating a <code>Channel</code>.</p>
+<h3><a id="connect-timeout" class="anchor" href="#connect-timeout">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Connect timeout</h3>
+<p>Fail fast when the server is unreachable:</p>
+<pre><code class="language-crystal">config <span class="o">=</span> <span class="t">GRPC</span><span class="t">::</span><span class="t">EndpointConfig</span>.new(connect_timeout: <span class="n">5</span>.seconds)
+channel <span class="o">=</span> <span class="t">GRPC</span><span class="t">::</span><span class="t">Channel</span>.new(<span class="s">&quot;localhost:50051&quot;</span>, endpoint_config: config)</code></pre>
+<h3><a id="tcp-keepalive" class="anchor" href="#tcp-keepalive">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>TCP keepalive</h3>
+<p>Keep long-lived connections alive at the OS level:</p>
+<pre><code class="language-crystal">config <span class="o">=</span> <span class="t">GRPC</span><span class="t">::</span><span class="t">EndpointConfig</span>.new(
+  tcp_keepalive: <span class="n">30</span>.seconds,           <span class="c"># enable OS keepalive (idle hint)</span>
+  keepalive: <span class="t">GRPC</span><span class="t">::</span><span class="t">KeepaliveParams</span>.new(
+    interval: <span class="n">30</span>.seconds,              <span class="c"># application-level hint</span>
+    timeout: <span class="n">10</span>.seconds,
+    permit_without_calls: <span class="n">false</span>,
+  ),
+)
+channel <span class="o">=</span> <span class="t">GRPC</span><span class="t">::</span><span class="t">Channel</span>.new(<span class="s">&quot;localhost:50051&quot;</span>, endpoint_config: config)</code></pre>
+<h3><a id="concurrency-limit" class="anchor" href="#concurrency-limit">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Concurrency limit</h3>
+<p>Cap the number of in-flight RPCs. Excess callers block until a slot is free.
+The slot is released automatically when the RPC finishes (including streaming calls):</p>
+<pre><code class="language-crystal">config <span class="o">=</span> <span class="t">GRPC</span><span class="t">::</span><span class="t">EndpointConfig</span>.new(concurrency_limit: <span class="n">10</span>)
+channel <span class="o">=</span> <span class="t">GRPC</span><span class="t">::</span><span class="t">Channel</span>.new(<span class="s">&quot;localhost:50051&quot;</span>, endpoint_config: config)</code></pre>
+<h3><a id="rate-limit" class="anchor" href="#rate-limit">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Rate limit</h3>
+<p>Throttle request starts to at most <em>n</em> requests per <em>period</em>.
+Callers that exceed the limit sleep until the next available slot:</p>
+<pre><code class="language-crystal">config <span class="o">=</span> <span class="t">GRPC</span><span class="t">::</span><span class="t">EndpointConfig</span>.new(
+  rate_limit: <span class="t">GRPC</span><span class="t">::</span><span class="t">RateLimitConfig</span>.new(<span class="n">100_u64</span>, <span class="n">1</span>.second),  <span class="c"># 100 req/s</span>
+)
+channel <span class="o">=</span> <span class="t">GRPC</span><span class="t">::</span><span class="t">Channel</span>.new(<span class="s">&quot;localhost:50051&quot;</span>, endpoint_config: config)</code></pre>
+<h3><a id="combining-options" class="anchor" href="#combining-options">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Combining options</h3>
+<pre><code class="language-crystal">config <span class="o">=</span> <span class="t">GRPC</span><span class="t">::</span><span class="t">EndpointConfig</span>.new(
+  connect_timeout:   <span class="n">5</span>.seconds,
+  tcp_keepalive:     <span class="n">30</span>.seconds,
+  concurrency_limit: <span class="n">20</span>,
+  rate_limit:        <span class="t">GRPC</span><span class="t">::</span><span class="t">RateLimitConfig</span>.new(<span class="n">200_u64</span>, <span class="n">1</span>.second),
+)
+channel <span class="o">=</span> <span class="t">GRPC</span><span class="t">::</span><span class="t">Channel</span>.new(<span class="s">&quot;https://api.example.com:443&quot;</span>, endpoint_config: config)</code></pre>
+<h3><a id="endpoint-struct" class="anchor" href="#endpoint-struct">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Endpoint struct</h3>
+<p>Address strings are parsed into <code><a href="GRPC/Endpoint.html">GRPC::Endpoint</a></code> automatically, but you can
+also build one explicitly:</p>
+<pre><code class="language-crystal">endpoint <span class="o">=</span> <span class="t">GRPC</span><span class="t">::</span><span class="t">Endpoint</span>.new(<span class="s">&quot;api.example.com&quot;</span>, <span class="n">50051</span>, tls: <span class="n">false</span>)
+channel  <span class="o">=</span> <span class="t">GRPC</span><span class="t">::</span><span class="t">Channel</span>.new(endpoint)</code></pre>
 <h2><a id="message-compression" class="anchor" href="#message-compression">
   <svg class="octicon-link" aria-hidden="true">
     <use href="#octicon-link"/>
