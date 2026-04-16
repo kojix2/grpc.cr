@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Crystal Docs 1.18.2">
+<meta name="crystal_docs.project_version" content="main">
+<meta name="crystal_docs.project_name" content="grpc">
+
+
+
+<link href="../css/style.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="../js/doc.js"></script>
+
+  <meta name="repository-name" content="grpc">
+  <title>GRPC::Channel - grpc main</title>
+  <script type="text/javascript">
+    CrystalDocs.base_path = "../";
+  </script>
+</head>
+<body>
+
+<svg class="hidden">
+  <symbol id="octicon-link" viewBox="0 0 16 16">
+    <path fill="currentColor" fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path>
+  </symbol>
+</svg>
+<input type="checkbox" id="sidebar-btn">
+<label for="sidebar-btn" id="sidebar-btn-label">
+  <svg class="open" xmlns="http://www.w3.org/2000/svg" height="2em" width="2em" viewBox="0 0 512 512"><title>Open Sidebar</title><path fill="currentColor" d="M80 96v64h352V96H80zm0 112v64h352v-64H80zm0 112v64h352v-64H80z"></path></svg>
+  <svg class="close" xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 512 512"><title>Close Sidebar</title><path fill="currentColor" d="m118.6 73.4-45.2 45.2L210.7 256 73.4 393.4l45.2 45.2L256 301.3l137.4 137.3 45.2-45.2L301.3 256l137.3-137.4-45.2-45.2L256 210.7Z"></path></svg>
+</label>
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="search-box">
+      <input type="search" class="search-input" placeholder="Search..." spellcheck="false" aria-label="Search">
+    </div>
+
+    <div class="project-summary">
+      <h1 class="project-name">
+        <a href="../index.html">
+          grpc
+        </a>
+      </h1>
+
+      <span class="project-version">
+        main
+      </span>
+    </div>
+  </div>
+
+  <div class="search-results hidden">
+    <ul class="search-list"></ul>
+  </div>
+
+  <div class="types-list">
+    <ul>
+  
+  <li class=" " data-id="grpc/CrystalGRPCGenerator" data-name="crystalgrpcgenerator">
+      <a href="../CrystalGRPCGenerator.html">CrystalGRPCGenerator</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/FileDesc" data-name="filedesc">
+      <a href="../FileDesc.html">FileDesc</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GeneratorRequest" data-name="generatorrequest">
+      <a href="../GeneratorRequest.html">GeneratorRequest</a>
+      
+    </li>
+  
+  <li class="parent open current" data-id="grpc/GRPC" data-name="grpc">
+      <a href="../GRPC.html">GRPC</a>
+      
+        <ul>
+  
+  <li class=" " data-id="grpc/GRPC/BidiCall" data-name="grpc::bidicall(req, res)">
+      <a href="../GRPC/BidiCall.html">BidiCall</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/BidiStreamClientCall" data-name="grpc::bidistreamclientcall">
+      <a href="../GRPC/BidiStreamClientCall.html">BidiStreamClientCall</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/BidiStreamServerCall" data-name="grpc::bidistreamservercall">
+      <a href="../GRPC/BidiStreamServerCall.html">BidiStreamServerCall</a>
+      
+    </li>
+  
+  <li class=" current" data-id="grpc/GRPC/Channel" data-name="grpc::channel">
+      <a href="../GRPC/Channel.html">Channel</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/ClientContext" data-name="grpc::clientcontext">
+      <a href="../GRPC/ClientContext.html">ClientContext</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/ClientInterceptor" data-name="grpc::clientinterceptor">
+      <a href="../GRPC/ClientInterceptor.html">ClientInterceptor</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/ClientStream" data-name="grpc::clientstream(req, res)">
+      <a href="../GRPC/ClientStream.html">ClientStream</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/ClientStreamClientCall" data-name="grpc::clientstreamclientcall">
+      <a href="../GRPC/ClientStreamClientCall.html">ClientStreamClientCall</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/ClientStreamServerCall" data-name="grpc::clientstreamservercall">
+      <a href="../GRPC/ClientStreamServerCall.html">ClientStreamServerCall</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Codec" data-name="grpc::codec">
+      <a href="../GRPC/Codec.html">Codec</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/ConnectionError" data-name="grpc::connectionerror">
+      <a href="../GRPC/ConnectionError.html">ConnectionError</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Interceptors" data-name="grpc::interceptors">
+      <a href="../GRPC/Interceptors.html">Interceptors</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Metadata" data-name="grpc::metadata">
+      <a href="../GRPC/Metadata.html">Metadata</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/RawServerStream" data-name="grpc::rawserverstream">
+      <a href="../GRPC/RawServerStream.html">RawServerStream</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/ResponseStream" data-name="grpc::responsestream">
+      <a href="../GRPC/ResponseStream.html">ResponseStream</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Server" data-name="grpc::server">
+      <a href="../GRPC/Server.html">Server</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/ServerContext" data-name="grpc::servercontext">
+      <a href="../GRPC/ServerContext.html">ServerContext</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/ServerInterceptor" data-name="grpc::serverinterceptor">
+      <a href="../GRPC/ServerInterceptor.html">ServerInterceptor</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/ServerStream" data-name="grpc::serverstream(t)">
+      <a href="../GRPC/ServerStream.html">ServerStream</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/ServerStreamClientCall" data-name="grpc::serverstreamclientcall">
+      <a href="../GRPC/ServerStreamClientCall.html">ServerStreamClientCall</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/ServerStreamServerCall" data-name="grpc::serverstreamservercall">
+      <a href="../GRPC/ServerStreamServerCall.html">ServerStreamServerCall</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Service" data-name="grpc::service">
+      <a href="../GRPC/Service.html">Service</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Status" data-name="grpc::status">
+      <a href="../GRPC/Status.html">Status</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/StatusCode" data-name="grpc::statuscode">
+      <a href="../GRPC/StatusCode.html">StatusCode</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/StatusError" data-name="grpc::statuserror">
+      <a href="../GRPC/StatusError.html">StatusError</a>
+      
+    </li>
+  
+  <li class="parent " data-id="grpc/GRPC/Transport" data-name="grpc::transport">
+      <a href="../GRPC/Transport.html">Transport</a>
+      
+        <ul>
+  
+  <li class=" " data-id="grpc/GRPC/Transport/Http2ClientConnection" data-name="grpc::transport::http2clientconnection">
+      <a href="../GRPC/Transport/Http2ClientConnection.html">Http2ClientConnection</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Transport/Http2Connection" data-name="grpc::transport::http2connection">
+      <a href="../GRPC/Transport/Http2Connection.html">Http2Connection</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Transport/Http2ServerConnection" data-name="grpc::transport::http2serverconnection">
+      <a href="../GRPC/Transport/Http2ServerConnection.html">Http2ServerConnection</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Transport/PendingCall" data-name="grpc::transport::pendingcall">
+      <a href="../GRPC/Transport/PendingCall.html">PendingCall</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Transport/PendingStream" data-name="grpc::transport::pendingstream">
+      <a href="../GRPC/Transport/PendingStream.html">PendingStream</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Transport/ResponseContext" data-name="grpc::transport::responsecontext">
+      <a href="../GRPC/Transport/ResponseContext.html">ResponseContext</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Transport/SendBuffer" data-name="grpc::transport::sendbuffer">
+      <a href="../GRPC/Transport/SendBuffer.html">SendBuffer</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Transport/StreamData" data-name="grpc::transport::streamdata">
+      <a href="../GRPC/Transport/StreamData.html">StreamData</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/UnaryClientCall" data-name="grpc::unaryclientcall">
+      <a href="../GRPC/UnaryClientCall.html">UnaryClientCall</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/UnaryServerCall" data-name="grpc::unaryservercall">
+      <a href="../GRPC/UnaryServerCall.html">UnaryServerCall</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="grpc/MethodDesc" data-name="methoddesc">
+      <a href="../MethodDesc.html">MethodDesc</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/ProtoDecode" data-name="protodecode">
+      <a href="../ProtoDecode.html">ProtoDecode</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/ProtoEncode" data-name="protoencode">
+      <a href="../ProtoEncode.html">ProtoEncode</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/ProtoField" data-name="protofield">
+      <a href="../ProtoField.html">ProtoField</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/ServiceDesc" data-name="servicedesc">
+      <a href="../ServiceDesc.html">ServiceDesc</a>
+      
+    </li>
+  
+</ul>
+
+  </div>
+</div>
+
+
+<div class="main-content">
+<h1 class="type-name">
+
+  <span class="kind">
+    class
+  </span> GRPC::<wbr>Channel
+
+</h1>
+
+
+  <ul class="superclass-hierarchy"><li class="superclass"><a href="../GRPC/Channel.html">GRPC::Channel</a></li><li class="superclass">Reference</li><li class="superclass">Object</li></ul>
+
+
+
+
+  <h2>
+    <a id="overview" class="anchor" href="#overview">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Overview
+  </h2>
+
+  <p>Channel represents a client-side gRPC endpoint.
+It manages HTTP/2 connections and is the entry point for RPC calls.</p>
+<p>Plain TCP examples:
+channel = GRPC::Channel.new(&quot;localhost:50051&quot;)
+channel = GRPC::Channel.new(&quot;http://api.example.com:8080&quot;)</p>
+<p>TLS examples:
+channel = GRPC::Channel.new(&quot;https://api.example.com:443&quot;)
+ctx = OpenSSL::SSL::Context::Client.new
+ctx.verify_mode = OpenSSL::SSL::VerifyMode::NONE  # skip cert check (testing only)
+channel = GRPC::Channel.new(&quot;https://localhost:50051&quot;, tls_context: ctx)</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <h2>
+    <a id="defined-in" class="anchor" href="#defined-in">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Defined in:
+  </h2>
+  
+    
+      <a href="https://github.com/kojix2/grpc.cr/blob/7d8477014c4599c04d84d96f3050eff23e7b1386/src/grpc/channel.cr#L16" target="_blank">
+        grpc/channel.cr
+      </a>
+    
+    <br/>
+  
+
+
+
+
+
+  
+  <h2>
+    <a id="constructors" class="anchor" href="#constructors">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Constructors
+  </h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#new%28address%3AString%2Cinterceptors%3AArray%28ClientInterceptor%29%3D%5B%5DofClientInterceptor%2Ctls_context%3AOpenSSL%3A%3ASSL%3A%3AContext%3A%3AClient%7CNil%3Dnil%29-class-method" class="signature"><strong>.new</strong>(address : String, interceptors : Array(ClientInterceptor) = <span class="o">[]</span> <span class="k">of</span> <span class="t">ClientInterceptor</span>, tls_context : OpenSSL::SSL::Context::Client | Nil = <span class="n">nil</span>)</a>
+        
+          <div class="summary"><p>Create a channel to <em>address</em>.</p></div>
+        
+      </li>
+    
+  </ul>
+
+
+  
+
+  
+
+  
+  <h2>
+    <a id="instance-method-summary" class="anchor" href="#instance-method-summary">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Instance Method Summary
+  </h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#client_stream_call%28service%3AString%2Cmethod%3AString%2Crequest_messages%3AArray%28Bytes%29%2Cctx%3AClientContext%3DClientContext.new%29%3ATuple%28Bytes%2CStatus%29-instance-method" class="signature"><strong>#client_stream_call</strong>(service : String, method : String, request_messages : Array(Bytes), ctx : ClientContext = <span class="t">ClientContext</span>.new) : Tuple(Bytes, Status)</a>
+        
+          <div class="summary"><p>client_stream_call sends multiple request messages and returns the single server response.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#close%3ANil-instance-method" class="signature"><strong>#close</strong> : Nil</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#open_bidi_stream%28service%3AString%2Cmethod%3AString%2Crequest_messages%3AArray%28Bytes%29%2Cctx%3AClientContext%3DClientContext.new%29%3ARawServerStream-instance-method" class="signature"><strong>#open_bidi_stream</strong>(service : String, method : String, request_messages : Array(Bytes), ctx : ClientContext = <span class="t">ClientContext</span>.new) : RawServerStream</a>
+        
+          <div class="summary"><p>open_bidi_stream sends multiple request messages (buffered) and returns a RawServerStream that delivers the server's streamed responses.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#open_server_stream%28service%3AString%2Cmethod%3AString%2Crequest_bytes%3ABytes%2Cctx%3AClientContext%3DClientContext.new%29%3ARawServerStream-instance-method" class="signature"><strong>#open_server_stream</strong>(service : String, method : String, request_bytes : Bytes, ctx : ClientContext = <span class="t">ClientContext</span>.new) : RawServerStream</a>
+        
+          <div class="summary"><p>open_server_stream initiates a server-streaming gRPC call.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#unary_call%28service%3AString%2Cmethod%3AString%2Crequest_bytes%3ABytes%2Cctx%3AClientContext%3DClientContext.new%29%3ATuple%28Bytes%2CStatus%29-instance-method" class="signature"><strong>#unary_call</strong>(service : String, method : String, request_bytes : Bytes, ctx : ClientContext = <span class="t">ClientContext</span>.new) : Tuple(Bytes, Status)</a>
+        
+          <div class="summary"><p>unary_call performs a single gRPC unary RPC.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#unary_call%28service%3AString%2Cmethod%3AString%2Crequest_bytes%3ABytes%2Cmetadata%3AMetadata%29%3ATuple%28Bytes%2CStatus%29-instance-method" class="signature"><strong>#unary_call</strong>(service : String, method : String, request_bytes : Bytes, metadata : Metadata) : Tuple(Bytes, Status)</a>
+        
+          <div class="summary"><p>unary_call with a plain Metadata object — convenience overload for generated code.</p></div>
+        
+      </li>
+    
+  </ul>
+
+
+
+  <div class="methods-inherited">
+    
+      
+
+
+      
+
+
+      
+
+
+      
+
+
+    
+      
+
+
+      
+
+
+      
+
+
+      
+
+
+    
+  </div>
+
+  
+  <h2>
+    <a id="constructor-detail" class="anchor" href="#constructor-detail">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Constructor Detail
+  </h2>
+  
+    <div class="entry-detail" id="new(address:String,interceptors:Array(ClientInterceptor)=[]ofClientInterceptor,tls_context:OpenSSL::SSL::Context::Client|Nil=nil)-class-method">
+      <div class="signature">
+        
+        def self.<strong>new</strong>(address : String, interceptors : Array(<a href="../GRPC/ClientInterceptor.html">ClientInterceptor</a>) = <span class="o">[]</span> <span class="k">of</span> <span class="t">ClientInterceptor</span>, tls_context : OpenSSL::SSL::Context::Client | Nil = <span class="n">nil</span>)
+
+        <a class="method-permalink" href="#new%28address%3AString%2Cinterceptors%3AArray%28ClientInterceptor%29%3D%5B%5DofClientInterceptor%2Ctls_context%3AOpenSSL%3A%3ASSL%3A%3AContext%3A%3AClient%7CNil%3Dnil%29-class-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>Create a channel to <em>address</em>.</p>
+<p>Address formats: &quot;host:port&quot;, &quot;http://host:port&quot;, &quot;https://host:port&quot;.
+HTTPS triggers TLS; use <em>tls_context</em> to supply a custom OpenSSL context
+(e.g. to disable certificate verification for testing).</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/7d8477014c4599c04d84d96f3050eff23e7b1386/src/grpc/channel.cr#L30" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
+
+  
+
+  
+
+  
+  <h2>
+    <a id="instance-method-detail" class="anchor" href="#instance-method-detail">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Instance Method Detail
+  </h2>
+  
+    <div class="entry-detail" id="client_stream_call(service:String,method:String,request_messages:Array(Bytes),ctx:ClientContext=ClientContext.new):Tuple(Bytes,Status)-instance-method">
+      <div class="signature">
+        
+        def <strong>client_stream_call</strong>(service : String, method : String, request_messages : Array(Bytes), ctx : <a href="../GRPC/ClientContext.html">ClientContext</a> = <span class="t">ClientContext</span>.new) : Tuple(Bytes, <a href="../GRPC/Status.html">Status</a>)
+
+        <a class="method-permalink" href="#client_stream_call%28service%3AString%2Cmethod%3AString%2Crequest_messages%3AArray%28Bytes%29%2Cctx%3AClientContext%3DClientContext.new%29%3ATuple%28Bytes%2CStatus%29-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>client_stream_call sends multiple request messages and returns the single
+server response.  Messages are buffered and submitted together.
+This is the internal API used by generated client stubs.</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/7d8477014c4599c04d84d96f3050eff23e7b1386/src/grpc/channel.cr#L101" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="close:Nil-instance-method">
+      <div class="signature">
+        
+        def <strong>close</strong> : Nil
+
+        <a class="method-permalink" href="#close%3ANil-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/7d8477014c4599c04d84d96f3050eff23e7b1386/src/grpc/channel.cr#L144" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="open_bidi_stream(service:String,method:String,request_messages:Array(Bytes),ctx:ClientContext=ClientContext.new):RawServerStream-instance-method">
+      <div class="signature">
+        
+        def <strong>open_bidi_stream</strong>(service : String, method : String, request_messages : Array(Bytes), ctx : <a href="../GRPC/ClientContext.html">ClientContext</a> = <span class="t">ClientContext</span>.new) : <a href="../GRPC/RawServerStream.html">RawServerStream</a>
+
+        <a class="method-permalink" href="#open_bidi_stream%28service%3AString%2Cmethod%3AString%2Crequest_messages%3AArray%28Bytes%29%2Cctx%3AClientContext%3DClientContext.new%29%3ARawServerStream-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>open_bidi_stream sends multiple request messages (buffered) and returns a
+RawServerStream that delivers the server's streamed responses.
+This is the internal API used by generated client stubs.</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/7d8477014c4599c04d84d96f3050eff23e7b1386/src/grpc/channel.cr#L122" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="open_server_stream(service:String,method:String,request_bytes:Bytes,ctx:ClientContext=ClientContext.new):RawServerStream-instance-method">
+      <div class="signature">
+        
+        def <strong>open_server_stream</strong>(service : String, method : String, request_bytes : Bytes, ctx : <a href="../GRPC/ClientContext.html">ClientContext</a> = <span class="t">ClientContext</span>.new) : <a href="../GRPC/RawServerStream.html">RawServerStream</a>
+
+        <a class="method-permalink" href="#open_server_stream%28service%3AString%2Cmethod%3AString%2Crequest_bytes%3ABytes%2Cctx%3AClientContext%3DClientContext.new%29%3ARawServerStream-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>open_server_stream initiates a server-streaming gRPC call.
+Returns a RawServerStream that can be iterated to receive response messages.
+This is the internal API used by generated client stubs.</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/7d8477014c4599c04d84d96f3050eff23e7b1386/src/grpc/channel.cr#L76" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="unary_call(service:String,method:String,request_bytes:Bytes,ctx:ClientContext=ClientContext.new):Tuple(Bytes,Status)-instance-method">
+      <div class="signature">
+        
+        def <strong>unary_call</strong>(service : String, method : String, request_bytes : Bytes, ctx : <a href="../GRPC/ClientContext.html">ClientContext</a> = <span class="t">ClientContext</span>.new) : Tuple(Bytes, <a href="../GRPC/Status.html">Status</a>)
+
+        <a class="method-permalink" href="#unary_call%28service%3AString%2Cmethod%3AString%2Crequest_bytes%3ABytes%2Cctx%3AClientContext%3DClientContext.new%29%3ATuple%28Bytes%2CStatus%29-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>unary_call performs a single gRPC unary RPC.
+This is the internal API used by generated client stubs.
+Returns {response_body_bytes, status}.
+If client interceptors are registered they wrap this call outermost-first.</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/7d8477014c4599c04d84d96f3050eff23e7b1386/src/grpc/channel.cr#L44" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="unary_call(service:String,method:String,request_bytes:Bytes,metadata:Metadata):Tuple(Bytes,Status)-instance-method">
+      <div class="signature">
+        
+        def <strong>unary_call</strong>(service : String, method : String, request_bytes : Bytes, metadata : <a href="../GRPC/Metadata.html">Metadata</a>) : Tuple(Bytes, <a href="../GRPC/Status.html">Status</a>)
+
+        <a class="method-permalink" href="#unary_call%28service%3AString%2Cmethod%3AString%2Crequest_bytes%3ABytes%2Cmetadata%3AMetadata%29%3ATuple%28Bytes%2CStatus%29-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>unary_call with a plain Metadata object — convenience overload for generated code.
+Interceptors are NOT applied on this low-level overload.</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/7d8477014c4599c04d84d96f3050eff23e7b1386/src/grpc/channel.cr#L64" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
+
+
+</div>
+
+</body>
+</html>

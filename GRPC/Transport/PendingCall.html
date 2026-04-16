@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Crystal Docs 1.18.2">
+<meta name="crystal_docs.project_version" content="main">
+<meta name="crystal_docs.project_name" content="grpc">
+
+
+
+<link href="../../css/style.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="../../js/doc.js"></script>
+
+  <meta name="repository-name" content="grpc">
+  <title>GRPC::Transport::PendingCall - grpc main</title>
+  <script type="text/javascript">
+    CrystalDocs.base_path = "../../";
+  </script>
+</head>
+<body>
+
+<svg class="hidden">
+  <symbol id="octicon-link" viewBox="0 0 16 16">
+    <path fill="currentColor" fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path>
+  </symbol>
+</svg>
+<input type="checkbox" id="sidebar-btn">
+<label for="sidebar-btn" id="sidebar-btn-label">
+  <svg class="open" xmlns="http://www.w3.org/2000/svg" height="2em" width="2em" viewBox="0 0 512 512"><title>Open Sidebar</title><path fill="currentColor" d="M80 96v64h352V96H80zm0 112v64h352v-64H80zm0 112v64h352v-64H80z"></path></svg>
+  <svg class="close" xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 512 512"><title>Close Sidebar</title><path fill="currentColor" d="m118.6 73.4-45.2 45.2L210.7 256 73.4 393.4l45.2 45.2L256 301.3l137.4 137.3 45.2-45.2L301.3 256l137.3-137.4-45.2-45.2L256 210.7Z"></path></svg>
+</label>
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="search-box">
+      <input type="search" class="search-input" placeholder="Search..." spellcheck="false" aria-label="Search">
+    </div>
+
+    <div class="project-summary">
+      <h1 class="project-name">
+        <a href="../../index.html">
+          grpc
+        </a>
+      </h1>
+
+      <span class="project-version">
+        main
+      </span>
+    </div>
+  </div>
+
+  <div class="search-results hidden">
+    <ul class="search-list"></ul>
+  </div>
+
+  <div class="types-list">
+    <ul>
+  
+  <li class=" " data-id="grpc/CrystalGRPCGenerator" data-name="crystalgrpcgenerator">
+      <a href="../../CrystalGRPCGenerator.html">CrystalGRPCGenerator</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/FileDesc" data-name="filedesc">
+      <a href="../../FileDesc.html">FileDesc</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GeneratorRequest" data-name="generatorrequest">
+      <a href="../../GeneratorRequest.html">GeneratorRequest</a>
+      
+    </li>
+  
+  <li class="parent open current" data-id="grpc/GRPC" data-name="grpc">
+      <a href="../../GRPC.html">GRPC</a>
+      
+        <ul>
+  
+  <li class=" " data-id="grpc/GRPC/BidiCall" data-name="grpc::bidicall(req, res)">
+      <a href="../../GRPC/BidiCall.html">BidiCall</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/BidiStreamClientCall" data-name="grpc::bidistreamclientcall">
+      <a href="../../GRPC/BidiStreamClientCall.html">BidiStreamClientCall</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/BidiStreamServerCall" data-name="grpc::bidistreamservercall">
+      <a href="../../GRPC/BidiStreamServerCall.html">BidiStreamServerCall</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Channel" data-name="grpc::channel">
+      <a href="../../GRPC/Channel.html">Channel</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/ClientContext" data-name="grpc::clientcontext">
+      <a href="../../GRPC/ClientContext.html">ClientContext</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/ClientInterceptor" data-name="grpc::clientinterceptor">
+      <a href="../../GRPC/ClientInterceptor.html">ClientInterceptor</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/ClientStream" data-name="grpc::clientstream(req, res)">
+      <a href="../../GRPC/ClientStream.html">ClientStream</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/ClientStreamClientCall" data-name="grpc::clientstreamclientcall">
+      <a href="../../GRPC/ClientStreamClientCall.html">ClientStreamClientCall</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/ClientStreamServerCall" data-name="grpc::clientstreamservercall">
+      <a href="../../GRPC/ClientStreamServerCall.html">ClientStreamServerCall</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Codec" data-name="grpc::codec">
+      <a href="../../GRPC/Codec.html">Codec</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/ConnectionError" data-name="grpc::connectionerror">
+      <a href="../../GRPC/ConnectionError.html">ConnectionError</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Interceptors" data-name="grpc::interceptors">
+      <a href="../../GRPC/Interceptors.html">Interceptors</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Metadata" data-name="grpc::metadata">
+      <a href="../../GRPC/Metadata.html">Metadata</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/RawServerStream" data-name="grpc::rawserverstream">
+      <a href="../../GRPC/RawServerStream.html">RawServerStream</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/ResponseStream" data-name="grpc::responsestream">
+      <a href="../../GRPC/ResponseStream.html">ResponseStream</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Server" data-name="grpc::server">
+      <a href="../../GRPC/Server.html">Server</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/ServerContext" data-name="grpc::servercontext">
+      <a href="../../GRPC/ServerContext.html">ServerContext</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/ServerInterceptor" data-name="grpc::serverinterceptor">
+      <a href="../../GRPC/ServerInterceptor.html">ServerInterceptor</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/ServerStream" data-name="grpc::serverstream(t)">
+      <a href="../../GRPC/ServerStream.html">ServerStream</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/ServerStreamClientCall" data-name="grpc::serverstreamclientcall">
+      <a href="../../GRPC/ServerStreamClientCall.html">ServerStreamClientCall</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/ServerStreamServerCall" data-name="grpc::serverstreamservercall">
+      <a href="../../GRPC/ServerStreamServerCall.html">ServerStreamServerCall</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Service" data-name="grpc::service">
+      <a href="../../GRPC/Service.html">Service</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Status" data-name="grpc::status">
+      <a href="../../GRPC/Status.html">Status</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/StatusCode" data-name="grpc::statuscode">
+      <a href="../../GRPC/StatusCode.html">StatusCode</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/StatusError" data-name="grpc::statuserror">
+      <a href="../../GRPC/StatusError.html">StatusError</a>
+      
+    </li>
+  
+  <li class="parent open current" data-id="grpc/GRPC/Transport" data-name="grpc::transport">
+      <a href="../../GRPC/Transport.html">Transport</a>
+      
+        <ul>
+  
+  <li class=" " data-id="grpc/GRPC/Transport/Http2ClientConnection" data-name="grpc::transport::http2clientconnection">
+      <a href="../../GRPC/Transport/Http2ClientConnection.html">Http2ClientConnection</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Transport/Http2Connection" data-name="grpc::transport::http2connection">
+      <a href="../../GRPC/Transport/Http2Connection.html">Http2Connection</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Transport/Http2ServerConnection" data-name="grpc::transport::http2serverconnection">
+      <a href="../../GRPC/Transport/Http2ServerConnection.html">Http2ServerConnection</a>
+      
+    </li>
+  
+  <li class=" current" data-id="grpc/GRPC/Transport/PendingCall" data-name="grpc::transport::pendingcall">
+      <a href="../../GRPC/Transport/PendingCall.html">PendingCall</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Transport/PendingStream" data-name="grpc::transport::pendingstream">
+      <a href="../../GRPC/Transport/PendingStream.html">PendingStream</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Transport/ResponseContext" data-name="grpc::transport::responsecontext">
+      <a href="../../GRPC/Transport/ResponseContext.html">ResponseContext</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Transport/SendBuffer" data-name="grpc::transport::sendbuffer">
+      <a href="../../GRPC/Transport/SendBuffer.html">SendBuffer</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Transport/StreamData" data-name="grpc::transport::streamdata">
+      <a href="../../GRPC/Transport/StreamData.html">StreamData</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/UnaryClientCall" data-name="grpc::unaryclientcall">
+      <a href="../../GRPC/UnaryClientCall.html">UnaryClientCall</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/UnaryServerCall" data-name="grpc::unaryservercall">
+      <a href="../../GRPC/UnaryServerCall.html">UnaryServerCall</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="grpc/MethodDesc" data-name="methoddesc">
+      <a href="../../MethodDesc.html">MethodDesc</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/ProtoDecode" data-name="protodecode">
+      <a href="../../ProtoDecode.html">ProtoDecode</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/ProtoEncode" data-name="protoencode">
+      <a href="../../ProtoEncode.html">ProtoEncode</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/ProtoField" data-name="protofield">
+      <a href="../../ProtoField.html">ProtoField</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/ServiceDesc" data-name="servicedesc">
+      <a href="../../ServiceDesc.html">ServiceDesc</a>
+      
+    </li>
+  
+</ul>
+
+  </div>
+</div>
+
+
+<div class="main-content">
+<h1 class="type-name">
+
+  <span class="kind">
+    class
+  </span> GRPC::<wbr>Transport::<wbr>PendingCall
+
+</h1>
+
+
+  <ul class="superclass-hierarchy"><li class="superclass"><a href="../../GRPC/Transport/PendingCall.html">GRPC::Transport::PendingCall</a></li><li class="superclass">Reference</li><li class="superclass">Object</li></ul>
+
+
+
+
+  <h2>
+    <a id="overview" class="anchor" href="#overview">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Overview
+  </h2>
+
+  <p>PendingCall holds state for an in-flight client RPC.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <h2>
+    <a id="defined-in" class="anchor" href="#defined-in">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Defined in:
+  </h2>
+  
+    
+      <a href="https://github.com/kojix2/grpc.cr/blob/7d8477014c4599c04d84d96f3050eff23e7b1386/src/grpc/transport/http2_client_connection.cr#L71" target="_blank">
+        grpc/transport/http2_client_connection.cr
+      </a>
+    
+    <br/>
+  
+
+
+
+
+
+  
+  <h2>
+    <a id="constructors" class="anchor" href="#constructors">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Constructors
+  </h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#new-class-method" class="signature"><strong>.new</strong></a>
+        
+      </li>
+    
+  </ul>
+
+
+  
+
+  
+
+  
+  <h2>
+    <a id="instance-method-summary" class="anchor" href="#instance-method-summary">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Instance Method Summary
+  </h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#complete%3ANil-instance-method" class="signature"><strong>#complete</strong> : Nil</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#done%3A%3A%3AChannel%28Nil%29-instance-method" class="signature"><strong>#done</strong> : ::Channel(Nil)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#done%3D%28done%3A%3A%3AChannel%28Nil%29%29-instance-method" class="signature"><strong>#done=</strong>(done : ::Channel(Nil))</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#grpc_status%3AStatus-instance-method" class="signature"><strong>#grpc_status</strong> : Status</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#response_body%3AIO%3A%3AMemory-instance-method" class="signature"><strong>#response_body</strong> : IO::Memory</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#response_body%3D%28response_body%3AIO%3A%3AMemory%29-instance-method" class="signature"><strong>#response_body=</strong>(response_body : IO::Memory)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#response_bytes%3ABytes-instance-method" class="signature"><strong>#response_bytes</strong> : Bytes</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#response_headers%3AHash%28String%2CString%29-instance-method" class="signature"><strong>#response_headers</strong> : Hash(String, String)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#response_headers%3D%28response_headers%3AHash%28String%2CString%29%29-instance-method" class="signature"><strong>#response_headers=</strong>(response_headers : Hash(String, String))</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#send_buf%3ASendBuffer%7CNil-instance-method" class="signature"><strong>#send_buf</strong> : SendBuffer | Nil</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#send_buf%3D%28send_buf%3ASendBuffer%7CNil%29-instance-method" class="signature"><strong>#send_buf=</strong>(send_buf : SendBuffer | Nil)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#trailers%3AHash%28String%2CString%29-instance-method" class="signature"><strong>#trailers</strong> : Hash(String, String)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#trailers%3D%28trailers%3AHash%28String%2CString%29%29-instance-method" class="signature"><strong>#trailers=</strong>(trailers : Hash(String, String))</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#wait%3ANil-instance-method" class="signature"><strong>#wait</strong> : Nil</a>
+        
+      </li>
+    
+  </ul>
+
+
+
+  <div class="methods-inherited">
+    
+      
+
+
+      
+
+
+      
+
+
+      
+
+
+    
+      
+
+
+      
+
+
+      
+
+
+      
+
+
+    
+  </div>
+
+  
+  <h2>
+    <a id="constructor-detail" class="anchor" href="#constructor-detail">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Constructor Detail
+  </h2>
+  
+    <div class="entry-detail" id="new-class-method">
+      <div class="signature">
+        
+        def self.<strong>new</strong>
+
+        <a class="method-permalink" href="#new-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/7d8477014c4599c04d84d96f3050eff23e7b1386/src/grpc/transport/http2_client_connection.cr#L78" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
+
+  
+
+  
+
+  
+  <h2>
+    <a id="instance-method-detail" class="anchor" href="#instance-method-detail">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Instance Method Detail
+  </h2>
+  
+    <div class="entry-detail" id="complete:Nil-instance-method">
+      <div class="signature">
+        
+        def <strong>complete</strong> : Nil
+
+        <a class="method-permalink" href="#complete%3ANil-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/7d8477014c4599c04d84d96f3050eff23e7b1386/src/grpc/transport/http2_client_connection.cr#L90" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="done:::Channel(Nil)-instance-method">
+      <div class="signature">
+        
+        def <strong>done</strong> : ::Channel(Nil)
+
+        <a class="method-permalink" href="#done%3A%3A%3AChannel%28Nil%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/7d8477014c4599c04d84d96f3050eff23e7b1386/src/grpc/transport/http2_client_connection.cr#L75" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="done=(done:::Channel(Nil))-instance-method">
+      <div class="signature">
+        
+        def <strong>done=</strong>(done : ::Channel(Nil))
+
+        <a class="method-permalink" href="#done%3D%28done%3A%3A%3AChannel%28Nil%29%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/7d8477014c4599c04d84d96f3050eff23e7b1386/src/grpc/transport/http2_client_connection.cr#L75" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="grpc_status:Status-instance-method">
+      <div class="signature">
+        
+        def <strong>grpc_status</strong> : <a href="../../GRPC/Status.html">Status</a>
+
+        <a class="method-permalink" href="#grpc_status%3AStatus-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/7d8477014c4599c04d84d96f3050eff23e7b1386/src/grpc/transport/http2_client_connection.cr#L94" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="response_body:IO::Memory-instance-method">
+      <div class="signature">
+        
+        def <strong>response_body</strong> : IO::Memory
+
+        <a class="method-permalink" href="#response_body%3AIO%3A%3AMemory-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/7d8477014c4599c04d84d96f3050eff23e7b1386/src/grpc/transport/http2_client_connection.cr#L73" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="response_body=(response_body:IO::Memory)-instance-method">
+      <div class="signature">
+        
+        def <strong>response_body=</strong>(response_body : IO::Memory)
+
+        <a class="method-permalink" href="#response_body%3D%28response_body%3AIO%3A%3AMemory%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/7d8477014c4599c04d84d96f3050eff23e7b1386/src/grpc/transport/http2_client_connection.cr#L73" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="response_bytes:Bytes-instance-method">
+      <div class="signature">
+        
+        def <strong>response_bytes</strong> : Bytes
+
+        <a class="method-permalink" href="#response_bytes%3ABytes-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/7d8477014c4599c04d84d96f3050eff23e7b1386/src/grpc/transport/http2_client_connection.cr#L101" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="response_headers:Hash(String,String)-instance-method">
+      <div class="signature">
+        
+        def <strong>response_headers</strong> : Hash(String, String)
+
+        <a class="method-permalink" href="#response_headers%3AHash%28String%2CString%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/7d8477014c4599c04d84d96f3050eff23e7b1386/src/grpc/transport/http2_client_connection.cr#L72" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="response_headers=(response_headers:Hash(String,String))-instance-method">
+      <div class="signature">
+        
+        def <strong>response_headers=</strong>(response_headers : Hash(String, String))
+
+        <a class="method-permalink" href="#response_headers%3D%28response_headers%3AHash%28String%2CString%29%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/7d8477014c4599c04d84d96f3050eff23e7b1386/src/grpc/transport/http2_client_connection.cr#L72" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="send_buf:SendBuffer|Nil-instance-method">
+      <div class="signature">
+        
+        def <strong>send_buf</strong> : <a href="../../GRPC/Transport/SendBuffer.html">SendBuffer</a> | Nil
+
+        <a class="method-permalink" href="#send_buf%3ASendBuffer%7CNil-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/7d8477014c4599c04d84d96f3050eff23e7b1386/src/grpc/transport/http2_client_connection.cr#L76" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="send_buf=(send_buf:SendBuffer|Nil)-instance-method">
+      <div class="signature">
+        
+        def <strong>send_buf=</strong>(send_buf : <a href="../../GRPC/Transport/SendBuffer.html">SendBuffer</a> | Nil)
+
+        <a class="method-permalink" href="#send_buf%3D%28send_buf%3ASendBuffer%7CNil%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/7d8477014c4599c04d84d96f3050eff23e7b1386/src/grpc/transport/http2_client_connection.cr#L76" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="trailers:Hash(String,String)-instance-method">
+      <div class="signature">
+        
+        def <strong>trailers</strong> : Hash(String, String)
+
+        <a class="method-permalink" href="#trailers%3AHash%28String%2CString%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/7d8477014c4599c04d84d96f3050eff23e7b1386/src/grpc/transport/http2_client_connection.cr#L74" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="trailers=(trailers:Hash(String,String))-instance-method">
+      <div class="signature">
+        
+        def <strong>trailers=</strong>(trailers : Hash(String, String))
+
+        <a class="method-permalink" href="#trailers%3D%28trailers%3AHash%28String%2CString%29%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/7d8477014c4599c04d84d96f3050eff23e7b1386/src/grpc/transport/http2_client_connection.cr#L74" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="wait:Nil-instance-method">
+      <div class="signature">
+        
+        def <strong>wait</strong> : Nil
+
+        <a class="method-permalink" href="#wait%3ANil-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc.cr/blob/7d8477014c4599c04d84d96f3050eff23e7b1386/src/grpc/transport/http2_client_connection.cr#L86" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
+
+
+</div>
+
+</body>
+</html>
