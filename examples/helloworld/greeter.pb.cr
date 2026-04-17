@@ -87,11 +87,11 @@ module Helloworld
     def initialize(@name : String = "")
     end
 
-    def to_protobuf : Bytes
+    def to_proto : Bytes
       Proto.encode_string_field(1, @name)
     end
 
-    def self.from_protobuf(data : Bytes) : HelloRequest
+    def self.from_proto(data : Bytes) : HelloRequest
       new(Proto.decode_string_field(data, 1) || "")
     end
   end
@@ -102,11 +102,11 @@ module Helloworld
     def initialize(@message : String = "")
     end
 
-    def to_protobuf : Bytes
+    def to_proto : Bytes
       Proto.encode_string_field(1, @message)
     end
 
-    def self.from_protobuf(data : Bytes) : HelloReply
+    def self.from_proto(data : Bytes) : HelloReply
       new(Proto.decode_string_field(data, 1) || "")
     end
   end
@@ -128,9 +128,9 @@ module Helloworld
     def dispatch(method : String, body : Bytes, ctx : GRPC::ServerContext) : {Bytes, GRPC::Status}
       case method
       when "SayHello"
-        req = HelloRequest.from_protobuf(body)
+        req = HelloRequest.from_proto(body)
         resp = say_hello(req, ctx)
-        {resp.to_protobuf, GRPC::Status.ok}
+        {resp.to_proto, GRPC::Status.ok}
       else
         {Bytes.empty, GRPC::Status.unimplemented("method #{method} not found")}
       end
@@ -156,9 +156,9 @@ module Helloworld
         metadata: metadata || GRPC::Metadata.new,
         deadline: deadline
       )
-      body, status = @channel.unary_call(SERVICE_NAME, "SayHello", request.to_protobuf, call_ctx)
+      body, status = @channel.unary_call(SERVICE_NAME, "SayHello", request.to_proto, call_ctx)
       raise GRPC::StatusError.new(status) unless status.ok?
-      HelloReply.from_protobuf(body)
+      HelloReply.from_proto(body)
     end
   end
 end

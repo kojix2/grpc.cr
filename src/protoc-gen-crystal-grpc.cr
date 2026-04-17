@@ -16,6 +16,8 @@
 # The plugin expects message types to already be available in the generated
 # output (e.g. from protoc-gen-crystal).  It only emits service infrastructure.
 
+require "./grpc_generator/naming_adapter"
+
 # ---------------------------------------------------------------------------
 # Minimal protobuf binary decoder
 # ---------------------------------------------------------------------------
@@ -49,7 +51,7 @@ struct ProtoField
   end
 end
 
-module ProtoDecode
+module ProtobufWireDecoder
   # Decode a base-128 varint from *data* starting at *offset*.
   # Returns {value, bytes_consumed}.
   def self.varint(data : Bytes, offset : Int32) : {UInt64, Int32}
@@ -128,7 +130,7 @@ end
 # Minimal protobuf binary encoder (for CodeGeneratorResponse)
 # ---------------------------------------------------------------------------
 
-module ProtoEncode
+module ProtobufWireEncoder
   def self.varint(io : IO, value : UInt64) : Nil
     loop do
       byte = (value & 0x7F).to_u8
@@ -161,8 +163,8 @@ end
 # Descriptor types parsed from the binary CodeGeneratorRequest
 # ---------------------------------------------------------------------------
 
-# MethodDesc mirrors google.protobuf.MethodDescriptorProto
-struct MethodDesc
+# MethodDescriptor mirrors google.protobuf.MethodDescriptorProto
+struct MethodDescriptor
   getter name : String
   getter input_type : String
   getter output_type : String
@@ -172,14 +174,14 @@ struct MethodDesc
   def initialize(@name, @input_type, @output_type, @client_streaming, @server_streaming)
   end
 
-  def self.parse(data : Bytes) : MethodDesc
-    fs = ProtoDecode.fields(data)
+  def self.parse(data : Bytes) : MethodDescriptor
+    fs = ProtobufWireDecoder.fields(data)
     new(
-      ProtoDecode.string(fs, 1),
-      ProtoDecode.string(fs, 2),
-      ProtoDecode.string(fs, 3),
-      ProtoDecode.bool(fs, 5),
-      ProtoDecode.bool(fs, 6),
+      ProtobufWireDecoder.string(fs, 1),
+      ProtobufWireDecoder.string(fs, 2),
+      ProtobufWireDecoder.string(fs, 3),
+      ProtobufWireDecoder.bool(fs, 5),
+      ProtobufWireDecoder.bool(fs, 6),
     )
   end
 
@@ -194,57 +196,57 @@ struct MethodDesc
   end
 end
 
-# ServiceDesc mirrors google.protobuf.ServiceDescriptorProto
-struct ServiceDesc
+# ServiceDescriptor mirrors google.protobuf.ServiceDescriptorProto
+struct ServiceDescriptor
   getter name : String
-  getter methods : Array(MethodDesc)
+  getter methods : Array(MethodDescriptor)
 
   def initialize(@name, @methods)
   end
 
-  def self.parse(data : Bytes) : ServiceDesc
-    fs = ProtoDecode.fields(data)
+  def self.parse(data : Bytes) : ServiceDescriptor
+    fs = ProtobufWireDecoder.fields(data)
     new(
-      ProtoDecode.string(fs, 1),
-      ProtoDecode.messages(fs, 2).map { |method_bytes| MethodDesc.parse(method_bytes) },
+      ProtobufWireDecoder.string(fs, 1),
+      ProtobufWireDecoder.messages(fs, 2).map { |method_bytes| MethodDescriptor.parse(method_bytes) },
     )
   end
 end
 
-# FileDesc mirrors google.protobuf.FileDescriptorProto (only the fields we need)
-struct FileDesc
+# ProtoFileDescriptor mirrors google.protobuf.FileDescriptorProto (only the fields we need)
+struct ProtoFileDescriptor
   getter name : String
   getter package : String
-  getter services : Array(ServiceDesc)
+  getter services : Array(ServiceDescriptor)
 
   def initialize(@name, @package, @services)
   end
 
-  def self.parse(data : Bytes) : FileDesc
-    fs = ProtoDecode.fields(data)
+  def self.parse(data : Bytes) : ProtoFileDescriptor
+    fs = ProtobufWireDecoder.fields(data)
     new(
-      ProtoDecode.string(fs, 1),
-      ProtoDecode.string(fs, 2),
-      ProtoDecode.messages(fs, 6).map { |svc_bytes| ServiceDesc.parse(svc_bytes) },
+      ProtobufWireDecoder.string(fs, 1),
+      ProtobufWireDecoder.string(fs, 2),
+      ProtobufWireDecoder.messages(fs, 6).map { |svc_bytes| ServiceDescriptor.parse(svc_bytes) },
     )
   end
 end
 
-# GeneratorRequest mirrors google.protobuf.compiler.CodeGeneratorRequest
-struct GeneratorRequest
+# PluginCodeGeneratorRequest mirrors google.protobuf.compiler.CodeGeneratorRequest
+struct PluginCodeGeneratorRequest
   getter files_to_generate : Array(String)
   getter parameter : String
-  getter proto_files : Array(FileDesc)
+  getter proto_files : Array(ProtoFileDescriptor)
 
   def initialize(@files_to_generate, @parameter, @proto_files)
   end
 
-  def self.parse(data : Bytes) : GeneratorRequest
-    fs = ProtoDecode.fields(data)
+  def self.parse(data : Bytes) : PluginCodeGeneratorRequest
+    fs = ProtobufWireDecoder.fields(data)
     new(
-      ProtoDecode.strings(fs, 1),
-      ProtoDecode.string(fs, 2),
-      ProtoDecode.messages(fs, 15).map { |file_bytes| FileDesc.parse(file_bytes) },
+      ProtobufWireDecoder.strings(fs, 1),
+      ProtobufWireDecoder.string(fs, 2),
+      ProtobufWireDecoder.messages(fs, 15).map { |file_bytes| ProtoFileDescriptor.parse(file_bytes) },
     )
   end
 end
@@ -253,10 +255,18 @@ end
 # Crystal gRPC code generator
 # ---------------------------------------------------------------------------
 
-class CrystalGRPCGenerator
+class CrystalGrpcCodeGenerator
+  @resolver : GRPC::Generator::TypeNameResolver
+
+  def initialize
+    @resolver = GRPC::Generator::CanonicalTypeNameResolver.new
+  end
+
   # Entry point: process the request and return an encoded CodeGeneratorResponse.
-  def run(request : GeneratorRequest) : Bytes
-    file_index = {} of String => FileDesc
+  def run(request : PluginCodeGeneratorRequest) : Bytes
+    @resolver = build_type_name_resolver(request.parameter)
+
+    file_index = {} of String => ProtoFileDescriptor
     request.proto_files.each { |file_desc| file_index[file_desc.name] = file_desc }
 
     generated = [] of {String, String}
@@ -276,7 +286,7 @@ class CrystalGRPCGenerator
 
   # ---- File-level generation ----
 
-  private def generate_file(fd : FileDesc) : String
+  private def generate_file(fd : ProtoFileDescriptor) : String
     String.build do |str|
       str << "# Code generated by protoc-gen-crystal-grpc. DO NOT EDIT.\n"
       str << "# Source: #{fd.name}\n"
@@ -298,8 +308,8 @@ class CrystalGRPCGenerator
   end
 
   # Emit both the abstract service class and the client stub for one service.
-  private def generate_service_pair(str : String::Builder, svc : ServiceDesc,
-                                    fd : FileDesc, indent : String) : Nil
+  private def generate_service_pair(str : String::Builder, svc : ServiceDescriptor,
+                                    fd : ProtoFileDescriptor, indent : String) : Nil
     generate_service_class(str, svc, fd, indent)
     str << "\n"
     generate_client_class(str, svc, fd, indent)
@@ -307,8 +317,8 @@ class CrystalGRPCGenerator
 
   # ---- Abstract service (server side) ----
 
-  private def generate_service_class(str : String::Builder, svc : ServiceDesc,
-                                     fd : FileDesc, indent : String) : Nil
+  private def generate_service_class(str : String::Builder, svc : ServiceDescriptor,
+                                     fd : ProtoFileDescriptor, indent : String) : Nil
     full_name = full_service_name(fd, svc)
 
     str << "\n"
@@ -319,6 +329,11 @@ class CrystalGRPCGenerator
     str << "\n"
     str << "#{indent}  def service_name : String\n"
     str << "#{indent}    SERVICE_NAME\n"
+    str << "#{indent}  end\n"
+    str << "\n"
+    str << "#{indent}  # Override this hook to swap marshaller implementations.\n"
+    str << "#{indent}  protected def marshaller_for(type : T.class) : GRPC::Marshaller(T) forall T\n"
+    str << "#{indent}    GRPC::ProtoMarshaller(T).new\n"
     str << "#{indent}  end\n"
 
     # Abstract method declarations
@@ -349,11 +364,14 @@ class CrystalGRPCGenerator
       str << "#{indent}    case method\n"
       unary.each do |meth|
         input = resolve_type(meth.input_type, fd.package)
+        output = resolve_type(meth.output_type, fd.package)
         mname = to_snake_case(meth.name)
         str << "#{indent}    when #{meth.name.inspect}\n"
-        str << "#{indent}      req  = #{input}.from_protobuf(body)\n"
+        str << "#{indent}      req_marshaller = marshaller_for(#{input})\n"
+        str << "#{indent}      res_marshaller = marshaller_for(#{output})\n"
+        str << "#{indent}      req  = req_marshaller.load(body)\n"
         str << "#{indent}      resp = #{mname}(req, ctx)\n"
-        str << "#{indent}      {resp.to_protobuf, GRPC::Status.ok}\n"
+        str << "#{indent}      {res_marshaller.dump(resp), GRPC::Status.ok}\n"
       end
       str << "#{indent}    else\n"
       str << "#{indent}      {Bytes.empty, GRPC::Status.unimplemented(\"method \#{method} not found\")}\n"
@@ -369,12 +387,7 @@ class CrystalGRPCGenerator
     ss = svc.methods.select { |meth| meth.rpc_type == :server_streaming }
     unless ss.empty?
       str << "\n"
-      str << "#{indent}  def server_streaming?(method : String) : Bool\n"
-      str << "#{indent}    case method\n"
-      ss.each { |meth| str << "#{indent}    when #{meth.name.inspect} then true\n" }
-      str << "#{indent}    else                       false\n"
-      str << "#{indent}    end\n"
-      str << "#{indent}  end\n"
+      emit_streaming_predicate(str, "server_streaming?", ss, indent)
       str << "\n"
       str << "#{indent}  def dispatch_server_stream(method : String, body : Bytes,\n"
       str << "#{indent}                             ctx : GRPC::ServerContext,\n"
@@ -385,8 +398,10 @@ class CrystalGRPCGenerator
         output = resolve_type(meth.output_type, fd.package)
         mname = to_snake_case(meth.name)
         str << "#{indent}    when #{meth.name.inspect}\n"
-        str << "#{indent}      typed_writer = GRPC::ResponseStream(#{output}).new(writer)\n"
-        str << "#{indent}      #{mname}(#{input}.from_protobuf(body), typed_writer, ctx)\n"
+        str << "#{indent}      req_marshaller = marshaller_for(#{input})\n"
+        str << "#{indent}      res_marshaller = marshaller_for(#{output})\n"
+        str << "#{indent}      typed_writer = GRPC::ResponseStream(#{output}).new(writer, res_marshaller)\n"
+        str << "#{indent}      #{mname}(req_marshaller.load(body), typed_writer, ctx)\n"
       end
       str << "#{indent}    else\n"
       str << "#{indent}      GRPC::Status.unimplemented(\"method \#{method} not found\")\n"
@@ -401,24 +416,21 @@ class CrystalGRPCGenerator
     # client_streaming? + dispatch_client_stream
     cs = svc.methods.select { |meth| meth.rpc_type == :client_streaming }
     unless cs.empty?
-      str << "\n"
-      str << "#{indent}  def client_streaming?(method : String) : Bool\n"
-      str << "#{indent}    case method\n"
-      cs.each { |meth| str << "#{indent}    when #{meth.name.inspect} then true\n" }
-      str << "#{indent}    else                       false\n"
-      str << "#{indent}    end\n"
-      str << "#{indent}  end\n"
+      emit_streaming_predicate(str, "client_streaming?", cs, indent)
       str << "\n"
       str << "#{indent}  def dispatch_client_stream(method : String, requests : GRPC::RawRequestStream,\n"
       str << "#{indent}                             ctx : GRPC::ServerContext) : {Bytes, GRPC::Status}\n"
       str << "#{indent}    case method\n"
       cs.each do |meth|
         input = resolve_type(meth.input_type, fd.package)
+        output = resolve_type(meth.output_type, fd.package)
         mname = to_snake_case(meth.name)
         str << "#{indent}    when #{meth.name.inspect}\n"
-        str << "#{indent}      reqs = GRPC::RequestStream(#{input}).new(requests.ch)\n"
+        str << "#{indent}      req_marshaller = marshaller_for(#{input})\n"
+        str << "#{indent}      res_marshaller = marshaller_for(#{output})\n"
+        str << "#{indent}      reqs = GRPC::RequestStream(#{input}).new(requests.ch, req_marshaller)\n"
         str << "#{indent}      resp = #{mname}(reqs, ctx)\n"
-        str << "#{indent}      {resp.to_protobuf, GRPC::Status.ok}\n"
+        str << "#{indent}      {res_marshaller.dump(resp), GRPC::Status.ok}\n"
       end
       str << "#{indent}    else\n"
       str << "#{indent}      {Bytes.empty, GRPC::Status.unimplemented(\"method \#{method} not found\")}\n"
@@ -433,13 +445,7 @@ class CrystalGRPCGenerator
     # bidi_streaming? + dispatch_bidi_stream
     bidi = svc.methods.select { |meth| meth.rpc_type == :bidi }
     unless bidi.empty?
-      str << "\n"
-      str << "#{indent}  def bidi_streaming?(method : String) : Bool\n"
-      str << "#{indent}    case method\n"
-      bidi.each { |meth| str << "#{indent}    when #{meth.name.inspect} then true\n" }
-      str << "#{indent}    else                       false\n"
-      str << "#{indent}    end\n"
-      str << "#{indent}  end\n"
+      emit_streaming_predicate(str, "bidi_streaming?", bidi, indent)
       str << "\n"
       str << "#{indent}  def dispatch_bidi_stream(method : String, requests : GRPC::RawRequestStream,\n"
       str << "#{indent}                           ctx : GRPC::ServerContext,\n"
@@ -450,8 +456,10 @@ class CrystalGRPCGenerator
         output = resolve_type(meth.output_type, fd.package)
         mname = to_snake_case(meth.name)
         str << "#{indent}    when #{meth.name.inspect}\n"
-        str << "#{indent}      reqs = GRPC::RequestStream(#{input}).new(requests.ch)\n"
-        str << "#{indent}      typed_writer = GRPC::ResponseStream(#{output}).new(writer)\n"
+        str << "#{indent}      req_marshaller = marshaller_for(#{input})\n"
+        str << "#{indent}      res_marshaller = marshaller_for(#{output})\n"
+        str << "#{indent}      reqs = GRPC::RequestStream(#{input}).new(requests.ch, req_marshaller)\n"
+        str << "#{indent}      typed_writer = GRPC::ResponseStream(#{output}).new(writer, res_marshaller)\n"
         str << "#{indent}      #{mname}(reqs, typed_writer, ctx)\n"
       end
       str << "#{indent}    else\n"
@@ -469,12 +477,17 @@ class CrystalGRPCGenerator
 
   # ---- Client stub ----
 
-  private def generate_client_class(str : String::Builder, svc : ServiceDesc,
-                                    fd : FileDesc, indent : String) : Nil
+  private def generate_client_class(str : String::Builder, svc : ServiceDescriptor,
+                                    fd : ProtoFileDescriptor, indent : String) : Nil
     str << "#{indent}# #{svc.name}Client is the generated type-safe client stub.\n"
     str << "#{indent}# Create one per GRPC::Channel and reuse across calls.\n"
     str << "#{indent}class #{svc.name}Client\n"
     str << "#{indent}  def initialize(@channel : GRPC::Channel)\n"
+    str << "#{indent}  end\n"
+    str << "\n"
+    str << "#{indent}  # Override this hook to swap marshaller implementations.\n"
+    str << "#{indent}  protected def marshaller_for(type : T.class) : GRPC::Marshaller(T) forall T\n"
+    str << "#{indent}    GRPC::ProtoMarshaller(T).new\n"
     str << "#{indent}  end\n"
 
     svc.methods.each do |meth|
@@ -486,17 +499,21 @@ class CrystalGRPCGenerator
       case meth.rpc_type
       when :unary
         str << "#{indent}  def #{mname}(request : #{input}, ctx : GRPC::ClientContext = GRPC::ClientContext.new) : #{output}\n"
-        str << "#{indent}    body, status = @channel.unary_call(#{sname}, #{meth.name.inspect}, request.to_protobuf, ctx)\n"
+        str << "#{indent}    req_marshaller = marshaller_for(#{input})\n"
+        str << "#{indent}    res_marshaller = marshaller_for(#{output})\n"
+        str << "#{indent}    body, status = @channel.unary_call(#{sname}, #{meth.name.inspect}, req_marshaller.dump(request), ctx)\n"
         str << "#{indent}    raise GRPC::StatusError.new(status) unless status.ok?\n"
-        str << "#{indent}    #{output}.from_protobuf(body)\n"
+        str << "#{indent}    res_marshaller.load(body)\n"
         str << "#{indent}  end\n"
       when :server_streaming
         str << "#{indent}  def #{mname}(request : #{input}, ctx : GRPC::ClientContext = GRPC::ClientContext.new) : GRPC::ServerStream(#{output})\n"
-        str << "#{indent}    raw    = @channel.open_server_stream(#{sname}, #{meth.name.inspect}, request.to_protobuf, ctx)\n"
+        str << "#{indent}    req_marshaller = marshaller_for(#{input})\n"
+        str << "#{indent}    res_marshaller = marshaller_for(#{output})\n"
+        str << "#{indent}    raw    = @channel.open_server_stream(#{sname}, #{meth.name.inspect}, req_marshaller.dump(request), ctx)\n"
         str << "#{indent}    stream = GRPC::ServerStream(#{output}).new(-> { raw.status }, -> { raw.trailers }, -> { raw.cancel })\n"
         str << "#{indent}    spawn do\n"
         str << "#{indent}      begin\n"
-        str << "#{indent}        raw.each { |bytes| stream.push(#{output}.from_protobuf(bytes)) }\n"
+        str << "#{indent}        raw.each { |bytes| stream.push(res_marshaller.load(bytes)) }\n"
         str << "#{indent}        stream.finish\n"
         str << "#{indent}      rescue ex\n"
         str << "#{indent}        stream.finish(GRPC::Status.internal(ex.message || \"error\"))\n"
@@ -510,15 +527,17 @@ class CrystalGRPCGenerator
         str << "#{indent}  # to flush and receive the server's single response.\n"
         str << "#{indent}  def #{mname}(ctx : GRPC::ClientContext = GRPC::ClientContext.new) : GRPC::ClientStream(#{input}, #{output})\n"
         str << "#{indent}    raw = @channel.open_client_stream_live(#{sname}, #{meth.name.inspect}, ctx)\n"
+        str << "#{indent}    req_marshaller = marshaller_for(#{input})\n"
+        str << "#{indent}    res_marshaller = marshaller_for(#{output})\n"
         str << "#{indent}    result_chan = ::Channel(#{output} | Exception).new(1)\n"
-        str << "#{indent}    send_proc = Proc(#{input}, Nil).new { |msg| raw.send_raw(msg.to_protobuf) }\n"
+        str << "#{indent}    send_proc = Proc(#{input}, Nil).new { |msg| raw.send_raw(req_marshaller.dump(msg)) }\n"
         str << "#{indent}    close_proc = Proc(Nil).new {\n"
         str << "#{indent}      spawn do\n"
         str << "#{indent}        begin\n"
         str << "#{indent}          body = raw.close_and_recv\n"
         str << "#{indent}          st = raw.status\n"
         str << "#{indent}          if st.ok?\n"
-        str << "#{indent}            result_chan.send(#{output}.from_protobuf(body)) rescue nil\n"
+        str << "#{indent}            result_chan.send(res_marshaller.load(body)) rescue nil\n"
         str << "#{indent}          else\n"
         str << "#{indent}            result_chan.send(GRPC::StatusError.new(st)) rescue nil\n"
         str << "#{indent}          end\n"
@@ -535,17 +554,19 @@ class CrystalGRPCGenerator
         str << "#{indent}  # signal end-of-input and iterate the replies with #each.\n"
         str << "#{indent}  def #{mname}(ctx : GRPC::ClientContext = GRPC::ClientContext.new) : GRPC::BidiCall(#{input}, #{output})\n"
         str << "#{indent}    raw = @channel.open_bidi_stream_live(#{sname}, #{meth.name.inspect}, ctx)\n"
+        str << "#{indent}    req_marshaller = marshaller_for(#{input})\n"
+        str << "#{indent}    res_marshaller = marshaller_for(#{output})\n"
         str << "#{indent}    recv_chan = ::Channel(#{output} | Exception).new(128)\n"
         str << "#{indent}    spawn do\n"
         str << "#{indent}      begin\n"
-        str << "#{indent}        raw.each { |bytes| recv_chan.send(#{output}.from_protobuf(bytes)) rescue nil }\n"
+        str << "#{indent}        raw.each { |bytes| recv_chan.send(res_marshaller.load(bytes)) rescue nil }\n"
         str << "#{indent}        recv_chan.close\n"
         str << "#{indent}      rescue ex\n"
         str << "#{indent}        recv_chan.send(ex) rescue nil\n"
         str << "#{indent}        recv_chan.close rescue nil\n"
         str << "#{indent}      end\n"
         str << "#{indent}    end\n"
-        str << "#{indent}    send_proc = Proc(#{input}, Nil).new { |msg| raw.send_raw(msg.to_protobuf) }\n"
+        str << "#{indent}    send_proc = Proc(#{input}, Nil).new { |msg| raw.send_raw(req_marshaller.dump(msg)) }\n"
         str << "#{indent}    close_proc = Proc(Nil).new { raw.close_send }\n"
         str << "#{indent}    GRPC::BidiCall(#{input}, #{output}).new(send_proc, close_proc, recv_chan, -> { raw.status }, -> { raw.trailers }, -> { raw.cancel })\n"
         str << "#{indent}  end\n"
@@ -559,41 +580,78 @@ class CrystalGRPCGenerator
 
   private def encode_response(io : IO, files : Array({String, String})) : Nil
     # supported_features = 1 (FEATURE_PROTO3_OPTIONAL)
-    ProtoEncode.varint(io, (2_u64 << 3) | 0)
-    ProtoEncode.varint(io, 1_u64)
+    ProtobufWireEncoder.varint(io, (2_u64 << 3) | 0)
+    ProtobufWireEncoder.varint(io, 1_u64)
 
     files.each do |name, content|
       # field 15 (repeated File)
-      ProtoEncode.message(io, 15) do |msg_io|
-        ProtoEncode.string(msg_io, 1, name)     # File.name
-        ProtoEncode.string(msg_io, 15, content) # File.content
+      ProtobufWireEncoder.message(io, 15) do |msg_io|
+        ProtobufWireEncoder.string(msg_io, 1, name)     # File.name
+        ProtobufWireEncoder.string(msg_io, 15, content) # File.content
       end
     end
   end
 
   # ---- Helpers ----
 
+  # Parse plugin parameters and build a type-name resolver.
+  #
+  # Accepted forms:
+  #   type_map=.foo.bar.HelloRequest=Foo::Bar::HelloRequest
+  #   type_map=.a.A=A::A;.b.B=B::B
+  #
+  # Behavior:
+  # - type_map unspecified: use grpc default resolver
+  # - type_map specified: use strict map-backed resolver; unmapped entries are errors
+  #
+  # Multiple parameter tokens are separated by comma as per protoc plugin
+  # conventions, while the type_map payload itself can contain ';' separators.
+  private def build_type_name_resolver(parameter : String) : GRPC::Generator::TypeNameResolver
+    return GRPC::Generator::CanonicalTypeNameResolver.new if parameter.empty?
+
+    map = {} of String => String
+
+    parameter.split(',').each do |token|
+      key, value = split_once(token, '=')
+      key = key.strip
+      value = value.strip
+      next if key.empty?
+
+      case key
+      when "type_map"
+        next if value.empty?
+        value.split(';').each do |entry|
+          proto_name, crystal_name = split_once(entry, '=')
+          proto_name = proto_name.strip
+          crystal_name = crystal_name.strip
+          next if proto_name.empty? || crystal_name.empty?
+          normalized = proto_name.starts_with?('.') ? proto_name : ".#{proto_name}"
+          map[normalized] = crystal_name
+        end
+      end
+    end
+
+    return GRPC::Generator::CanonicalTypeNameResolver.new if map.empty?
+
+    GRPC::Generator::TypeMapNameResolver.new(map)
+  end
+
+  private def split_once(text : String, delimiter : Char) : {String, String}
+    idx = text.index(delimiter)
+    return {text, ""} unless idx
+    {text[0, idx], text[idx + 1, text.bytesize - idx - 1]}
+  end
+
   # Convert a proto package like "google.protobuf" to "Google::Protobuf".
   private def package_to_module(package : String) : String?
     return if package.empty?
-    package.split('.').map(&.capitalize).join("::")
+    package.split('.').map(&.split('_').map(&.capitalize).join).join("::")
   end
 
   # Convert a proto full type name like ".helloworld.HelloRequest" to a
   # Crystal type expression relative to *current_package*.
   private def resolve_type(proto_type : String, current_package : String) : String
-    # Strip the leading dot
-    type = proto_type.lstrip('.')
-    parts = type.split('.')
-    type_name = parts.last
-    type_package = parts[0..-2].join('.')
-
-    if type_package.empty? || type_package == current_package
-      type_name
-    else
-      # Foreign package — build a Crystal module-qualified name
-      (parts[0..-2].map(&.capitalize) + [type_name]).join("::")
-    end
+    @resolver.resolve(proto_type, current_package)
   end
 
   # "SayHello" → "say_hello", "GetFooBarBaz" → "get_foo_bar_baz"
@@ -604,7 +662,19 @@ class CrystalGRPCGenerator
       .downcase
   end
 
-  private def full_service_name(fd : FileDesc, svc : ServiceDesc) : String
+  # Emit a streaming predicate method that returns true for the listed RPC names.
+  private def emit_streaming_predicate(str : String::Builder, method_name : String,
+                                       methods : Array(MethodDescriptor), indent : String) : Nil
+    str << "\n"
+    str << "#{indent}  def #{method_name}(method : String) : Bool\n"
+    str << "#{indent}    case method\n"
+    methods.each { |meth| str << "#{indent}    when #{meth.name.inspect} then true\n" }
+    str << "#{indent}    else                       false\n"
+    str << "#{indent}    end\n"
+    str << "#{indent}  end\n"
+  end
+
+  private def full_service_name(fd : ProtoFileDescriptor, svc : ServiceDescriptor) : String
     fd.package.empty? ? svc.name : "#{fd.package}.#{svc.name}"
   end
 end

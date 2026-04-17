@@ -87,11 +87,11 @@ module Numbers
     def initialize(@value : Int32 = 0)
     end
 
-    def to_protobuf : Bytes
+    def to_proto : Bytes
       Proto.encode_int32_field(1, @value)
     end
 
-    def self.from_protobuf(data : Bytes) : Number
+    def self.from_proto(data : Bytes) : Number
       new(Proto.decode_int32_field(data, 1))
     end
   end
@@ -111,8 +111,8 @@ module Numbers
     def dispatch(method : String, body : Bytes, ctx : GRPC::ServerContext) : {Bytes, GRPC::Status}
       case method
       when "Square"
-        req = Number.from_protobuf(body)
-        {square(req, ctx).to_protobuf, GRPC::Status.ok}
+        req = Number.from_proto(body)
+        {square(req, ctx).to_proto, GRPC::Status.ok}
       else
         {Bytes.empty, GRPC::Status.unimplemented("method #{method} not found")}
       end
@@ -136,7 +136,7 @@ module Numbers
       case method
       when "Range"
         typed_writer = GRPC::ResponseStream(Number).new(writer)
-        range(Number.from_protobuf(body), typed_writer, ctx)
+        range(Number.from_proto(body), typed_writer, ctx)
       else
         GRPC::Status.unimplemented("method #{method} not found")
       end
@@ -158,7 +158,7 @@ module Numbers
       case method
       when "Sum"
         typed = GRPC::RequestStream(Number).new(requests.ch)
-        {sum(typed, ctx).to_protobuf, GRPC::Status.ok}
+        {sum(typed, ctx).to_proto, GRPC::Status.ok}
       else
         {Bytes.empty, GRPC::Status.unimplemented("method #{method} not found")}
       end
@@ -202,18 +202,18 @@ module Numbers
 
     # Unary call.
     def square(req : Number, ctx : GRPC::ClientContext = GRPC::ClientContext.new) : Number
-      body, status = @channel.unary_call(SERVICE_NAME, "Square", req.to_protobuf, ctx)
+      body, status = @channel.unary_call(SERVICE_NAME, "Square", req.to_proto, ctx)
       raise GRPC::StatusError.new(status) unless status.ok?
-      Number.from_protobuf(body)
+      Number.from_proto(body)
     end
 
     # Server streaming: returns a typed stream of Number replies.
     def range(req : Number, ctx : GRPC::ClientContext = GRPC::ClientContext.new) : GRPC::ServerStream(Number)
-      raw = @channel.open_server_stream(SERVICE_NAME, "Range", req.to_protobuf, ctx)
+      raw = @channel.open_server_stream(SERVICE_NAME, "Range", req.to_proto, ctx)
       stream = GRPC::ServerStream(Number).new(-> { raw.status }, -> { raw.trailers }, -> { raw.cancel })
       spawn do
         begin
-          raw.each { |bytes| stream.push(Number.from_protobuf(bytes)) }
+          raw.each { |bytes| stream.push(Number.from_proto(bytes)) }
           stream.finish
         rescue ex
           stream.finish(GRPC::Status.internal(ex.message || "error"))
@@ -227,14 +227,14 @@ module Numbers
     def sum(ctx : GRPC::ClientContext = GRPC::ClientContext.new) : GRPC::ClientStream(Number, Number)
       raw = @channel.open_client_stream_live(SERVICE_NAME, "Sum", ctx)
       result_chan = ::Channel(Number | Exception).new(1)
-      send_proc = Proc(Number, Nil).new { |msg| raw.send_raw(msg.to_protobuf) }
+      send_proc = Proc(Number, Nil).new { |msg| raw.send_raw(msg.to_proto) }
       close_proc = Proc(Nil).new do
         spawn do
           begin
             body = raw.close_and_recv
             st = raw.status
             if st.ok?
-              result_chan.send(Number.from_protobuf(body)) rescue nil
+              result_chan.send(Number.from_proto(body)) rescue nil
             else
               result_chan.send(GRPC::StatusError.new(st)) rescue nil
             end
@@ -253,14 +253,14 @@ module Numbers
       recv_chan = ::Channel(Number | Exception).new(128)
       spawn do
         begin
-          raw.each { |bytes| recv_chan.send(Number.from_protobuf(bytes)) rescue nil }
+          raw.each { |bytes| recv_chan.send(Number.from_proto(bytes)) rescue nil }
           recv_chan.close
         rescue ex
           recv_chan.send(ex) rescue nil
           recv_chan.close rescue nil
         end
       end
-      send_proc = Proc(Number, Nil).new { |msg| raw.send_raw(msg.to_protobuf) }
+      send_proc = Proc(Number, Nil).new { |msg| raw.send_raw(msg.to_proto) }
       close_proc = Proc(Nil).new { raw.close_send }
       GRPC::BidiCall(Number, Number).new(send_proc, close_proc, recv_chan, -> { raw.status }, -> { raw.trailers }, -> { raw.cancel })
     end

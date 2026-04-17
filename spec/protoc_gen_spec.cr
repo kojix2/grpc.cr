@@ -77,9 +77,10 @@ module TestProtoEncode
   end
 
   # Build a CodeGeneratorRequest
-  def self.request(files_to_generate : Array(String), proto_files : Array(Bytes)) : Bytes
+  def self.request(files_to_generate : Array(String), proto_files : Array(Bytes), parameter : String = "") : Bytes
     io = IO::Memory.new
     files_to_generate.each { |fname| string(io, 1, fname) }
+    string(io, 2, parameter)
     proto_files.each do |file_bytes|
       varint(io, ((15 << 3) | 2).to_u64)
       varint(io, file_bytes.size.to_u64)
@@ -93,7 +94,7 @@ end
 # Spec
 # ---------------------------------------------------------------------------
 
-describe CrystalGRPCGenerator do
+describe CrystalGrpcCodeGenerator do
   it "generates a unary service stub" do
     method = TestProtoEncode.method_proto(
       "SayHello",
@@ -104,8 +105,8 @@ describe CrystalGRPCGenerator do
     file = TestProtoEncode.file_proto("helloworld.proto", "helloworld", [svc])
     req_bytes = TestProtoEncode.request(["helloworld.proto"], [file])
 
-    request = GeneratorRequest.parse(req_bytes)
-    generator = CrystalGRPCGenerator.new
+    request = PluginCodeGeneratorRequest.parse(req_bytes)
+    generator = CrystalGrpcCodeGenerator.new
     response_bytes = generator.run(request)
 
     # Parse the response to extract the generated file content
@@ -118,7 +119,9 @@ describe CrystalGRPCGenerator do
     c.should contain("class GreeterClient")
     c.should contain("def say_hello(request : HelloRequest, ctx : GRPC::ClientContext")
     c.should contain("@channel.unary_call")
-    c.should contain("HelloReply.from_protobuf(body)")
+    c.should contain("protected def marshaller_for(type : T.class) : GRPC::Marshaller(T) forall T")
+    c.should contain("res_marshaller = marshaller_for(HelloReply)")
+    c.should contain("res_marshaller.load(body)")
   end
 
   it "generates a server-streaming stub" do
@@ -138,6 +141,9 @@ describe CrystalGRPCGenerator do
     content.should contain("dispatch_server_stream")
     content.should contain("GRPC::ServerStream(Number)")
     content.should contain("open_server_stream")
+    content.should contain("req_marshaller = marshaller_for(Number)")
+    content.should contain("res_marshaller = marshaller_for(Number)")
+    content.should contain("stream.push(res_marshaller.load(bytes))")
   end
 
   it "generates a client-streaming stub" do
@@ -159,6 +165,10 @@ describe CrystalGRPCGenerator do
     content.should contain("open_client_stream_live")
     content.should contain("GRPC::ClientStream(Number, Number)")
     content.should contain("GRPC::RequestStream(Number)")
+    content.should contain("req_marshaller = marshaller_for(Number)")
+    content.should contain("res_marshaller = marshaller_for(Number)")
+    content.should contain("raw.send_raw(req_marshaller.dump(msg))")
+    content.should contain("result_chan.send(res_marshaller.load(body))")
   end
 
   it "generates a bidirectional-streaming stub" do
@@ -179,6 +189,10 @@ describe CrystalGRPCGenerator do
     content.should contain("def bidi_streaming?(method : String) : Bool")
     content.should contain("dispatch_bidi_stream")
     content.should contain("open_bidi_stream")
+    content.should contain("req_marshaller = marshaller_for(Number)")
+    content.should contain("res_marshaller = marshaller_for(Number)")
+    content.should contain("recv_chan.send(res_marshaller.load(bytes))")
+    content.should contain("raw.send_raw(req_marshaller.dump(msg))")
   end
 
   it "wraps generated code in a module for a non-empty package" do
@@ -227,8 +241,8 @@ describe CrystalGRPCGenerator do
     file = TestProtoEncode.file_proto("empty.proto", "empty", [] of Bytes)
     req_bytes = TestProtoEncode.request(["empty.proto"], [file])
 
-    request = GeneratorRequest.parse(req_bytes)
-    generator = CrystalGRPCGenerator.new
+    request = PluginCodeGeneratorRequest.parse(req_bytes)
+    generator = CrystalGrpcCodeGenerator.new
     response_bytes = generator.run(request)
 
     content = extract_file_content(response_bytes, "empty.grpc.cr")
@@ -252,6 +266,102 @@ describe CrystalGRPCGenerator do
     content.should contain("Google::Protobuf::Empty")
     # .mypkg.Reply in the mypkg package → just Reply
     content.should contain(": Reply")
+  end
+
+  it "prefers type_map mappings when provided" do
+    method = TestProtoEncode.method_proto(
+      "Ping",
+      ".google.protobuf.Empty",
+      ".mypkg.Reply"
+    )
+    svc = TestProtoEncode.service_proto("Svc", [method])
+    file = TestProtoEncode.file_proto("svc.proto", "mypkg", [svc])
+    req = TestProtoEncode.request(
+      ["svc.proto"],
+      [file],
+      "type_map=.google.protobuf.Empty=My::Custom::Empty;.mypkg.Reply=Reply"
+    )
+
+    content = run_generator(req, "svc.grpc.cr")
+    content.should contain("My::Custom::Empty")
+    content.should_not contain("Google::Protobuf::Empty")
+  end
+
+  it "parses type_map parameters with surrounding whitespace" do
+    method = TestProtoEncode.method_proto(
+      "Ping",
+      ".google.protobuf.Empty",
+      ".mypkg.Reply"
+    )
+    svc = TestProtoEncode.service_proto("Svc", [method])
+    file = TestProtoEncode.file_proto("svc.proto", "mypkg", [svc])
+    req = TestProtoEncode.request(
+      ["svc.proto"],
+      [file],
+      " type_map = .google.protobuf.Empty = My::Custom::Empty ; .mypkg.Reply = Reply "
+    )
+
+    content = run_generator(req, "svc.grpc.cr")
+    content.should contain("My::Custom::Empty")
+    content.should_not contain("Google::Protobuf::Empty")
+  end
+
+  it "resolves underscore+nested+import-style types via type_map" do
+    method = TestProtoEncode.method_proto(
+      "Query",
+      ".acme_ml.v1.RequestEnvelope.Payload",
+      ".third_party.shared.v2.Result.Container"
+    )
+    svc = TestProtoEncode.service_proto("Gateway", [method])
+    file = TestProtoEncode.file_proto("gateway.proto", "acme_ml.v1", [svc])
+    req = TestProtoEncode.request(
+      ["gateway.proto"],
+      [file],
+      "type_map=.acme_ml.v1.RequestEnvelope.Payload=AcmeML::V1::RequestEnvelope::Payload;.third_party.shared.v2.Result.Container=Shared::V2::Result::Container"
+    )
+
+    content = run_generator(req, "gateway.grpc.cr")
+    content.should contain("AcmeML::V1::RequestEnvelope::Payload")
+    content.should contain("Shared::V2::Result::Container")
+    content.should contain("module AcmeMl::V1")
+  end
+
+  it "uses canonical resolution when type_map is not provided" do
+    method = TestProtoEncode.method_proto(
+      "Query",
+      ".acme_ml.v1.RequestEnvelope.Payload",
+      ".third_party.shared.v2.Result.Container"
+    )
+    svc = TestProtoEncode.service_proto("Gateway", [method])
+    file = TestProtoEncode.file_proto("gateway.proto", "acme_ml.v1", [svc])
+
+    content = run_generator(
+      TestProtoEncode.request(["gateway.proto"], [file]),
+      "gateway.grpc.cr"
+    )
+    content.should contain("RequestEnvelope::Payload")
+    content.should contain("ThirdParty::Shared::V2::Result::Container")
+  end
+
+  it "uses strict type_map mode when mapping is incomplete" do
+    method = TestProtoEncode.method_proto(
+      "Query",
+      ".acme_ml.v1.RequestEnvelope.Payload",
+      ".third_party.shared.v2.Result.Container"
+    )
+    svc = TestProtoEncode.service_proto("Gateway", [method])
+    file = TestProtoEncode.file_proto("gateway.proto", "acme_ml.v1", [svc])
+    req = TestProtoEncode.request(
+      ["gateway.proto"],
+      [file],
+      "type_map=.acme_ml.v1.RequestEnvelope.Payload=AcmeML::V1::RequestEnvelope::Payload"
+    )
+
+    request = PluginCodeGeneratorRequest.parse(req)
+    generator = CrystalGrpcCodeGenerator.new
+    expect_raises(ArgumentError, /Missing type_map entry/) do
+      generator.run(request)
+    end
   end
 
   it "generates service stubs for all 4 RPC types in one service" do
@@ -288,8 +398,8 @@ end
 # ---------------------------------------------------------------------------
 
 private def run_generator(request_bytes : Bytes, output_file : String) : String
-  request = GeneratorRequest.parse(request_bytes)
-  generator = CrystalGRPCGenerator.new
+  request = PluginCodeGeneratorRequest.parse(request_bytes)
+  generator = CrystalGrpcCodeGenerator.new
   response_bytes = generator.run(request)
   extract_file_content(response_bytes, output_file) ||
     fail("Expected #{output_file} to be generated")
@@ -298,11 +408,11 @@ end
 # Parse the CodeGeneratorResponse binary and return the content of the named
 # file, or nil if not found.
 private def extract_file_content(response : Bytes, filename : String) : String?
-  fs = ProtoDecode.fields(response)
-  ProtoDecode.messages(fs, 15).each do |file_bytes|
-    file_fields = ProtoDecode.fields(file_bytes)
-    name = ProtoDecode.string(file_fields, 1)
-    content = ProtoDecode.string(file_fields, 15)
+  fs = ProtobufWireDecoder.fields(response)
+  ProtobufWireDecoder.messages(fs, 15).each do |file_bytes|
+    file_fields = ProtobufWireDecoder.fields(file_bytes)
+    name = ProtobufWireDecoder.string(file_fields, 1)
+    content = ProtobufWireDecoder.string(file_fields, 15)
     return content if name == filename
   end
   nil

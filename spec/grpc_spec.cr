@@ -1,5 +1,30 @@
 require "./spec_helper"
 
+struct DummyMessage
+  getter value : String
+
+  def initialize(@value : String)
+  end
+
+  def to_proto : Bytes
+    @value.to_slice
+  end
+
+  def self.from_proto(bytes : Bytes) : self
+    new(String.new(bytes))
+  end
+end
+
+class TestDummyMarshaller < GRPC::Marshaller(DummyMessage)
+  def dump(value : DummyMessage) : Bytes
+    ("out:" + value.value).to_slice
+  end
+
+  def load(bytes : Bytes) : DummyMessage
+    DummyMessage.new("in:" + String.new(bytes))
+  end
+end
+
 describe GRPC do
   describe GRPC::StatusCode do
     it "has standard gRPC status codes" do
@@ -139,6 +164,41 @@ describe GRPC do
       expect_raises(GRPC::StatusError) do
         GRPC::Codec.decode(bad_frame)
       end
+    end
+  end
+
+  describe GRPC::Marshaller do
+    it "decodes request stream messages via a custom marshaller" do
+      ch = ::Channel(Bytes?).new(2)
+      ch.send("A".to_slice)
+      ch.send("B".to_slice)
+      ch.close
+
+      stream = GRPC::RequestStream(DummyMessage).new(ch, TestDummyMarshaller.new)
+      values = [] of DummyMessage
+      stream.each { |v| values << v }
+
+      values.map(&.value).should eq(["in:A", "in:B"])
+    end
+
+    it "encodes response stream messages via a custom marshaller" do
+      sent = [] of Bytes
+      raw = GRPC::RawResponseStream.new(->(bytes : Bytes) { sent << bytes; nil })
+      stream = GRPC::ResponseStream(DummyMessage).new(raw, TestDummyMarshaller.new)
+
+      stream.send(DummyMessage.new("hello"))
+
+      body, _consumed = GRPC::Codec.decode(sent[0])
+      String.new(body).should eq("out:hello")
+    end
+
+    it "decodes envelopes via a custom marshaller" do
+      info = GRPC::CallInfo.new("/svc/m", GRPC::RPCKind::Unary)
+      req = GRPC::RequestEnvelope.new(info, "xyz".to_slice)
+      res = GRPC::ResponseEnvelope.new(info, "xyz".to_slice, GRPC::Status.ok)
+
+      req.decode(DummyMessage, TestDummyMarshaller.new).value.should eq("in:xyz")
+      res.decode(DummyMessage, TestDummyMarshaller.new).value.should eq("in:xyz")
     end
   end
 

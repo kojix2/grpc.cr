@@ -262,12 +262,15 @@ module GRPC
   #     GRPC::Status.ok
   #   end
   class ResponseStream(T)
-    def initialize(@raw : RawResponseStream)
+    def initialize(
+      @raw : RawResponseStream,
+      @marshaller : Marshaller(T) = ProtoMarshaller(T).new,
+    )
     end
 
     # send serialises *message* to protobuf and transmits it to the client.
     def send(message : T) : Nil
-      @raw.send_raw(message.to_protobuf)
+      @raw.send_raw(@marshaller.dump(message))
     end
   end
 

@@ -50,8 +50,8 @@ module GRPC
                    @codec : String? = nil, @descriptor : String? = nil)
     end
 
-    def decode(type : T.class) : T forall T
-      type.from_protobuf(@raw)
+    def decode(type : T.class, marshaller : Marshaller(T)? = nil) : T forall T
+      (marshaller || ProtoMarshaller(T).new).load(@raw)
     end
   end
 
@@ -70,8 +70,8 @@ module GRPC
                    @codec : String? = nil, @descriptor : String? = nil)
     end
 
-    def decode(type : T.class) : T forall T
-      type.from_protobuf(@raw)
+    def decode(type : T.class, marshaller : Marshaller(T)? = nil) : T forall T
+      (marshaller || ProtoMarshaller(T).new).load(@raw)
     end
   end
 

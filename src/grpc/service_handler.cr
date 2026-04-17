@@ -5,14 +5,17 @@ module GRPC
   class RequestStream(T)
     include Enumerable(T)
 
-    def initialize(@ch : ::Channel(Bytes?))
+    def initialize(
+      @ch : ::Channel(Bytes?),
+      @marshaller : Marshaller(T) = ProtoMarshaller(T).new,
+    )
     end
 
     def each(& : T ->) : Nil
       loop do
         raw = @ch.receive?
         break if raw.nil?
-        yield T.from_protobuf(raw)
+        yield @marshaller.load(raw)
       end
     end
   end
@@ -55,9 +58,9 @@ module GRPC
   #       def dispatch(method : String, body : Bytes, ctx : GRPC::ServerContext) : {Bytes, GRPC::Status}
   #         case method
   #         when "SayHello"
-  #           req  = HelloRequest.from_protobuf(body)
+  #           req  = HelloRequest.from_proto(body)
   #           resp = say_hello(req, ctx)
-  #           {resp.to_protobuf, GRPC::Status.ok}
+  #           {resp.to_proto, GRPC::Status.ok}
   #         else
   #           {Bytes.empty, GRPC::Status.unimplemented("method #{method} not found")}
   #         end

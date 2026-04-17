@@ -77,9 +77,9 @@ Crystal stdlib TCPSocket
 
 The plugin is self-contained — it includes a minimal binary-format protobuf decoder/encoder with no external dependencies.  Key modules:
 
-- **`ProtoDecode`** — decodes varint-encoded fields from `CodeGeneratorRequest` / `FileDescriptorProto` / etc.
-- **`ProtoEncode`** — encodes `CodeGeneratorResponse` back to binary.
-- **`CrystalGRPCGenerator`** — walks descriptors and emits Crystal source.
+- **`ProtobufWireDecoder`** — decodes varint-encoded fields from `CodeGeneratorRequest` / `FileDescriptorProto` / etc.
+- **`ProtobufWireEncoder`** — encodes `CodeGeneratorResponse` back to binary.
+- **`CrystalGrpcCodeGenerator`** — walks descriptors and emits Crystal source.
 
 Generated code conventions:
 - Service class: `{ServiceName}Service < GRPC::Service`  (e.g. `GreeterService`)
