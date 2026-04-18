@@ -5,7 +5,7 @@ port = ARGV[1]? || "50051"
 name = ARGV[2]? || "world"
 
 channel = GRPC::Channel.new("#{host}:#{port}")
-client = Helloworld::GreeterClient.new(channel)
+client = Helloworld::Greeter::Client.new(channel)
 
 request = Helloworld::HelloRequest.new(name: name)
 puts "Sending: SayHello(name=#{name})"

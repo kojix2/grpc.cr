@@ -1,6 +1,6 @@
 require "./numbers.pb"
 
-class NumbersImpl < Numbers::NumbersService
+class NumbersImpl < Numbers::Numbers::Service
   # Unary: returns value^2
   def square(req : Numbers::Number, ctx : GRPC::ServerContext) : Numbers::Number
     Numbers::Number.new(req.value ** 2)

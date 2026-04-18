@@ -4,7 +4,7 @@ host = ARGV[0]? || "localhost"
 port = ARGV[1]? || "50052"
 
 channel = GRPC::Channel.new("#{host}:#{port}")
-client = Numbers::NumbersClient.new(channel)
+client = Numbers::Numbers::Client.new(channel)
 
 begin
   # --- Unary ---

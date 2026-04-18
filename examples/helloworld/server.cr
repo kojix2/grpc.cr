@@ -1,6 +1,6 @@
 require "./greeter.pb"
 
-class GreeterImpl < Helloworld::GreeterService
+class GreeterImpl < Helloworld::Greeter::Service
   def say_hello(request : Helloworld::HelloRequest, ctx : GRPC::ServerContext) : Helloworld::HelloReply
     puts "Received: #{request.name} from #{ctx.peer}"
     Helloworld::HelloReply.new(message: "Hello, #{request.name}!")

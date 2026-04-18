@@ -1,3 +1,5 @@
+require "log"
+
 require "./transport/http2_server_connection"
 
 module GRPC
@@ -14,6 +16,8 @@ module GRPC
   #   server.handle GreeterImpl.new
   #   server.listen "0.0.0.0", 50051
   class Server
+    LOGGER = ::Log.for(self)
+
     alias ServerTransportFactory = Proc(IO, Hash(String, Service), Array(ServerInterceptor), String, OpenSSL::SSL::Socket::Server?, Transport::ServerTransport)
 
     @services : Hash(String, Service)
@@ -34,7 +38,7 @@ module GRPC
 
     # handle registers a service implementation with the server.
     def handle(service : Service) : self
-      @services[service.service_name] = service
+      @services[service.service_full_name] = service
       self
     end
 
@@ -132,7 +136,7 @@ module GRPC
       conn = @transport_factory.call(io, services, interceptors, peer, tls_sock)
       conn.run_recv_loop
     rescue ex
-      STDERR.puts "grpc connection error: #{ex.message}"
+      LOGGER.error(exception: ex) { "grpc connection error" }
     ensure
       socket.close rescue nil
     end

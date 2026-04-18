@@ -9,9 +9,13 @@ class FakeClientTransport
   end
 
   def unary_call(service : String, method : String,
-                 request_body : Bytes, metadata : GRPC::Metadata) : {Bytes, GRPC::Status}
+                 request_body : Bytes, metadata : GRPC::Metadata) : GRPC::ResponseEnvelope
     @unary_calls += 1
-    {request_body, GRPC::Status.ok}
+    GRPC::ResponseEnvelope.new(
+      GRPC::CallInfo.new("/#{service}/#{method}", GRPC::RPCKind::Unary),
+      request_body,
+      GRPC::Status.ok
+    )
   end
 
   def open_server_stream(service : String, method : String,
@@ -31,6 +35,7 @@ class FakeClientTransport
       ->(_b : Bytes) { },
       -> { },
       ch,
+      -> { GRPC::Metadata.new },
       -> { GRPC::Status.ok },
       -> { GRPC::Metadata.new },
       -> { }
@@ -43,6 +48,7 @@ class FakeClientTransport
     GRPC::RawClientCall.new(
       ->(_b : Bytes) { },
       -> { Bytes.empty },
+      -> { GRPC::Metadata.new },
       -> { GRPC::Status.ok },
       -> { GRPC::Metadata.new },
       -> { }
@@ -70,10 +76,14 @@ class BlockingUnaryTransport
   end
 
   def unary_call(service : String, method : String,
-                 request_body : Bytes, metadata : GRPC::Metadata) : {Bytes, GRPC::Status}
+                 request_body : Bytes, metadata : GRPC::Metadata) : GRPC::ResponseEnvelope
     @started.send(nil)
     @releases.receive
-    {request_body, GRPC::Status.ok}
+    GRPC::ResponseEnvelope.new(
+      GRPC::CallInfo.new("/#{service}/#{method}", GRPC::RPCKind::Unary),
+      request_body,
+      GRPC::Status.ok
+    )
   end
 
   def open_server_stream(service : String, method : String,
@@ -93,6 +103,7 @@ class BlockingUnaryTransport
       ->(_b : Bytes) { },
       -> { },
       ch,
+      -> { GRPC::Metadata.new },
       -> { GRPC::Status.ok },
       -> { GRPC::Metadata.new },
       -> { }
@@ -105,6 +116,7 @@ class BlockingUnaryTransport
     GRPC::RawClientCall.new(
       ->(_b : Bytes) { },
       -> { Bytes.empty },
+      -> { GRPC::Metadata.new },
       -> { GRPC::Status.ok },
       -> { GRPC::Metadata.new },
       -> { }
@@ -129,9 +141,13 @@ class TimestampUnaryTransport
   end
 
   def unary_call(service : String, method : String,
-                 request_body : Bytes, metadata : GRPC::Metadata) : {Bytes, GRPC::Status}
+                 request_body : Bytes, metadata : GRPC::Metadata) : GRPC::ResponseEnvelope
     @starts << Time.instant
-    {request_body, GRPC::Status.ok}
+    GRPC::ResponseEnvelope.new(
+      GRPC::CallInfo.new("/#{service}/#{method}", GRPC::RPCKind::Unary),
+      request_body,
+      GRPC::Status.ok
+    )
   end
 
   def open_server_stream(service : String, method : String,
@@ -151,6 +167,7 @@ class TimestampUnaryTransport
       ->(_b : Bytes) { },
       -> { },
       ch,
+      -> { GRPC::Metadata.new },
       -> { GRPC::Status.ok },
       -> { GRPC::Metadata.new },
       -> { }
@@ -163,6 +180,7 @@ class TimestampUnaryTransport
     GRPC::RawClientCall.new(
       ->(_b : Bytes) { },
       -> { Bytes.empty },
+      -> { GRPC::Metadata.new },
       -> { GRPC::Status.ok },
       -> { GRPC::Metadata.new },
       -> { }
@@ -187,8 +205,12 @@ class BlockingServerStreamTransport
   end
 
   def unary_call(service : String, method : String,
-                 request_body : Bytes, metadata : GRPC::Metadata) : {Bytes, GRPC::Status}
-    {request_body, GRPC::Status.ok}
+                 request_body : Bytes, metadata : GRPC::Metadata) : GRPC::ResponseEnvelope
+    GRPC::ResponseEnvelope.new(
+      GRPC::CallInfo.new("/#{service}/#{method}", GRPC::RPCKind::Unary),
+      request_body,
+      GRPC::Status.ok
+    )
   end
 
   def open_server_stream(service : String, method : String,
@@ -208,6 +230,7 @@ class BlockingServerStreamTransport
       ->(_b : Bytes) { },
       -> { },
       ch,
+      -> { GRPC::Metadata.new },
       -> { GRPC::Status.ok },
       -> { GRPC::Metadata.new },
       -> { }
@@ -220,6 +243,7 @@ class BlockingServerStreamTransport
     GRPC::RawClientCall.new(
       ->(_b : Bytes) { },
       -> { Bytes.empty },
+      -> { GRPC::Metadata.new },
       -> { GRPC::Status.ok },
       -> { GRPC::Metadata.new },
       -> { }
@@ -244,8 +268,12 @@ class CyclingClientTransport
   end
 
   def unary_call(service : String, method : String,
-                 request_body : Bytes, metadata : GRPC::Metadata) : {Bytes, GRPC::Status}
-    {Bytes[@id.to_u8], GRPC::Status.ok}
+                 request_body : Bytes, metadata : GRPC::Metadata) : GRPC::ResponseEnvelope
+    GRPC::ResponseEnvelope.new(
+      GRPC::CallInfo.new("/#{service}/#{method}", GRPC::RPCKind::Unary),
+      Bytes[@id.to_u8],
+      GRPC::Status.ok
+    )
   end
 
   def open_server_stream(service : String, method : String,
@@ -265,6 +293,7 @@ class CyclingClientTransport
       ->(_b : Bytes) { },
       -> { },
       ch,
+      -> { GRPC::Metadata.new },
       -> { GRPC::Status.ok },
       -> { GRPC::Metadata.new },
       -> { }
@@ -277,6 +306,7 @@ class CyclingClientTransport
     GRPC::RawClientCall.new(
       ->(_b : Bytes) { },
       -> { Bytes.empty },
+      -> { GRPC::Metadata.new },
       -> { GRPC::Status.ok },
       -> { GRPC::Metadata.new },
       -> { }
@@ -324,9 +354,9 @@ describe "GRPC transport factory injection" do
     channel = GRPC::Channel.new("127.0.0.1:12345", transport_factory: factory)
 
     begin
-      body, status = channel.unary_call("test.Echo", "Echo", Bytes[1, 2, 3])
-      status.ok?.should be_true
-      body.should eq(Bytes[1, 2, 3])
+      response = channel.unary_call("test.Echo", "Echo", Bytes[1, 2, 3])
+      response.status.ok?.should be_true
+      response.raw.should eq(Bytes[1, 2, 3])
       created.should eq(1)
       fake.unary_calls.should eq(1)
     ensure
@@ -378,14 +408,14 @@ describe "GRPC transport factory injection" do
     channel = GRPC::Channel.new("127.0.0.1:12345", transport_factory: factory)
 
     begin
-      first_body, _ = channel.unary_call("test.Echo", "Echo", Bytes.empty)
-      first_body.should eq(Bytes[1_u8])
+      first_response = channel.unary_call("test.Echo", "Echo", Bytes.empty)
+      first_response.raw.should eq(Bytes[1_u8])
       created.size.should eq(1)
 
       created.first.close
 
-      second_body, _ = channel.unary_call("test.Echo", "Echo", Bytes.empty)
-      second_body.should eq(Bytes[2_u8])
+      second_response = channel.unary_call("test.Echo", "Echo", Bytes.empty)
+      second_response.raw.should eq(Bytes[2_u8])
       created.size.should eq(2)
     ensure
       channel.close

@@ -156,8 +156,8 @@ describe "gripmock client e2e" do
   it "returns non-OK status when no stub is configured" do
     channel = GRPC::Channel.new(gripmock_target)
     begin
-      _body, status = channel.unary_call("e2e.Probe", "UnaryEcho", E2EProto.encode_string("no-stub"))
-      status.ok?.should be_false
+      response = channel.unary_call("e2e.Probe", "UnaryEcho", E2EProto.encode_string("no-stub"))
+      response.status.ok?.should be_false
     ensure
       channel.close
     end
@@ -174,9 +174,9 @@ describe "gripmock client e2e" do
 
     channel = GRPC::Channel.new(gripmock_target)
     begin
-      body, status = channel.unary_call("e2e.Probe", "UnaryEcho", E2EProto.encode_string("hello"))
-      status.ok?.should be_true
-      E2EProto.decode_string(body).should eq("echo:hello;token:none")
+      response = channel.unary_call("e2e.Probe", "UnaryEcho", E2EProto.encode_string("hello"))
+      response.status.ok?.should be_true
+      E2EProto.decode_string(response.raw).should eq("echo:hello;token:none")
     ensure
       channel.close
       gripmock_clear_stubs
@@ -196,10 +196,10 @@ describe "gripmock client e2e" do
 
     channel = GRPC::Channel.new(gripmock_target)
     begin
-      _body, status = channel.unary_call("e2e.Probe", "UnaryFail", E2EProto.encode_string("lost"))
-      status.ok?.should be_false
-      status.code.should eq(GRPC::StatusCode::NOT_FOUND)
-      status.message.should eq("missing:lost")
+      response = channel.unary_call("e2e.Probe", "UnaryFail", E2EProto.encode_string("lost"))
+      response.status.ok?.should be_false
+      response.status.code.should eq(GRPC::StatusCode::NOT_FOUND)
+      response.status.message.should eq("missing:lost")
     ensure
       channel.close
       gripmock_clear_stubs
@@ -228,8 +228,8 @@ describe "gripmock client e2e" do
           channel = GRPC::Channel.new(gripmock_target)
           begin
             ctx = GRPC::ClientContext.new(metadata: {"x-e2e-token" => token})
-            body, status = channel.unary_call("e2e.Probe", "UnaryEcho", E2EProto.encode_string(token), ctx)
-            results.send({token, status.ok?, E2EProto.decode_string(body)})
+            response = channel.unary_call("e2e.Probe", "UnaryEcho", E2EProto.encode_string(token), ctx)
+            results.send({token, response.status.ok?, E2EProto.decode_string(response.raw)})
           rescue ex
             results.send({token, false, ex.message || "exception"})
           ensure
@@ -268,9 +268,9 @@ describe "gripmock client e2e" do
     channel = GRPC::Channel.new(gripmock_target)
     begin
       ctx = GRPC::ClientContext.new(metadata: {"x-e2e-token" => "abc123"})
-      body, status = channel.unary_call("e2e.Probe", "UnaryEcho", E2EProto.encode_string("meta"), ctx)
-      status.ok?.should be_true
-      E2EProto.decode_string(body).should eq("echo:meta;token:abc123")
+      response = channel.unary_call("e2e.Probe", "UnaryEcho", E2EProto.encode_string("meta"), ctx)
+      response.status.ok?.should be_true
+      E2EProto.decode_string(response.raw).should eq("echo:meta;token:abc123")
     ensure
       channel.close
       gripmock_clear_stubs
@@ -298,14 +298,14 @@ describe "gripmock client e2e" do
     channel = GRPC::Channel.new(gripmock_target)
     begin
       ctx_a = GRPC::ClientContext.new(metadata: {"x-e2e-token" => "token-a"})
-      first_body, first_status = channel.unary_call("e2e.Probe", "UnaryEcho", E2EProto.encode_string("token-a"), ctx_a)
-      first_status.ok?.should be_true
-      E2EProto.decode_string(first_body).should eq("echo:token-a;token:token-a")
+      first_response = channel.unary_call("e2e.Probe", "UnaryEcho", E2EProto.encode_string("token-a"), ctx_a)
+      first_response.status.ok?.should be_true
+      E2EProto.decode_string(first_response.raw).should eq("echo:token-a;token:token-a")
 
       ctx_b = GRPC::ClientContext.new(metadata: {"x-e2e-token" => "token-b"})
-      second_body, second_status = channel.unary_call("e2e.Probe", "UnaryEcho", E2EProto.encode_string("token-b"), ctx_b)
-      second_status.ok?.should be_true
-      E2EProto.decode_string(second_body).should eq("echo:token-b;token:token-b")
+      second_response = channel.unary_call("e2e.Probe", "UnaryEcho", E2EProto.encode_string("token-b"), ctx_b)
+      second_response.status.ok?.should be_true
+      E2EProto.decode_string(second_response.raw).should eq("echo:token-b;token:token-b")
     ensure
       channel.close
       gripmock_clear_stubs
@@ -325,9 +325,9 @@ describe "gripmock client e2e" do
     channel = GRPC::Channel.new(gripmock_target)
     begin
       ctx = GRPC::ClientContext.new(deadline: 3.seconds)
-      body, status = channel.unary_call("e2e.Probe", "SlowUnary", E2EProto.encode_string("sleep"), ctx)
-      status.ok?.should be_true
-      E2EProto.decode_string(body).should eq("deadline:ok")
+      response = channel.unary_call("e2e.Probe", "SlowUnary", E2EProto.encode_string("sleep"), ctx)
+      response.status.ok?.should be_true
+      E2EProto.decode_string(response.raw).should eq("deadline:ok")
     ensure
       channel.close
       gripmock_clear_stubs
@@ -348,10 +348,10 @@ describe "gripmock client e2e" do
 
     channel = GRPC::Channel.new(gripmock_target)
     begin
-      _body, status = channel.unary_call("e2e.Probe", "UnaryFail", E2EProto.encode_string("wait-and-fail"))
-      status.ok?.should be_false
-      status.code.should eq(GRPC::StatusCode::UNAVAILABLE)
-      status.message.should eq("temporarily unavailable")
+      response = channel.unary_call("e2e.Probe", "UnaryFail", E2EProto.encode_string("wait-and-fail"))
+      response.status.ok?.should be_false
+      response.status.code.should eq(GRPC::StatusCode::UNAVAILABLE)
+      response.status.message.should eq("temporarily unavailable")
     ensure
       channel.close
       gripmock_clear_stubs

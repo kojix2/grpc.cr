@@ -6,21 +6,21 @@ struct DummyMessage
   def initialize(@value : String)
   end
 
-  def to_proto : Bytes
+  def encode : Bytes
     @value.to_slice
   end
 
-  def self.from_proto(bytes : Bytes) : self
+  def self.decode(bytes : Bytes) : self
     new(String.new(bytes))
   end
 end
 
 class TestDummyMarshaller < GRPC::Marshaller(DummyMessage)
-  def dump(value : DummyMessage) : Bytes
+  def encode(value : DummyMessage) : Bytes
     ("out:" + value.value).to_slice
   end
 
-  def load(bytes : Bytes) : DummyMessage
+  def decode(bytes : Bytes) : DummyMessage
     DummyMessage.new("in:" + String.new(bytes))
   end
 end
@@ -45,6 +45,13 @@ describe GRPC do
       s = GRPC::Status.new(GRPC::StatusCode::NOT_FOUND, "resource not found")
       s.ok?.should be_false
       s.message.should eq("resource not found")
+    end
+
+    it "can carry optional status details bytes" do
+      details = Bytes[0x01, 0x02, 0x03]
+      s = GRPC::Status.new(GRPC::StatusCode::INTERNAL, "boom", details)
+
+      s.details.should eq(details)
     end
   end
 
@@ -71,6 +78,22 @@ describe GRPC do
     it "can be constructed from a Hash" do
       m = GRPC::Metadata.new({"x-foo" => "bar"})
       m.get("x-foo").should eq("bar")
+    end
+
+    it "stores binary metadata separately from text metadata" do
+      m = GRPC::Metadata.new
+      m.add_bin("trace-bin", Bytes[1, 2, 3])
+
+      m.get("trace-bin").should be_nil
+      m.get_bin("trace-bin").should eq(Bytes[1, 2, 3])
+      m.to_h["trace-bin"].should eq("AQID")
+    end
+
+    it "decodes wire-format binary metadata" do
+      m = GRPC::Metadata.new
+      m.add_wire("trace-bin", "AQID")
+
+      m.get_bin("trace-bin").should eq(Bytes[1, 2, 3])
     end
   end
 
@@ -215,6 +238,15 @@ describe GRPC do
       ex.status.should eq(status)
     end
 
+    it "retains trailers when provided" do
+      trailers = GRPC::Metadata.new
+      trailers.add("x-extra", "value")
+
+      ex = GRPC::StatusError.new(GRPC::Status.internal("boom"), trailers)
+
+      ex.trailers.get("x-extra").should eq("value")
+    end
+
     it "CallError is an alias for StatusError" do
       GRPC::CallError.should eq(GRPC::StatusError)
     end
@@ -310,6 +342,7 @@ describe GRPC do
       call = GRPC::RawClientCall.new(
         ->(_b : Bytes) { },
         -> { Bytes[7_u8] },
+        -> { GRPC::Metadata.new },
         -> { GRPC::Status.ok },
         -> { GRPC::Metadata.new },
         -> { }
@@ -333,6 +366,7 @@ describe GRPC do
         ->(_b : Bytes) { },
         -> { },
         ch,
+        -> { GRPC::Metadata.new },
         -> { GRPC::Status.ok },
         -> { GRPC::Metadata.new },
         -> { }
@@ -408,6 +442,92 @@ describe GRPC do
     it "returns nil remaining when no deadline" do
       ctx = GRPC::ClientContext.new
       ctx.remaining.should be_nil
+    end
+  end
+
+  describe GRPC::Transport::PendingCall do
+    it "decodes grpc-status-details-bin from trailers" do
+      call = GRPC::Transport::PendingCall.new
+      call.trailers.add("grpc-status", GRPC::StatusCode::INVALID_ARGUMENT.value.to_s)
+      call.trailers.add("grpc-message", "bad%20request")
+      call.trailers.add("grpc-status-details-bin", Base64.strict_encode(Bytes[0x0A, 0x01, 0x7F]))
+
+      status = call.grpc_status
+      status.code.should eq(GRPC::StatusCode::INVALID_ARGUMENT)
+      status.message.should eq("bad request")
+      status.details.should eq(Bytes[0x0A, 0x01, 0x7F])
+    end
+
+    it "separates initial headers from trailing metadata" do
+      call = GRPC::Transport::PendingCall.new
+      call.begin_header_block
+      call.add_header(":status", "200")
+      call.add_header("x-initial", "one")
+      call.begin_header_block
+      call.add_header("grpc-status", "0")
+      call.add_header("x-trailer", "done")
+
+      call.grpc_headers.get("x-initial").should eq("one")
+      call.grpc_headers.get("x-trailer").should be_nil
+      call.grpc_trailers.get("x-trailer").should eq("done")
+    end
+  end
+
+  describe GRPC::UnaryResponse do
+    it "raises status errors with trailing metadata from ok!" do
+      trailers = GRPC::Metadata.new
+      trailers.add("x-extra", "value")
+      response = GRPC::UnaryResponse(String).new(nil, GRPC::Metadata.new, trailers, GRPC::Status.internal("boom"))
+
+      ex = expect_raises(GRPC::StatusError) { response.ok! }
+      ex.trailers.get("x-extra").should eq("value")
+    end
+  end
+
+  describe GRPC::Transport::PendingStream do
+    it "keeps grpc status trailers out of metadata" do
+      stream = GRPC::Transport::PendingStream.new
+      stream.trailers.add("grpc-status", "13")
+      stream.trailers.add("grpc-message", "boom")
+      stream.trailers.add("grpc-status-details-bin", Base64.strict_encode(Bytes[0x01]))
+      stream.trailers.add("x-extra", "ok")
+      stream.trailers.add("x-extra", "second")
+
+      trailers = stream.grpc_trailers
+      trailers.get("grpc-status").should be_nil
+      trailers.get("grpc-message").should be_nil
+      trailers.get("grpc-status-details-bin").should be_nil
+      trailers.get_all("x-extra").should eq(["ok", "second"])
+    end
+
+    it "tracks initial headers separately from trailing metadata" do
+      stream = GRPC::Transport::PendingStream.new
+      stream.begin_header_block
+      stream.add_header(":status", "200")
+      stream.add_header("x-initial", "one")
+      stream.begin_header_block
+      stream.add_header("grpc-status", "0")
+      stream.add_header("x-trailer", "done")
+
+      stream.grpc_headers.get("x-initial").should eq("one")
+      stream.grpc_headers.get("x-trailer").should be_nil
+      stream.grpc_trailers.get("x-trailer").should eq("done")
+    end
+  end
+
+  describe GRPC::RawServerStream do
+    it "exposes initial headers separately from trailers" do
+      headers = GRPC::Metadata.new
+      headers.add("x-initial", "one")
+      trailers = GRPC::Metadata.new
+      trailers.add("x-trailer", "done")
+      messages = ::Channel(Bytes?).new(1)
+      messages.close
+
+      stream = GRPC::RawServerStream.new(messages, -> { GRPC::Status.ok }, -> { trailers }).with_headers(-> { headers })
+
+      stream.headers.get("x-initial").should eq("one")
+      stream.trailers.get("x-trailer").should eq("done")
     end
   end
 end

@@ -73,14 +73,14 @@ module GRPC
 
     # unary_call performs a single gRPC unary RPC.
     # This is the internal API used by generated client stubs.
-    # Returns {response_body_bytes, status}.
+    # Returns the raw unary response envelope with metadata and status.
     # If client interceptors are registered they wrap this call outermost-first.
     def unary_call(
       service : String,
       method : String,
       request_bytes : Bytes,
       ctx : ClientContext = ClientContext.new,
-    ) : {Bytes, Status}
+    ) : ResponseEnvelope
       wait_for_rate_limit_slot
       release = acquire_concurrency_slot
 
@@ -95,13 +95,20 @@ module GRPC
         info = CallInfo.new(method_path, RPCKind::Unary)
         req = RequestEnvelope.new(info, request_bytes)
         base = UnaryClientCall.new do |_method_path, req_env, call_ctx|
-          body, status = get_or_create_connection.unary_call(service, method, req_env.raw, call_ctx.effective_metadata)
-          ResponseEnvelope.new(req_env.info, body, status)
+          response = get_or_create_connection.unary_call(service, method, req_env.raw, call_ctx.effective_metadata)
+          ResponseEnvelope.new(
+            req_env.info,
+            response.raw,
+            response.status,
+            response.initial_metadata,
+            response.trailing_metadata,
+            response.codec,
+            response.descriptor
+          )
         end
         chain = Interceptors.build_client_chain(@interceptors, base)
         begin
-          response = chain.call(method_path, req, ctx)
-          {response.raw, response.status}
+          chain.call(method_path, req, ctx)
         ensure
           release.call
         end
@@ -115,7 +122,7 @@ module GRPC
       method : String,
       request_bytes : Bytes,
       metadata : Metadata,
-    ) : {Bytes, Status}
+    ) : ResponseEnvelope
       wait_for_rate_limit_slot
       release = acquire_concurrency_slot
       begin

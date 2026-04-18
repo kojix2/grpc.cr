@@ -31,7 +31,7 @@ channel = GRPC::Channel.new("#{host}:#{port}", interceptors: [
   RequestIDInterceptor.new,
 ] of GRPC::ClientInterceptor)
 
-client = Helloworld::GreeterClient.new(channel)
+client = Helloworld::Greeter::Client.new(channel)
 
 begin
   reply = client.say_hello(Helloworld::HelloRequest.new(name: name))

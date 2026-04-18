@@ -5,10 +5,23 @@ module GRPC
   class RawServerStream
     include Enumerable(Bytes)
 
+    def self.build(
+      messages : ::Channel(Bytes?),
+      *,
+      headers_proc : -> Metadata = -> { Metadata.new },
+      status_proc : -> Status,
+      trailers_proc : -> Metadata = -> { Metadata.new },
+      cancel_proc : -> Nil = -> { },
+      on_finish : -> Nil = -> { },
+    ) : self
+      new(messages, status_proc, trailers_proc, cancel_proc, on_finish).with_headers(headers_proc)
+    end
+
     def initialize(@messages : ::Channel(Bytes?), @status_proc : -> Status,
                    @trailers_proc : -> Metadata = -> { Metadata.new },
                    @cancel_proc : -> Nil = -> { },
                    @on_finish : -> Nil = -> { })
+      @headers_proc = -> { Metadata.new }
       @finished = false
       @finish_mutex = Mutex.new
     end
@@ -29,6 +42,10 @@ module GRPC
       @status_proc.call
     end
 
+    def headers : Metadata
+      @headers_proc.call
+    end
+
     def trailers : Metadata
       @trailers_proc.call
     end
@@ -36,6 +53,11 @@ module GRPC
     def cancel : Nil
       @cancel_proc.call
       finish_once
+    end
+
+    def with_headers(headers_proc : -> Metadata) : self
+      @headers_proc = headers_proc
+      self
     end
 
     # with_on_finish appends a completion callback and returns self.
@@ -71,12 +93,14 @@ module GRPC
     include Enumerable(T)
 
     @messages : ::Channel(T | Exception)
+    @headers_proc : -> Metadata
     @status_proc : -> Status
     @trailers_proc : -> Metadata
     @cancel_proc : -> Nil
     @status_override : Status?
 
     def initialize(
+      @headers_proc : -> Metadata = -> { Metadata.new },
       @status_proc : -> Status = -> { Status.ok },
       @trailers_proc : -> Metadata = -> { Metadata.new },
       @cancel_proc : -> Nil = -> { },
@@ -97,6 +121,10 @@ module GRPC
 
     def status : Status
       @status_override || @status_proc.call
+    end
+
+    def headers : Metadata
+      @headers_proc.call
     end
 
     def trailers : Metadata
@@ -133,11 +161,13 @@ module GRPC
     @close_proc : -> Nil
     @result : ::Channel(Res | Exception)
     @closed : Bool
+    @headers_proc : -> Metadata
     @status_proc : -> Status
     @trailers_proc : -> Metadata
     @cancel_proc : -> Nil
 
     def initialize(@send_proc, @close_proc, @result,
+                   @headers_proc : -> Metadata = -> { Metadata.new },
                    @status_proc : -> Status = -> { Status.ok },
                    @trailers_proc : -> Metadata = -> { Metadata.new },
                    @cancel_proc : -> Nil = -> { })
@@ -166,6 +196,10 @@ module GRPC
       @cancel_proc.call
     end
 
+    def headers : Metadata
+      @headers_proc.call
+    end
+
     def status : Status
       @status_proc.call
     end
@@ -192,11 +226,13 @@ module GRPC
     @close_proc : -> Nil
     @recv_chan : ::Channel(Res | Exception)
     @closed : Bool
+    @headers_proc : -> Metadata
     @status_proc : -> Status
     @trailers_proc : -> Metadata
     @cancel_proc : -> Nil
 
     def initialize(@send_proc, @close_proc, @recv_chan,
+                   @headers_proc : -> Metadata = -> { Metadata.new },
                    @status_proc : -> Status = -> { Status.ok },
                    @trailers_proc : -> Metadata = -> { Metadata.new },
                    @cancel_proc : -> Nil = -> { })
@@ -227,6 +263,10 @@ module GRPC
 
     def cancel : Nil
       @cancel_proc.call
+    end
+
+    def headers : Metadata
+      @headers_proc.call
     end
 
     def status : Status
@@ -270,7 +310,7 @@ module GRPC
 
     # send serialises *message* to protobuf and transmits it to the client.
     def send(message : T) : Nil
-      @raw.send_raw(@marshaller.dump(message))
+      @raw.send_raw(@marshaller.encode(message))
     end
   end
 
@@ -282,6 +322,7 @@ module GRPC
     def initialize(
       @send_proc : Bytes -> Nil,
       @close_and_recv_proc : -> Bytes,
+      @headers_proc : -> Metadata,
       @status_proc : -> Status,
       @trailers_proc : -> Metadata,
       @cancel_proc : -> Nil,
@@ -307,6 +348,10 @@ module GRPC
     def cancel : Nil
       @cancel_proc.call
       finish_once
+    end
+
+    def headers : Metadata
+      @headers_proc.call
     end
 
     def status : Status
@@ -348,6 +393,7 @@ module GRPC
       @send_proc : Bytes -> Nil,
       @close_proc : -> Nil,
       @messages : ::Channel(Bytes?),
+      @headers_proc : -> Metadata,
       @status_proc : -> Status,
       @trailers_proc : -> Metadata,
       @cancel_proc : -> Nil,
@@ -382,6 +428,10 @@ module GRPC
     def cancel : Nil
       @cancel_proc.call
       finish_once
+    end
+
+    def headers : Metadata
+      @headers_proc.call
     end
 
     def status : Status

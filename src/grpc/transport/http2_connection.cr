@@ -1,17 +1,53 @@
 require "./lib_nghttp2"
+require "base64"
 require "socket"
 require "openssl"
 
 module GRPC
   module Transport
+    module TrailerCodec
+      extend self
+
+      def percent_decode(s : String) : String
+        result = IO::Memory.new
+        i = 0
+        while i < s.size
+          if s[i] == '%' && i + 2 < s.size
+            hex = s[i + 1, 2]
+            byte = hex.to_u8?(16)
+            if byte
+              result.write_byte(byte)
+              i += 3
+              next
+            end
+          end
+          result.write_byte(s.byte_at(i))
+          i += 1
+        end
+        String.new(result.to_slice)
+      end
+
+      def encode_bin(data : Bytes?) : String?
+        return unless data
+        Base64.strict_encode(data)
+      end
+
+      def decode_bin(data : String?) : Bytes?
+        return if data.nil? || data.empty?
+        Base64.decode(data)
+      rescue
+        nil
+      end
+    end
+
     # StreamData accumulates headers and body for one HTTP/2 stream.
     class StreamData
-      property headers : Hash(String, String)
+      property headers : Metadata
       property body : IO::Memory
       property? closed : Bool
 
       def initialize
-        @headers = {} of String => String
+        @headers = Metadata.new
         @body = IO::Memory.new
         @closed = false
       end

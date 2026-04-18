@@ -5,7 +5,7 @@ module GRPC
     # All methods return public stream types; PendingStream stays internal.
     module ClientTransport
       abstract def unary_call(service : String, method : String,
-                              request_body : Bytes, metadata : Metadata) : {Bytes, Status}
+                              request_body : Bytes, metadata : Metadata) : ResponseEnvelope
 
       abstract def open_server_stream(service : String, method : String,
                                       request_bytes : Bytes,

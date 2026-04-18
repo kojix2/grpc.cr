@@ -4,7 +4,7 @@ require "../helloworld/greeter.pb"
 #   openssl req -x509 -newkey rsa:2048 -keyout server.key -out server.crt \
 #           -days 365 -nodes -subj "/CN=localhost"
 
-class GreeterImpl < Helloworld::GreeterService
+class GreeterImpl < Helloworld::Greeter::Service
   def say_hello(request : Helloworld::HelloRequest, ctx : GRPC::ServerContext) : Helloworld::HelloReply
     Helloworld::HelloReply.new(message: "Hello over TLS, #{request.name}!")
   end

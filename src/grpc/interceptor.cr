@@ -51,7 +51,7 @@ module GRPC
     end
 
     def decode(type : T.class, marshaller : Marshaller(T)? = nil) : T forall T
-      (marshaller || ProtoMarshaller(T).new).load(@raw)
+      (marshaller || ProtoMarshaller(T).new).decode(@raw)
     end
   end
 
@@ -60,18 +60,33 @@ module GRPC
   struct ResponseEnvelope
     getter info : CallInfo
     getter raw : Bytes
-    getter status : Status
-    getter metadata : Metadata
+    getter status : GRPC::Status
+    getter initial_metadata : GRPC::Metadata
+    getter trailing_metadata : GRPC::Metadata
     getter codec : String?
     getter descriptor : String?
 
-    def initialize(@info : CallInfo, @raw : Bytes, @status : Status,
-                   @metadata : Metadata = Metadata.new,
+    def initialize(@info : CallInfo, @raw : Bytes, @status : GRPC::Status,
+                   @initial_metadata : GRPC::Metadata = GRPC::Metadata.new,
+                   @trailing_metadata : GRPC::Metadata = GRPC::Metadata.new,
                    @codec : String? = nil, @descriptor : String? = nil)
     end
 
+    def metadata : GRPC::Metadata
+      @initial_metadata
+    end
+
+    def [](index : Int) : Bytes | GRPC::Status
+      case index
+      when 0 then @raw
+      when 1 then @status
+      else
+        raise IndexError.new
+      end
+    end
+
     def decode(type : T.class, marshaller : Marshaller(T)? = nil) : T forall T
-      (marshaller || ProtoMarshaller(T).new).load(@raw)
+      (marshaller || ProtoMarshaller(T).new).decode(@raw)
     end
   end
 

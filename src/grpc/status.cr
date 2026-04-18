@@ -23,8 +23,9 @@ module GRPC
   class Status
     getter code : StatusCode
     getter message : String
+    getter details : Bytes?
 
-    def initialize(@code : StatusCode, @message : String = "")
+    def initialize(@code : StatusCode, @message : String = "", @details : Bytes? = nil)
     end
 
     def ok? : Bool
@@ -66,6 +67,9 @@ module GRPC
     def to_s(io : IO) : Nil
       io << "Status(#{@code}"
       io << ", #{@message}" unless @message.empty?
+      if details = @details
+        io << ", details=#{details.size} bytes"
+      end
       io << ")"
     end
   end

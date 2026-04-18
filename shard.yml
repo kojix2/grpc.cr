@@ -5,10 +5,12 @@ authors:
   - kojix2 <2xijok@gmail.com>
 
 targets:
-  grpc:
-    main: src/grpc.cr
   protoc-gen-crystal-grpc:
     main: src/protoc-gen-crystal-grpc_main.cr
+
+dependencies:
+  proto:
+    github: kojix2/proto
 
 crystal: '>= 1.19.1'
 

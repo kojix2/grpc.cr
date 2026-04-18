@@ -2,10 +2,10 @@ require "./spec_helper"
 
 # Debug spec to trace the HTTP/2 transport behavior
 class DebugService < GRPC::Service
-  SERVICE_NAME = "debug.Test"
+  SERVICE_FULL_NAME = "debug.Test"
 
-  def service_name : String
-    SERVICE_NAME
+  def service_full_name : String
+    SERVICE_FULL_NAME
   end
 
   def dispatch(method : String, request_body : Bytes, ctx : GRPC::ServerContext) : {Bytes, GRPC::Status}
@@ -37,10 +37,10 @@ describe "GRPC debug" do
     channel = GRPC::Channel.new("127.0.0.1:#{port}")
 
     STDERR.puts "[TEST] calling unary_call"
-    body, status = channel.unary_call("debug.Test", "Ping", Bytes.empty)
-    STDERR.puts "[TEST] got status=#{status.code} body_size=#{body.size}"
+    response = channel.unary_call("debug.Test", "Ping", Bytes.empty)
+    STDERR.puts "[TEST] got status=#{response.status.code} body_size=#{response.raw.size}"
 
-    status.ok?.should be_true
+    response.status.ok?.should be_true
 
     channel.close
     grpc_server.stop

@@ -61,10 +61,10 @@ end
 
 # A minimal service for testing
 class EchoService < GRPC::Service
-  SERVICE_NAME = "test.Echo"
+  SERVICE_FULL_NAME = "test.Echo"
 
-  def service_name : String
-    SERVICE_NAME
+  def service_full_name : String
+    SERVICE_FULL_NAME
   end
 
   def dispatch(method : String, request_body : Bytes, ctx : GRPC::ServerContext) : {Bytes, GRPC::Status}
@@ -82,10 +82,10 @@ class EchoService < GRPC::Service
 end
 
 class StreamingEchoService < GRPC::Service
-  SERVICE_NAME = "test.StreamingEcho"
+  SERVICE_FULL_NAME = "test.StreamingEcho"
 
-  def service_name : String
-    SERVICE_NAME
+  def service_full_name : String
+    SERVICE_FULL_NAME
   end
 
   def dispatch(method : String, request_body : Bytes, ctx : GRPC::ServerContext) : {Bytes, GRPC::Status}
@@ -156,13 +156,13 @@ class StreamingEchoService < GRPC::Service
 end
 
 class LiveProbeService < GRPC::Service
-  SERVICE_NAME = "test.LiveProbe"
+  SERVICE_FULL_NAME = "test.LiveProbe"
 
   def initialize(@first_seen : ::Channel(String))
   end
 
-  def service_name : String
-    SERVICE_NAME
+  def service_full_name : String
+    SERVICE_FULL_NAME
   end
 
   def dispatch(method : String, request_body : Bytes, ctx : GRPC::ServerContext) : {Bytes, GRPC::Status}
@@ -198,10 +198,10 @@ end
 # "GetMeta"     — request body encodes the key name; response is that key's value (or "")
 # "HasDeadline" — response is "yes" if ctx.deadline is set, "no" otherwise
 class MetaEchoService < GRPC::Service
-  SERVICE_NAME = "test.MetaEcho"
+  SERVICE_FULL_NAME = "test.MetaEcho"
 
-  def service_name : String
-    SERVICE_NAME
+  def service_full_name : String
+    SERVICE_FULL_NAME
   end
 
   def dispatch(method : String, request_body : Bytes, ctx : GRPC::ServerContext) : {Bytes, GRPC::Status}
@@ -414,9 +414,9 @@ describe "GRPC TLS integration" do
     channel = GRPC::Channel.new("https://127.0.0.1:#{port}", tls_context: ctx)
 
     begin
-      body, status = channel.unary_call("test.Echo", "Echo", TestProto.encode_string("tls"))
-      status.ok?.should be_true
-      TestProto.decode_string(body).should eq("echo:tls")
+      response = channel.unary_call("test.Echo", "Echo", TestProto.encode_string("tls"))
+      response.status.ok?.should be_true
+      TestProto.decode_string(response.raw).should eq("echo:tls")
     ensure
       channel.close
       server.stop
@@ -461,10 +461,10 @@ describe "GRPC compression integration" do
       compressed_frame = GRPC::Codec.encode(raw, compress: true)
       # The server's Codec.decode (called by Http2ServerConnection.decode_message)
       # should transparently decompress the frame.
-      body, status = channel.unary_call("test.Echo", "Echo",
+      response = channel.unary_call("test.Echo", "Echo",
         GRPC::Codec.decode(compressed_frame).first)
-      status.ok?.should be_true
-      TestProto.decode_string(body).should eq("echo:compressed")
+      response.status.ok?.should be_true
+      TestProto.decode_string(response.raw).should eq("echo:compressed")
     ensure
       channel.close
       server.stop
@@ -480,10 +480,10 @@ describe "GRPC integration" do
 
     begin
       req_bytes = TestProto.encode_string("hello")
-      body, status = channel.unary_call("test.Echo", "Echo", req_bytes)
+      response = channel.unary_call("test.Echo", "Echo", req_bytes)
 
-      status.ok?.should be_true
-      TestProto.decode_string(body).should eq("echo:hello")
+      response.status.ok?.should be_true
+      TestProto.decode_string(response.raw).should eq("echo:hello")
     ensure
       channel.close
       server.stop
@@ -496,10 +496,10 @@ describe "GRPC integration" do
     channel = GRPC::Channel.new("127.0.0.1:#{port}")
 
     begin
-      _, status = channel.unary_call("test.Echo", "Fail", Bytes.empty)
-      status.ok?.should be_false
-      status.code.should eq(GRPC::StatusCode::NOT_FOUND)
-      status.message.should eq("not here")
+      response = channel.unary_call("test.Echo", "Fail", Bytes.empty)
+      response.status.ok?.should be_false
+      response.status.code.should eq(GRPC::StatusCode::NOT_FOUND)
+      response.status.message.should eq("not here")
     ensure
       channel.close
       server.stop
@@ -512,9 +512,9 @@ describe "GRPC integration" do
     channel = GRPC::Channel.new("127.0.0.1:#{port}")
 
     begin
-      _, status = channel.unary_call("no.Such", "Nope", Bytes.empty)
-      status.ok?.should be_false
-      status.code.should eq(GRPC::StatusCode::UNIMPLEMENTED)
+      response = channel.unary_call("no.Such", "Nope", Bytes.empty)
+      response.status.ok?.should be_false
+      response.status.code.should eq(GRPC::StatusCode::UNIMPLEMENTED)
     ensure
       channel.close
       server.stop
@@ -714,9 +714,9 @@ describe "GRPC keepalive settings" do
     channel = GRPC::Channel.new("127.0.0.1:#{port}", endpoint_config: config)
 
     begin
-      body, status = channel.unary_call("test.Echo", "Echo", TestProto.encode_string("ka"))
-      status.ok?.should be_true
-      TestProto.decode_string(body).should eq("echo:ka")
+      response = channel.unary_call("test.Echo", "Echo", TestProto.encode_string("ka"))
+      response.status.ok?.should be_true
+      TestProto.decode_string(response.raw).should eq("echo:ka")
     ensure
       channel.close
       server.stop
@@ -733,9 +733,9 @@ describe "GRPC client interceptors" do
       interceptors: [interceptor] of GRPC::ClientInterceptor)
 
     begin
-      body, status = channel.unary_call("test.Echo", "Echo", TestProto.encode_string("hi"))
-      status.ok?.should be_true
-      TestProto.decode_string(body).should eq("echo:hi")
+      response = channel.unary_call("test.Echo", "Echo", TestProto.encode_string("hi"))
+      response.status.ok?.should be_true
+      TestProto.decode_string(response.raw).should eq("echo:hi")
       interceptor.calls.should eq(["before:/test.Echo/Echo", "after:/test.Echo/Echo"])
     ensure
       channel.close
@@ -752,8 +752,8 @@ describe "GRPC client interceptors" do
       interceptors: [first, second] of GRPC::ClientInterceptor)
 
     begin
-      _, status = channel.unary_call("test.Echo", "Echo", TestProto.encode_string("x"))
-      status.ok?.should be_true
+      response = channel.unary_call("test.Echo", "Echo", TestProto.encode_string("x"))
+      response.status.ok?.should be_true
       # first wraps second: first.before → second.before → RPC → second.after → first.after
       first.calls.should eq(["before:/test.Echo/Echo", "after:/test.Echo/Echo"])
       second.calls.should eq(["before:/test.Echo/Echo", "after:/test.Echo/Echo"])
@@ -775,10 +775,10 @@ describe "GRPC server interceptors" do
     channel = GRPC::Channel.new("127.0.0.1:#{port}")
 
     begin
-      _, status = channel.unary_call("test.Echo", "Echo", TestProto.encode_string("hi"))
-      status.ok?.should be_false
-      status.code.should eq(GRPC::StatusCode::UNAUTHENTICATED)
-      status.message.should eq("invalid token")
+      response = channel.unary_call("test.Echo", "Echo", TestProto.encode_string("hi"))
+      response.status.ok?.should be_false
+      response.status.code.should eq(GRPC::StatusCode::UNAUTHENTICATED)
+      response.status.message.should eq("invalid token")
     ensure
       channel.close
       server.stop
@@ -796,9 +796,9 @@ describe "GRPC server interceptors" do
 
     begin
       ctx = GRPC::ClientContext.new(metadata: {"authorization" => "valid-token"})
-      body, status = channel.unary_call("test.Echo", "Echo", TestProto.encode_string("hello"), ctx)
-      status.ok?.should be_true
-      TestProto.decode_string(body).should eq("echo:hello")
+      response = channel.unary_call("test.Echo", "Echo", TestProto.encode_string("hello"), ctx)
+      response.status.ok?.should be_true
+      TestProto.decode_string(response.raw).should eq("echo:hello")
     ensure
       channel.close
       server.stop
@@ -816,8 +816,8 @@ describe "GRPC server interceptors" do
     channel = GRPC::Channel.new("127.0.0.1:#{port}")
 
     begin
-      _, status = channel.unary_call("test.Echo", "Echo", TestProto.encode_string("test"))
-      status.ok?.should be_true
+      response = channel.unary_call("test.Echo", "Echo", TestProto.encode_string("test"))
+      response.status.ok?.should be_true
       interceptor.calls.should eq(["before:Echo", "after:Echo"])
     ensure
       channel.close
@@ -1000,10 +1000,10 @@ describe "GRPC metadata" do
 
     begin
       ctx = GRPC::ClientContext.new(metadata: {"x-test-header" => "hello-world"})
-      body, status = channel.unary_call("test.MetaEcho", "GetMeta",
+      response = channel.unary_call("test.MetaEcho", "GetMeta",
         TestProto.encode_string("x-test-header"), ctx)
-      status.ok?.should be_true
-      TestProto.decode_string(body).should eq("hello-world")
+      response.status.ok?.should be_true
+      TestProto.decode_string(response.raw).should eq("hello-world")
     ensure
       channel.close
       server.stop
@@ -1021,10 +1021,10 @@ describe "GRPC metadata" do
 
     begin
       # MutatingClientInterceptor injects x-from-interceptor: 1 into the context
-      body, status = channel.unary_call("test.MetaEcho", "GetMeta",
+      response = channel.unary_call("test.MetaEcho", "GetMeta",
         TestProto.encode_string("x-from-interceptor"))
-      status.ok?.should be_true
-      TestProto.decode_string(body).should eq("1")
+      response.status.ok?.should be_true
+      TestProto.decode_string(response.raw).should eq("1")
     ensure
       channel.close
       server.stop
@@ -1044,9 +1044,9 @@ describe "GRPC multiple services" do
 
     begin
       # Call EchoService
-      body, status = channel.unary_call("test.Echo", "Echo", TestProto.encode_string("ping"))
-      status.ok?.should be_true
-      TestProto.decode_string(body).should eq("echo:ping")
+      response = channel.unary_call("test.Echo", "Echo", TestProto.encode_string("ping"))
+      response.status.ok?.should be_true
+      TestProto.decode_string(response.raw).should eq("echo:ping")
 
       # Call StreamingEchoService on the same channel/server
       msgs = [TestProto.encode_string("a"), TestProto.encode_string("b")]
@@ -1140,9 +1140,9 @@ describe "GRPC deadline" do
 
     begin
       ctx = GRPC::ClientContext.new(deadline: 30.seconds)
-      body, status = channel.unary_call("test.MetaEcho", "HasDeadline", Bytes.empty, ctx)
-      status.ok?.should be_true
-      TestProto.decode_string(body).should eq("yes")
+      response = channel.unary_call("test.MetaEcho", "HasDeadline", Bytes.empty, ctx)
+      response.status.ok?.should be_true
+      TestProto.decode_string(response.raw).should eq("yes")
     ensure
       channel.close
       server.stop
@@ -1216,10 +1216,10 @@ end
 # ---- Full-duplex bidi service ----
 # Echoes all incoming messages back after close_send (current server-side bidi is batch).
 class FullDuplexEchoService < GRPC::Service
-  SERVICE_NAME = "test.FullDuplexEcho"
+  SERVICE_FULL_NAME = "test.FullDuplexEcho"
 
-  def service_name : String
-    SERVICE_NAME
+  def service_full_name : String
+    SERVICE_FULL_NAME
   end
 
   def dispatch(method : String, request_body : Bytes, ctx : GRPC::ServerContext) : {Bytes, GRPC::Status}

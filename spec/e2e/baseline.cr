@@ -16,10 +16,10 @@ rescue
 end
 
 class E2EProbeService < GRPC::Service
-  SERVICE_NAME = "e2e.Probe"
+  SERVICE_FULL_NAME = "e2e.Probe"
 
-  def service_name : String
-    SERVICE_NAME
+  def service_full_name : String
+    SERVICE_FULL_NAME
   end
 
   def dispatch(

@@ -11,7 +11,7 @@ tls_ctx = OpenSSL::SSL::Context::Client.new
 tls_ctx.verify_mode = OpenSSL::SSL::VerifyMode::NONE
 
 channel = GRPC::Channel.new("https://#{host}:#{port}", tls_context: tls_ctx)
-client = Helloworld::GreeterClient.new(channel)
+client = Helloworld::Greeter::Client.new(channel)
 
 begin
   reply = client.say_hello(Helloworld::HelloRequest.new(name: name))

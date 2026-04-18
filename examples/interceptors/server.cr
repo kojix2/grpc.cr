@@ -27,7 +27,7 @@ class AuthInterceptor < GRPC::ServerInterceptor
   end
 end
 
-class GreeterImpl < Helloworld::GreeterService
+class GreeterImpl < Helloworld::Greeter::Service
   def say_hello(request : Helloworld::HelloRequest, ctx : GRPC::ServerContext) : Helloworld::HelloReply
     Helloworld::HelloReply.new(message: "Hello, #{request.name}!")
   end

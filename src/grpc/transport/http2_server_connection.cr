@@ -1,3 +1,5 @@
+require "log"
+
 require "./http2_connection"
 require "./interface"
 
@@ -17,12 +19,16 @@ module GRPC
       property status_value : String
       property message_name : String
       property message_value : String
+      property details_name : String?
+      property details_value : String?
 
       def initialize(@data : Bytes, @stream_id : Int32,
-                     @status_value : String, @message_value : String)
+                     @status_value : String, @message_value : String,
+                     @details_value : String? = nil)
         @offset = 0
         @status_name = "grpc-status"
         @message_name = "grpc-message"
+        @details_name = @details_value ? "grpc-status-details-bin" : nil
       end
 
       def remaining : Int32
@@ -34,6 +40,8 @@ module GRPC
     # It receives gRPC requests, dispatches to registered services, and sends responses.
     class Http2ServerConnection < Http2Connection
       include ServerTransport
+
+      LOGGER = ::Log.for(self)
 
       # Per-stream state for live request-streaming RPCs.
       class LiveRequestState
@@ -80,18 +88,26 @@ module GRPC
         if ctx.remaining == 0
           data_flags.value |= LibNghttp2::DATA_FLAG_EOF | LibNghttp2::DATA_FLAG_NO_END_STREAM
           # Submit trailers from inside the callback (safe per nghttp2 docs).
+          trailer_nva = [] of LibNghttp2::Nv
           sn = ctx.status_name.to_slice
           sv = ctx.status_value.to_slice
+          trailer_nva << LibNghttp2::Nv.new(name: sn.to_unsafe, value: sv.to_unsafe,
+            namelen: sn.size, valuelen: sv.size,
+            flags: LibNghttp2::NV_FLAG_NONE)
           mn = ctx.message_name.to_slice
           mv = ctx.message_value.to_slice
-          trailer_nva = StaticArray[
-            LibNghttp2::Nv.new(name: sn.to_unsafe, value: sv.to_unsafe,
-              namelen: sn.size, valuelen: sv.size,
-              flags: LibNghttp2::NV_FLAG_NONE),
-            LibNghttp2::Nv.new(name: mn.to_unsafe, value: mv.to_unsafe,
-              namelen: mn.size, valuelen: mv.size,
-              flags: LibNghttp2::NV_FLAG_NONE),
-          ]
+          trailer_nva << LibNghttp2::Nv.new(name: mn.to_unsafe, value: mv.to_unsafe,
+            namelen: mn.size, valuelen: mv.size,
+            flags: LibNghttp2::NV_FLAG_NONE)
+          if details_name = ctx.details_name
+            if details_value = ctx.details_value
+              dn = details_name.to_slice
+              dv = details_value.to_slice
+              trailer_nva << LibNghttp2::Nv.new(name: dn.to_unsafe, value: dv.to_unsafe,
+                namelen: dn.size, valuelen: dv.size,
+                flags: LibNghttp2::NV_FLAG_NONE)
+            end
+          end
           LibNghttp2.submit_trailer(session, stream_id, trailer_nva.to_unsafe, trailer_nva.size)
         end
         to_copy.to_i64
@@ -113,7 +129,7 @@ module GRPC
         to_copy.to_i64
       end
 
-      # service_name => Service
+      # service_full_name => Service
       @services : Hash(String, Service)
       # registered server-side interceptors (applied to all RPC variants)
       @interceptors : Array(ServerInterceptor)
@@ -162,7 +178,7 @@ module GRPC
         sd = stream_data_for(stream_id)
         return unless sd
 
-        sd.headers[String.new(name, nlen)] = String.new(value, vlen)
+        sd.headers.add_wire(String.new(name, nlen), String.new(value, vlen))
       end
 
       def on_data_chunk_cb(stream_id : Int32, data : UInt8*, len : LibC::SizeT) : Nil
@@ -220,18 +236,18 @@ module GRPC
       # ---- Dispatch ----
 
       private def dispatch_request(stream_id : Int32, sd : StreamData) : Nil
-        path = sd.headers[":path"]? || ""
+        path = sd.headers.get(":path") || ""
         meta = build_metadata(sd.headers)
         ctx = ServerContext.new(@peer_address, meta, parse_deadline(sd.headers))
 
         # path format: "/{PackageService}/{MethodName}"
         parts = path.split("/")
-        service_name = parts[1]? || ""
+        service_full_name = parts[1]? || ""
         method_name = parts[2]? || ""
 
-        service = @services[service_name]?
+        service = @services[service_full_name]?
         unless service
-          send_error(stream_id, StatusCode::UNIMPLEMENTED, "service #{service_name} not found")
+          send_error(stream_id, StatusCode::UNIMPLEMENTED, "service #{service_full_name} not found")
           return
         end
 
@@ -300,7 +316,7 @@ module GRPC
         if @interceptors.empty?
           service.dispatch_server_stream(method_name, decoded, ctx, writer)
         else
-          full_path = "/#{service.service_name}/#{method_name}"
+          full_path = "/#{service.service_full_name}/#{method_name}"
           info = CallInfo.new(full_path, RPCKind::ServerStreaming)
           request = RequestEnvelope.new(info, decoded)
           base = ServerStreamServerCall.new do |_, req, call_ctx, writer_inner|
@@ -319,10 +335,10 @@ module GRPC
         else
           base = ClientStreamServerCall.new do |_, reqs, call_ctx|
             body, status = service.dispatch_client_stream(method_name, reqs, call_ctx)
-            info = CallInfo.new("/#{service.service_name}/#{method_name}", RPCKind::ClientStreaming)
+            info = CallInfo.new("/#{service.service_full_name}/#{method_name}", RPCKind::ClientStreaming)
             ResponseEnvelope.new(info, body, status)
           end
-          full_path = "/#{service.service_name}/#{method_name}"
+          full_path = "/#{service.service_full_name}/#{method_name}"
           chain = Interceptors.build_server_chain(@interceptors, base)
           response = chain.call(full_path, requests, ctx)
           {response.raw, response.status}
@@ -338,7 +354,7 @@ module GRPC
           base = BidiStreamServerCall.new do |_, reqs, call_ctx, writer_inner|
             service.dispatch_bidi_stream(method_name, reqs, call_ctx, writer_inner)
           end
-          full_path = "/#{service.service_name}/#{method_name}"
+          full_path = "/#{service.service_full_name}/#{method_name}"
           chain = Interceptors.build_server_chain(@interceptors, base)
           chain.call(full_path, requests, ctx, writer)
         end
@@ -352,7 +368,7 @@ module GRPC
           response_bytes, status = service.dispatch(method_name, decoded, ctx)
           send_response(stream_id, response_bytes, status)
         else
-          full_path = "/#{service.service_name}/#{method_name}"
+          full_path = "/#{service.service_full_name}/#{method_name}"
           info = CallInfo.new(full_path, RPCKind::Unary)
           request = RequestEnvelope.new(info, decoded)
           base = UnaryServerCall.new do |_, req, call_ctx|
@@ -388,7 +404,7 @@ module GRPC
           src.ptr = boxed
           dp = LibNghttp2::DataProvider.new(source: src, read_callback: STREAMING_DATA_READ_CB)
           rc = LibNghttp2.submit_data(@session, LibNghttp2::FLAG_NONE, stream_id, pointerof(dp))
-          STDERR.puts "submit_data error: #{String.new(LibNghttp2.strerror(rc))}" if rc < 0
+          LOGGER.error { "submit_data error: #{String.new(LibNghttp2.strerror(rc))}" } if rc < 0
           flush_send
           @stream_send_bufs.delete(stream_id)
         end
@@ -396,10 +412,7 @@ module GRPC
 
       private def send_stream_trailers(stream_id : Int32, status : Status) : Nil
         @mutex.synchronize do
-          trailer_nva = StaticArray[
-            make_nv("grpc-status", status.code.value.to_s),
-            make_nv("grpc-message", percent_encode(status.message)),
-          ]
+          trailer_nva = build_status_trailers(status)
           LibNghttp2.submit_trailer(@session, stream_id, trailer_nva.to_unsafe, trailer_nva.size)
           flush_send
         end
@@ -411,7 +424,8 @@ module GRPC
           resp_ctx = ResponseContext.new(
             framed, stream_id,
             status.code.value.to_s,
-            percent_encode(status.message)
+            percent_encode(status.message),
+            TrailerCodec.encode_bin(status.details)
           )
           @response_ctxs[stream_id] = resp_ctx
 
@@ -425,7 +439,7 @@ module GRPC
           dp = LibNghttp2::DataProvider.new(source: src, read_callback: DATA_READ_CB)
 
           rc = LibNghttp2.submit_response(@session, stream_id, nva.to_unsafe, nva.size, pointerof(dp))
-          STDERR.puts "submit_response error: #{String.new(LibNghttp2.strerror(rc))}" if rc != 0
+          LOGGER.error { "submit_response error: #{String.new(LibNghttp2.strerror(rc))}" } if rc != 0
           flush_send
         end
       end
@@ -439,13 +453,21 @@ module GRPC
           LibNghttp2.submit_headers(@session, LibNghttp2::FLAG_NONE, stream_id, nil,
             nva.to_unsafe, nva.size, nil)
 
-          trailer_nva = StaticArray[
-            make_nv("grpc-status", code.value.to_s),
-            make_nv("grpc-message", percent_encode(message)),
-          ]
+          trailer_nva = build_status_trailers(Status.new(code, message))
           LibNghttp2.submit_trailer(@session, stream_id, trailer_nva.to_unsafe, trailer_nva.size)
           flush_send
         end
+      end
+
+      private def build_status_trailers(status : Status) : Array(LibNghttp2::Nv)
+        trailers = [
+          make_nv("grpc-status", status.code.value.to_s),
+          make_nv("grpc-message", percent_encode(status.message)),
+        ] of LibNghttp2::Nv
+        if encoded_details = TrailerCodec.encode_bin(status.details)
+          trailers << make_nv("grpc-status-details-bin", encoded_details)
+        end
+        trailers
       end
 
       # ---- Helpers ----
@@ -458,11 +480,11 @@ module GRPC
       end
 
       private def request_stream_target(sd : StreamData) : {Service, String, Symbol}?
-        path = sd.headers[":path"]? || ""
+        path = sd.headers.get(":path") || ""
         parts = path.split("/")
-        service_name = parts[1]? || ""
+        service_full_name = parts[1]? || ""
         method_name = parts[2]? || ""
-        service = @services[service_name]?
+        service = @services[service_full_name]?
         return unless service
         return {service, method_name, :client} if service.client_streaming?(method_name)
         return {service, method_name, :bidi} if service.bidi_streaming?(method_name)
@@ -504,19 +526,22 @@ module GRPC
         state.close
       end
 
-      private def build_metadata(headers : Hash(String, String)) : Metadata
+      private def build_metadata(headers : Metadata) : Metadata
         meta = Metadata.new
-        headers.each do |k, v|
+        headers.each_value do |k, v|
           next if k.starts_with?(":")
           next if k == "content-type" || k == "te" || k == "grpc-timeout"
-          meta.add(k, v)
+          case v
+          when String then meta.add(k, v)
+          when Bytes  then meta.add_bin(k, v)
+          end
         end
         meta
       end
 
       # parse_deadline reads grpc-timeout from headers and returns an absolute deadline.
-      private def parse_deadline(headers : Hash(String, String)) : Time?
-        timeout_str = headers["grpc-timeout"]?
+      private def parse_deadline(headers : Metadata) : Time?
+        timeout_str = headers.get("grpc-timeout")
         return if timeout_str.nil? || timeout_str.empty?
 
         # Format: integer followed by unit (H=hours, M=minutes, S=seconds, m=ms, u=us, n=ns)

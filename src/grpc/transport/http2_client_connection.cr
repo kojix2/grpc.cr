@@ -6,7 +6,8 @@ module GRPC
   module Transport
     # PendingStream holds state for an in-flight client server-streaming RPC.
     class PendingStream
-      property trailers : Hash(String, String)
+      property headers : Metadata
+      property trailers : Metadata
       property messages : ::Channel(Bytes?)
       property recv_buf : IO::Memory
       property send_buf : SendBuffer?          # GC anchor for request body (batch bidi)
@@ -14,9 +15,11 @@ module GRPC
       property send_resume_proc : (-> Nil)?    # wakes up deferred DATA for live bidi
       property cancel_proc : (-> Nil)?
       @cancelled : Bool
+      @receiving_trailers : Bool
 
       def initialize
-        @trailers = {} of String => String
+        @headers = Metadata.new
+        @trailers = Metadata.new
         @messages = ::Channel(Bytes?).new(128)
         @recv_buf = IO::Memory.new
         @send_buf = nil
@@ -24,6 +27,16 @@ module GRPC
         @send_resume_proc = nil
         @cancel_proc = nil
         @cancelled = false
+        @receiving_trailers = false
+      end
+
+      def begin_header_block : Nil
+        @receiving_trailers = !@headers.empty?
+      end
+
+      def add_header(key : String, value : String) : Nil
+        target = @receiving_trailers ? @trailers : @headers
+        target.add_wire(key, value)
       end
 
       # drain_grpc_frames parses all complete gRPC frames from recv_buf and delivers
@@ -76,57 +89,57 @@ module GRPC
         @cancelled
       end
 
+      def grpc_headers : Metadata
+        @headers
+      end
+
       # grpc_trailers returns the raw trailer hash received from the server.
       def grpc_trailers : Metadata
         meta = Metadata.new
-        @trailers.each do |k, v|
-          next if k == "grpc-status" || k == "grpc-message"
-          meta.add(k, v)
+        @trailers.each_value do |k, v|
+          next if k == "grpc-status" || k == "grpc-message" || k == "grpc-status-details-bin"
+          case v
+          when String then meta.add(k, v)
+          when Bytes  then meta.add_bin(k, v)
+          end
         end
         meta
       end
 
       def grpc_status : Status
-        code_str = @trailers["grpc-status"]? || "0"
+        code_str = @trailers.get("grpc-status") || "0"
         code_int = code_str.to_i? || 0
-        message = url_decode(@trailers["grpc-message"]? || "")
-        Status.new(StatusCode.from_value?(code_int) || StatusCode::UNKNOWN, message)
-      end
-
-      private def url_decode(s : String) : String
-        result = IO::Memory.new
-        i = 0
-        while i < s.size
-          if s[i] == '%' && i + 2 < s.size
-            hex = s[i + 1, 2]
-            byte = hex.to_u8?(16)
-            if byte
-              result.write_byte(byte)
-              i += 3
-              next
-            end
-          end
-          result.write_byte(s.byte_at(i))
-          i += 1
-        end
-        String.new(result.to_slice)
+        message = TrailerCodec.percent_decode(@trailers.get("grpc-message") || "")
+        details = @trailers.get_bin("grpc-status-details-bin") || TrailerCodec.decode_bin(@trailers.get("grpc-status-details-bin"))
+        Status.new(StatusCode.from_value?(code_int) || StatusCode::UNKNOWN, message, details)
       end
     end
 
     # PendingCall holds state for an in-flight client RPC.
     class PendingCall
-      property response_headers : Hash(String, String)
+      property response_headers : Metadata
       property response_body : IO::Memory
-      property trailers : Hash(String, String)
+      property trailers : Metadata
       property done : ::Channel(Nil)
       property send_buf : SendBuffer? # GC anchor
+      @receiving_trailers : Bool
 
       def initialize
-        @response_headers = {} of String => String
+        @response_headers = Metadata.new
         @response_body = IO::Memory.new
-        @trailers = {} of String => String
+        @trailers = Metadata.new
         @done = ::Channel(Nil).new(1)
         @send_buf = nil
+        @receiving_trailers = false
+      end
+
+      def begin_header_block : Nil
+        @receiving_trailers = !@response_headers.empty?
+      end
+
+      def add_header(key : String, value : String) : Nil
+        target = @receiving_trailers ? @trailers : @response_headers
+        target.add_wire(key, value)
       end
 
       def wait : Nil
@@ -138,33 +151,40 @@ module GRPC
       end
 
       def grpc_status : Status
-        code_str = @trailers["grpc-status"]? || "0"
+        code_str = @trailers.get("grpc-status") || "0"
         code_int = code_str.to_i? || 0
-        message = url_decode(@trailers["grpc-message"]? || "")
-        Status.new(StatusCode.from_value?(code_int) || StatusCode::UNKNOWN, message)
+        message = TrailerCodec.percent_decode(@trailers.get("grpc-message") || "")
+        details = @trailers.get_bin("grpc-status-details-bin") || TrailerCodec.decode_bin(@trailers.get("grpc-status-details-bin"))
+        Status.new(StatusCode.from_value?(code_int) || StatusCode::UNKNOWN, message, details)
       end
 
       def response_bytes : Bytes
         @response_body.to_slice
       end
 
-      private def url_decode(s : String) : String
-        result = IO::Memory.new
-        i = 0
-        while i < s.size
-          if s[i] == '%' && i + 2 < s.size
-            hex = s[i + 1, 2]
-            byte = hex.to_u8?(16)
-            if byte
-              result.write_byte(byte)
-              i += 3
-              next
-            end
+      def grpc_headers : Metadata
+        meta = Metadata.new
+        @response_headers.each_value do |k, v|
+          next if k.starts_with?(":")
+          next if k == "content-type"
+          case v
+          when String then meta.add(k, v)
+          when Bytes  then meta.add_bin(k, v)
           end
-          result.write_byte(s.byte_at(i))
-          i += 1
         end
-        String.new(result.to_slice)
+        meta
+      end
+
+      def grpc_trailers : Metadata
+        meta = Metadata.new
+        @trailers.each_value do |k, v|
+          next if k == "grpc-status" || k == "grpc-message" || k == "grpc-status-details-bin"
+          case v
+          when String then meta.add(k, v)
+          when Bytes  then meta.add_bin(k, v)
+          end
+        end
+        meta
       end
     end
 
@@ -361,7 +381,7 @@ module GRPC
 
       # unary_call sends one gRPC request and blocks until the response arrives.
       def unary_call(service : String, method : String, request_body : Bytes,
-                     metadata : Metadata = Metadata.new) : {Bytes, Status}
+                     metadata : Metadata = Metadata.new) : ResponseEnvelope
         submit_unary_request(service, method, Codec.encode(request_body), metadata)
       end
 
@@ -397,11 +417,12 @@ module GRPC
 
       # ---- Private submission helpers ----
       private def pending_to_raw_stream(ps : PendingStream) : RawServerStream
-        RawServerStream.new(
+        RawServerStream.build(
           ps.messages,
-          -> { ps.grpc_status },
-          -> { ps.grpc_trailers },
-          -> { ps.cancel }
+          headers_proc: stream_headers_proc(ps),
+          status_proc: stream_status_proc(ps),
+          trailers_proc: stream_trailers_proc(ps),
+          cancel_proc: stream_cancel_proc(ps)
         )
       end
 
@@ -421,28 +442,50 @@ module GRPC
             end
             result
           },
-          -> { ps.grpc_status },
-          -> { ps.grpc_trailers },
-          -> { ps.cancel }
+          stream_headers_proc(ps),
+          stream_status_proc(ps),
+          stream_trailers_proc(ps),
+          stream_cancel_proc(ps)
         )
       end
 
       private def pending_to_raw_bidi_call(ps : PendingStream) : RawBidiCall
         RawBidiCall.new(
           ->(b : Bytes) { ps.send_outgoing(Codec.encode(b)) },
-          -> { ps.close_send },
+          stream_close_proc(ps),
           ps.messages,
-          -> { ps.grpc_status },
-          -> { ps.grpc_trailers },
-          -> { ps.cancel }
+          stream_headers_proc(ps),
+          stream_status_proc(ps),
+          stream_trailers_proc(ps),
+          stream_cancel_proc(ps)
         )
+      end
+
+      private def stream_headers_proc(ps : PendingStream) : -> Metadata
+        -> { ps.grpc_headers }
+      end
+
+      private def stream_status_proc(ps : PendingStream) : -> Status
+        -> { ps.grpc_status }
+      end
+
+      private def stream_trailers_proc(ps : PendingStream) : -> Metadata
+        -> { ps.grpc_trailers }
+      end
+
+      private def stream_cancel_proc(ps : PendingStream) : -> Nil
+        -> { ps.cancel }
+      end
+
+      private def stream_close_proc(ps : PendingStream) : -> Nil
+        -> { ps.close_send }
       end
 
       # Submits an HTTP/2 request with *framed_body* and blocks until the single
       # unary response arrives.  Shared by unary_call and client_stream_call.
       private def submit_unary_request(service : String, method : String,
                                        framed_body : Bytes,
-                                       metadata : Metadata) : {Bytes, Status}
+                                       metadata : Metadata) : ResponseEnvelope
         call = PendingCall.new
 
         @mutex.synchronize do
@@ -468,12 +511,30 @@ module GRPC
 
         call.wait
         status = call.grpc_status
-        return {Bytes.empty, status} unless status.ok?
+        return ResponseEnvelope.new(
+          CallInfo.new("/#{service}/#{method}", RPCKind::Unary),
+          Bytes.empty,
+          status,
+          call.grpc_headers,
+          call.grpc_trailers
+        ) unless status.ok?
         begin
           body, _ = Codec.decode(call.response_bytes)
-          {body, status}
+          ResponseEnvelope.new(
+            CallInfo.new("/#{service}/#{method}", RPCKind::Unary),
+            body,
+            status,
+            call.grpc_headers,
+            call.grpc_trailers
+          )
         rescue
-          {Bytes.empty, status}
+          ResponseEnvelope.new(
+            CallInfo.new("/#{service}/#{method}", RPCKind::Unary),
+            Bytes.empty,
+            status,
+            call.grpc_headers,
+            call.grpc_trailers
+          )
         end
       end
 
@@ -576,12 +637,24 @@ module GRPC
           make_nv(":authority", @peer_address),
           make_nv("content-type", "application/grpc"),
           make_nv("te", "trailers"),
+          make_nv("user-agent", "grpc-crystal/#{GRPC::VERSION}"),
         ] of LibNghttp2::Nv
-        metadata.each { |k, v| nva_list << make_nv(k, v) }
+        metadata.each_wire { |k, v| nva_list << make_nv(k, v) }
         nva_list
       end
 
       # ---- Callbacks ----
+
+      def on_begin_headers_cb(frame : Void*) : Nil
+        return unless frame_type(frame) == LibNghttp2::FRAME_HEADERS
+        stream_id = frame_stream_id(frame)
+
+        if call = @pending[stream_id]?
+          call.begin_header_block
+        elsif ps = @pending_streams[stream_id]?
+          ps.begin_header_block
+        end
+      end
 
       def on_header_cb(frame : Void*, name : UInt8*, nlen : LibC::SizeT,
                        value : UInt8*, vlen : LibC::SizeT) : Nil
@@ -590,16 +663,9 @@ module GRPC
         val = String.new(value, vlen)
 
         if call = @pending[stream_id]?
-          # grpc-status and grpc-message are trailer headers; everything else is response headers.
-          if key == "grpc-status" || key == "grpc-message"
-            call.trailers[key] = val
-          else
-            call.response_headers[key] = val
-          end
+          call.add_header(key, val)
         elsif ps = @pending_streams[stream_id]?
-          # Skip HTTP/2 pseudo-headers (:status, :path, etc.) and content-type.
-          # All other headers on a streaming call are trailing metadata.
-          ps.trailers[key] = val unless key.starts_with?(":") || key == "content-type"
+          ps.add_header(key, val)
         end
       end
 

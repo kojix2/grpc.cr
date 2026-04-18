@@ -15,7 +15,7 @@ module GRPC
       loop do
         raw = @ch.receive?
         break if raw.nil?
-        yield @marshaller.load(raw)
+        yield @marshaller.decode(raw)
       end
     end
   end
@@ -47,10 +47,10 @@ module GRPC
   # Example (generated code):
   #   module Helloworld
   #     abstract class GreeterService < GRPC::Service
-  #       SERVICE_NAME = "helloworld.Greeter"
+  #       SERVICE_FULL_NAME = "helloworld.Greeter"
   #
-  #       def service_name : String
-  #         SERVICE_NAME
+  #       def service_full_name : String
+  #         SERVICE_FULL_NAME
   #       end
   #
   #       abstract def say_hello(req : HelloRequest, ctx : GRPC::ServerContext) : HelloReply
@@ -58,9 +58,9 @@ module GRPC
   #       def dispatch(method : String, body : Bytes, ctx : GRPC::ServerContext) : {Bytes, GRPC::Status}
   #         case method
   #         when "SayHello"
-  #           req  = HelloRequest.from_proto(body)
+  #           req  = HelloRequest.decode(body)
   #           resp = say_hello(req, ctx)
-  #           {resp.to_proto, GRPC::Status.ok}
+  #           {resp.encode, GRPC::Status.ok}
   #         else
   #           {Bytes.empty, GRPC::Status.unimplemented("method #{method} not found")}
   #         end
@@ -72,8 +72,8 @@ module GRPC
   #     end
   #   end
   abstract class Service
-    # service_name returns the full gRPC service name (e.g. "helloworld.Greeter").
-    abstract def service_name : String
+    # service_full_name returns the full gRPC service name (e.g. "helloworld.Greeter").
+    abstract def service_full_name : String
 
     # dispatch routes an incoming unary RPC call to the correct method implementation.
     # Returns {response_body : Bytes, status : Status}.
