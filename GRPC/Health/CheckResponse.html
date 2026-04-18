@@ -14,7 +14,7 @@
 <script type="text/javascript" src="../../js/doc.js"></script>
 
   <meta name="repository-name" content="grpc">
-  <title>GRPC::Transport::SendBuffer - grpc main</title>
+  <title>GRPC::Health::CheckResponse - grpc main</title>
   <script type="text/javascript">
     CrystalDocs.base_path = "../../";
   </script>
@@ -142,7 +142,7 @@
       
     </li>
   
-  <li class="parent " data-id="grpc/GRPC/Health" data-name="grpc::health">
+  <li class="parent open current" data-id="grpc/GRPC/Health" data-name="grpc::health">
       <a href="../../GRPC/Health.html">Health</a>
       
         <ul>
@@ -152,7 +152,7 @@
       
     </li>
   
-  <li class=" " data-id="grpc/GRPC/Health/CheckResponse" data-name="grpc::health::checkresponse">
+  <li class=" current" data-id="grpc/GRPC/Health/CheckResponse" data-name="grpc::health::checkresponse">
       <a href="../../GRPC/Health/CheckResponse.html">CheckResponse</a>
       
     </li>
@@ -332,7 +332,7 @@
       
     </li>
   
-  <li class="parent open current" data-id="grpc/GRPC/Transport" data-name="grpc::transport">
+  <li class="parent " data-id="grpc/GRPC/Transport" data-name="grpc::transport">
       <a href="../../GRPC/Transport.html">Transport</a>
       
         <ul>
@@ -387,7 +387,7 @@
       
     </li>
   
-  <li class=" current" data-id="grpc/GRPC/Transport/SendBuffer" data-name="grpc::transport::sendbuffer">
+  <li class=" " data-id="grpc/GRPC/Transport/SendBuffer" data-name="grpc::transport::sendbuffer">
       <a href="../../GRPC/Transport/SendBuffer.html">SendBuffer</a>
       
     </li>
@@ -462,27 +462,16 @@
 <h1 class="type-name">
 
   <span class="kind">
-    class
-  </span> GRPC::<wbr>Transport::<wbr>SendBuffer
+    struct
+  </span> GRPC::<wbr>Health::<wbr>CheckResponse
 
 </h1>
 
 
-  <ul class="superclass-hierarchy"><li class="superclass"><a href="../../GRPC/Transport/SendBuffer.html">GRPC::Transport::SendBuffer</a></li><li class="superclass">Reference</li><li class="superclass">Object</li></ul>
+  <ul class="superclass-hierarchy"><li class="superclass"><a href="../../GRPC/Health/CheckResponse.html">GRPC::Health::CheckResponse</a></li><li class="superclass">Struct</li><li class="superclass">Value</li><li class="superclass">Object</li></ul>
 
 
 
-
-  <h2>
-    <a id="overview" class="anchor" href="#overview">
-  <svg class="octicon-link" aria-hidden="true">
-    <use href="#octicon-link"/>
-  </svg>
-</a>
-    Overview
-  </h2>
-
-  <p>SendBuffer is used as a DataProvider source for outgoing DATA frames.</p>
 
 
 
@@ -509,8 +498,8 @@
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/transport/http2_connection.cr#L61" target="_blank">
-        grpc/transport/http2_connection.cr
+      <a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/health.cr#L51" target="_blank">
+        grpc/health.cr
       </a>
     
     <br/>
@@ -532,7 +521,12 @@
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#new%28data%3ABytes%29-class-method" class="signature"><strong>.new</strong>(data : Bytes)</a>
+        <a href="#decode%28bytes%3ABytes%29%3Aself-class-method" class="signature"><strong>.decode</strong>(bytes : Bytes) : <span class="k">self</span></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#new%28status%3AServingStatus%29-class-method" class="signature"><strong>.new</strong>(status : ServingStatus)</a>
         
       </li>
     
@@ -555,27 +549,12 @@
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#data%3ABytes-instance-method" class="signature"><strong>#data</strong> : Bytes</a>
+        <a href="#encode%3ABytes-instance-method" class="signature"><strong>#encode</strong> : Bytes</a>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#data%3D%28data%3ABytes%29-instance-method" class="signature"><strong>#data=</strong>(data : Bytes)</a>
-        
-      </li>
-    
-      <li class="entry-summary">
-        <a href="#offset%3AInt32-instance-method" class="signature"><strong>#offset</strong> : Int32</a>
-        
-      </li>
-    
-      <li class="entry-summary">
-        <a href="#offset%3D%28offset%3AInt32%29-instance-method" class="signature"><strong>#offset=</strong>(offset : Int32)</a>
-        
-      </li>
-    
-      <li class="entry-summary">
-        <a href="#remaining%3AInt32-instance-method" class="signature"><strong>#remaining</strong> : Int32</a>
+        <a href="#status%3AServingStatus-instance-method" class="signature"><strong>#status</strong> : ServingStatus</a>
         
       </li>
     
@@ -584,6 +563,19 @@
 
 
   <div class="methods-inherited">
+    
+      
+
+
+      
+
+
+      
+
+
+      
+
+
     
       
 
@@ -623,18 +615,34 @@
     Constructor Detail
   </h2>
   
-    <div class="entry-detail" id="new(data:Bytes)-class-method">
+    <div class="entry-detail" id="decode(bytes:Bytes):self-class-method">
       <div class="signature">
         
-        def self.<strong>new</strong>(data : Bytes)
+        def self.<strong>decode</strong>(bytes : Bytes) : <span class="k">self</span>
 
-        <a class="method-permalink" href="#new%28data%3ABytes%29-class-method">#</a>
+        <a class="method-permalink" href="#decode%28bytes%3ABytes%29%3Aself-class-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/transport/http2_connection.cr#L65" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/health.cr#L64" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="new(status:ServingStatus)-class-method">
+      <div class="signature">
+        
+        def self.<strong>new</strong>(status : <a href="../../GRPC/Health/ServingStatus.html">ServingStatus</a>)
+
+        <a class="method-permalink" href="#new%28status%3AServingStatus%29-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/health.cr#L54" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -655,82 +663,34 @@
     Instance Method Detail
   </h2>
   
-    <div class="entry-detail" id="data:Bytes-instance-method">
+    <div class="entry-detail" id="encode:Bytes-instance-method">
       <div class="signature">
         
-        def <strong>data</strong> : Bytes
+        def <strong>encode</strong> : Bytes
 
-        <a class="method-permalink" href="#data%3ABytes-instance-method">#</a>
+        <a class="method-permalink" href="#encode%3ABytes-instance-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/transport/http2_connection.cr#L62" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/health.cr#L57" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="data=(data:Bytes)-instance-method">
+    <div class="entry-detail" id="status:ServingStatus-instance-method">
       <div class="signature">
         
-        def <strong>data=</strong>(data : Bytes)
+        def <strong>status</strong> : <a href="../../GRPC/Health/ServingStatus.html">ServingStatus</a>
 
-        <a class="method-permalink" href="#data%3D%28data%3ABytes%29-instance-method">#</a>
+        <a class="method-permalink" href="#status%3AServingStatus-instance-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/transport/http2_connection.cr#L62" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
-    <div class="entry-detail" id="offset:Int32-instance-method">
-      <div class="signature">
-        
-        def <strong>offset</strong> : Int32
-
-        <a class="method-permalink" href="#offset%3AInt32-instance-method">#</a>
-      </div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/transport/http2_connection.cr#L63" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
-    <div class="entry-detail" id="offset=(offset:Int32)-instance-method">
-      <div class="signature">
-        
-        def <strong>offset=</strong>(offset : Int32)
-
-        <a class="method-permalink" href="#offset%3D%28offset%3AInt32%29-instance-method">#</a>
-      </div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/transport/http2_connection.cr#L63" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
-    <div class="entry-detail" id="remaining:Int32-instance-method">
-      <div class="signature">
-        
-        def <strong>remaining</strong> : Int32
-
-        <a class="method-permalink" href="#remaining%3AInt32-instance-method">#</a>
-      </div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/transport/http2_connection.cr#L69" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/health.cr#L52" target="_blank">View source</a>]
         
       </div>
     </div>

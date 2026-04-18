@@ -14,7 +14,7 @@
 <script type="text/javascript" src="../../js/doc.js"></script>
 
   <meta name="repository-name" content="grpc">
-  <title>GRPC::Transport::SendBuffer - grpc main</title>
+  <title>GRPC::Health::Service - grpc main</title>
   <script type="text/javascript">
     CrystalDocs.base_path = "../../";
   </script>
@@ -142,7 +142,7 @@
       
     </li>
   
-  <li class="parent " data-id="grpc/GRPC/Health" data-name="grpc::health">
+  <li class="parent open current" data-id="grpc/GRPC/Health" data-name="grpc::health">
       <a href="../../GRPC/Health.html">Health</a>
       
         <ul>
@@ -157,7 +157,7 @@
       
     </li>
   
-  <li class=" " data-id="grpc/GRPC/Health/Service" data-name="grpc::health::service">
+  <li class=" current" data-id="grpc/GRPC/Health/Service" data-name="grpc::health::service">
       <a href="../../GRPC/Health/Service.html">Service</a>
       
     </li>
@@ -332,7 +332,7 @@
       
     </li>
   
-  <li class="parent open current" data-id="grpc/GRPC/Transport" data-name="grpc::transport">
+  <li class="parent " data-id="grpc/GRPC/Transport" data-name="grpc::transport">
       <a href="../../GRPC/Transport.html">Transport</a>
       
         <ul>
@@ -387,7 +387,7 @@
       
     </li>
   
-  <li class=" current" data-id="grpc/GRPC/Transport/SendBuffer" data-name="grpc::transport::sendbuffer">
+  <li class=" " data-id="grpc/GRPC/Transport/SendBuffer" data-name="grpc::transport::sendbuffer">
       <a href="../../GRPC/Transport/SendBuffer.html">SendBuffer</a>
       
     </li>
@@ -463,12 +463,12 @@
 
   <span class="kind">
     class
-  </span> GRPC::<wbr>Transport::<wbr>SendBuffer
+  </span> GRPC::<wbr>Health::<wbr>Service
 
 </h1>
 
 
-  <ul class="superclass-hierarchy"><li class="superclass"><a href="../../GRPC/Transport/SendBuffer.html">GRPC::Transport::SendBuffer</a></li><li class="superclass">Reference</li><li class="superclass">Object</li></ul>
+  <ul class="superclass-hierarchy"><li class="superclass"><a href="../../GRPC/Health/Service.html">GRPC::Health::Service</a></li><li class="superclass"><a href="../../GRPC/Service.html">GRPC::Service</a></li><li class="superclass">Reference</li><li class="superclass">Object</li></ul>
 
 
 
@@ -482,7 +482,8 @@
     Overview
   </h2>
 
-  <p>SendBuffer is used as a DataProvider source for outgoing DATA frames.</p>
+  <p>Minimal standard health checking service.
+This step intentionally implements unary Check only (no Watch yet).</p>
 
 
 
@@ -509,14 +510,33 @@
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/transport/http2_connection.cr#L61" target="_blank">
-        grpc/transport/http2_connection.cr
+      <a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/health.cr#L146" target="_blank">
+        grpc/health.cr
       </a>
     
     <br/>
   
 
 
+
+  
+    <h2>
+      <a id="constant-summary" class="anchor" href="#constant-summary">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+      Constant Summary
+    </h2>
+  
+  <dl>
+    
+      <dt class="entry-const" id="SERVICE_FULL_NAME">
+        <strong>SERVICE_FULL_NAME</strong> = <code><span class="s">&quot;grpc.health.v1.Health&quot;</span></code>
+      </dt>
+      
+    
+  </dl>
 
 
 
@@ -532,7 +552,7 @@
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#new%28data%3ABytes%29-class-method" class="signature"><strong>.new</strong>(data : Bytes)</a>
+        <a href="#new%28default_status%3AServingStatus%3DServingStatus%3A%3ASERVING%29-class-method" class="signature"><strong>.new</strong>(default_status : ServingStatus = <span class="t">ServingStatus</span><span class="t">::</span><span class="t">SERVING</span>)</a>
         
       </li>
     
@@ -555,27 +575,40 @@
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#data%3ABytes-instance-method" class="signature"><strong>#data</strong> : Bytes</a>
+        <a href="#clear_status%28service%3AString%29%3Aself-instance-method" class="signature"><strong>#clear_status</strong>(service : String) : <span class="k">self</span></a>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#data%3D%28data%3ABytes%29-instance-method" class="signature"><strong>#data=</strong>(data : Bytes)</a>
+        <a href="#dispatch%28method%3AString%2Crequest_body%3ABytes%2Cctx%3AServerContext%29%3ATuple%28Bytes%2CStatus%29-instance-method" class="signature"><strong>#dispatch</strong>(method : String, request_body : Bytes, ctx : ServerContext) : Tuple(Bytes, Status)</a>
+        
+          <div class="summary"><p>dispatch routes an incoming unary RPC call to the correct method implementation.</p></div>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#offset%3AInt32-instance-method" class="signature"><strong>#offset</strong> : Int32</a>
+        <a href="#dispatch_server_stream%28method%3AString%2Crequest_body%3ABytes%2Cctx%3AServerContext%2Cwriter%3ARawResponseStream%29%3AStatus-instance-method" class="signature"><strong>#dispatch_server_stream</strong>(method : String, request_body : Bytes, ctx : ServerContext, writer : RawResponseStream) : Status</a>
+        
+          <div class="summary"><p>dispatch_server_stream dispatches a server-streaming RPC.</p></div>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#offset%3D%28offset%3AInt32%29-instance-method" class="signature"><strong>#offset=</strong>(offset : Int32)</a>
+        <a href="#server_streaming%3F%28method%3AString%29%3ABool-instance-method" class="signature"><strong>#server_streaming?</strong>(method : String) : Bool</a>
+        
+          <div class="summary"><p>server_streaming? returns true if <em>method</em> is a server-streaming RPC.</p></div>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#remaining%3AInt32-instance-method" class="signature"><strong>#remaining</strong> : Int32</a>
+        <a href="#service_full_name%3AString-instance-method" class="signature"><strong>#service_full_name</strong> : String</a>
+        
+          <div class="summary"><p>service_full_name returns the full gRPC service name (e.g.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#set_status%28service%3AString%2Cstatus%3AServingStatus%29%3Aself-instance-method" class="signature"><strong>#set_status</strong>(service : String, status : ServingStatus) : <span class="k">self</span></a>
         
       </li>
     
@@ -584,6 +617,63 @@
 
 
   <div class="methods-inherited">
+    
+      
+
+  <h3>Instance methods inherited from class <code><a href="../../GRPC/Service.html">GRPC::Service</a></code></h3>
+  
+  
+    <a href="../../GRPC/Service.html#bidi_streaming%3F%28method%3AString%29%3ABool-instance-method" class="tooltip">
+      <span>bidi_streaming?(method : String) : Bool</span>
+    bidi_streaming?</a>, 
+    
+  
+    <a href="../../GRPC/Service.html#client_streaming%3F%28method%3AString%29%3ABool-instance-method" class="tooltip">
+      <span>client_streaming?(method : String) : Bool</span>
+    client_streaming?</a>, 
+    
+  
+    <a href="../../GRPC/Service.html#dispatch%28method%3AString%2Crequest_body%3ABytes%2Cctx%3AServerContext%29%3ATuple%28Bytes%2CStatus%29-instance-method" class="tooltip">
+      <span>dispatch(method : String, request_body : Bytes, ctx : ServerContext) : Tuple(Bytes, Status)</span>
+    dispatch</a>, 
+    
+  
+    <a href="../../GRPC/Service.html#dispatch_bidi_stream%28method%3AString%2Crequests%3ARawRequestStream%2Cctx%3AServerContext%2Cwriter%3ARawResponseStream%29%3AStatus-instance-method" class="tooltip">
+      <span>dispatch_bidi_stream(method : String, requests : RawRequestStream, ctx : ServerContext, writer : RawResponseStream) : Status</span>
+    dispatch_bidi_stream</a>, 
+    
+  
+    <a href="../../GRPC/Service.html#dispatch_client_stream%28method%3AString%2Crequests%3ARawRequestStream%2Cctx%3AServerContext%29%3ATuple%28Bytes%2CStatus%29-instance-method" class="tooltip">
+      <span>dispatch_client_stream(method : String, requests : RawRequestStream, ctx : ServerContext) : Tuple(Bytes, Status)</span>
+    dispatch_client_stream</a>, 
+    
+  
+    <a href="../../GRPC/Service.html#dispatch_server_stream%28method%3AString%2Crequest_body%3ABytes%2Cctx%3AServerContext%2Cwriter%3ARawResponseStream%29%3AStatus-instance-method" class="tooltip">
+      <span>dispatch_server_stream(method : String, request_body : Bytes, ctx : ServerContext, writer : RawResponseStream) : Status</span>
+    dispatch_server_stream</a>, 
+    
+  
+    <a href="../../GRPC/Service.html#server_streaming%3F%28method%3AString%29%3ABool-instance-method" class="tooltip">
+      <span>server_streaming?(method : String) : Bool</span>
+    server_streaming?</a>, 
+    
+  
+    <a href="../../GRPC/Service.html#service_full_name%3AString-instance-method" class="tooltip">
+      <span>service_full_name : String</span>
+    service_full_name</a>
+    
+  
+
+
+      
+
+
+      
+
+
+      
+
+
     
       
 
@@ -623,18 +713,18 @@
     Constructor Detail
   </h2>
   
-    <div class="entry-detail" id="new(data:Bytes)-class-method">
+    <div class="entry-detail" id="new(default_status:ServingStatus=ServingStatus::SERVING)-class-method">
       <div class="signature">
         
-        def self.<strong>new</strong>(data : Bytes)
+        def self.<strong>new</strong>(default_status : <a href="../../GRPC/Health/ServingStatus.html">ServingStatus</a> = <span class="t">ServingStatus</span><span class="t">::</span><span class="t">SERVING</span>)
 
-        <a class="method-permalink" href="#new%28data%3ABytes%29-class-method">#</a>
+        <a class="method-permalink" href="#new%28default_status%3AServingStatus%3DServingStatus%3A%3ASERVING%29-class-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/transport/http2_connection.cr#L65" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/health.cr#L152" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -655,82 +745,138 @@
     Instance Method Detail
   </h2>
   
-    <div class="entry-detail" id="data:Bytes-instance-method">
+    <div class="entry-detail" id="clear_status(service:String):self-instance-method">
       <div class="signature">
         
-        def <strong>data</strong> : Bytes
+        def <strong>clear_status</strong>(service : String) : <span class="k">self</span>
 
-        <a class="method-permalink" href="#data%3ABytes-instance-method">#</a>
+        <a class="method-permalink" href="#clear_status%28service%3AString%29%3Aself-instance-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/transport/http2_connection.cr#L62" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/health.cr#L166" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="data=(data:Bytes)-instance-method">
+    <div class="entry-detail" id="dispatch(method:String,request_body:Bytes,ctx:ServerContext):Tuple(Bytes,Status)-instance-method">
       <div class="signature">
         
-        def <strong>data=</strong>(data : Bytes)
+        def <strong>dispatch</strong>(method : String, request_body : Bytes, ctx : <a href="../../GRPC/ServerContext.html">ServerContext</a>) : Tuple(Bytes, <a href="../../GRPC/Status.html">Status</a>)
 
-        <a class="method-permalink" href="#data%3D%28data%3ABytes%29-instance-method">#</a>
+        <a class="method-permalink" href="#dispatch%28method%3AString%2Crequest_body%3ABytes%2Cctx%3AServerContext%29%3ATuple%28Bytes%2CStatus%29-instance-method">#</a>
       </div>
+      
+        <div class="doc">
+          
+            <div class="doc-inherited">
+              Description copied from class <a href="../../GRPC/Service.html">GRPC::Service</a>
+            </div>
+          
+          <p>dispatch routes an incoming unary RPC call to the correct method implementation.
+Returns {response_body : Bytes, status : Status}.</p>
+        </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/transport/http2_connection.cr#L62" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/health.cr#L190" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="offset:Int32-instance-method">
+    <div class="entry-detail" id="dispatch_server_stream(method:String,request_body:Bytes,ctx:ServerContext,writer:RawResponseStream):Status-instance-method">
       <div class="signature">
         
-        def <strong>offset</strong> : Int32
+        def <strong>dispatch_server_stream</strong>(method : String, request_body : Bytes, ctx : <a href="../../GRPC/ServerContext.html">ServerContext</a>, writer : <a href="../../GRPC/RawResponseStream.html">RawResponseStream</a>) : <a href="../../GRPC/Status.html">Status</a>
 
-        <a class="method-permalink" href="#offset%3AInt32-instance-method">#</a>
+        <a class="method-permalink" href="#dispatch_server_stream%28method%3AString%2Crequest_body%3ABytes%2Cctx%3AServerContext%2Cwriter%3ARawResponseStream%29%3AStatus-instance-method">#</a>
       </div>
+      
+        <div class="doc">
+          
+            <div class="doc-inherited">
+              Description copied from class <a href="../../GRPC/Service.html">GRPC::Service</a>
+            </div>
+          
+          <p>dispatch_server_stream dispatches a server-streaming RPC.
+The transport passes a RawResponseStream; generated subclasses wrap it in a
+typed ResponseStream(T) before handing off to the user implementation.</p>
+        </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/transport/http2_connection.cr#L63" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/health.cr#L175" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="offset=(offset:Int32)-instance-method">
+    <div class="entry-detail" id="server_streaming?(method:String):Bool-instance-method">
       <div class="signature">
         
-        def <strong>offset=</strong>(offset : Int32)
+        def <strong>server_streaming?</strong>(method : String) : Bool
 
-        <a class="method-permalink" href="#offset%3D%28offset%3AInt32%29-instance-method">#</a>
+        <a class="method-permalink" href="#server_streaming%3F%28method%3AString%29%3ABool-instance-method">#</a>
       </div>
+      
+        <div class="doc">
+          
+            <div class="doc-inherited">
+              Description copied from class <a href="../../GRPC/Service.html">GRPC::Service</a>
+            </div>
+          
+          <p>server_streaming? returns true if <em>method</em> is a server-streaming RPC.
+Generated service base classes override this; the default is false (unary).</p>
+        </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/transport/http2_connection.cr#L63" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/health.cr#L171" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="remaining:Int32-instance-method">
+    <div class="entry-detail" id="service_full_name:String-instance-method">
       <div class="signature">
         
-        def <strong>remaining</strong> : Int32
+        def <strong>service_full_name</strong> : String
 
-        <a class="method-permalink" href="#remaining%3AInt32-instance-method">#</a>
+        <a class="method-permalink" href="#service_full_name%3AString-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+            <div class="doc-inherited">
+              Description copied from class <a href="../../GRPC/Service.html">GRPC::Service</a>
+            </div>
+          
+          <p>service_full_name returns the full gRPC service name (e.g. &quot;helloworld.Greeter&quot;).</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/health.cr#L157" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="set_status(service:String,status:ServingStatus):self-instance-method">
+      <div class="signature">
+        
+        def <strong>set_status</strong>(service : String, status : <a href="../../GRPC/Health/ServingStatus.html">ServingStatus</a>) : <span class="k">self</span>
+
+        <a class="method-permalink" href="#set_status%28service%3AString%2Cstatus%3AServingStatus%29%3Aself-instance-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/transport/http2_connection.cr#L69" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/health.cr#L161" target="_blank">View source</a>]
         
       </div>
     </div>

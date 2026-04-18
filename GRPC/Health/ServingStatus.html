@@ -14,7 +14,7 @@
 <script type="text/javascript" src="../../js/doc.js"></script>
 
   <meta name="repository-name" content="grpc">
-  <title>GRPC::Transport::SendBuffer - grpc main</title>
+  <title>GRPC::Health::ServingStatus - grpc main</title>
   <script type="text/javascript">
     CrystalDocs.base_path = "../../";
   </script>
@@ -142,7 +142,7 @@
       
     </li>
   
-  <li class="parent " data-id="grpc/GRPC/Health" data-name="grpc::health">
+  <li class="parent open current" data-id="grpc/GRPC/Health" data-name="grpc::health">
       <a href="../../GRPC/Health.html">Health</a>
       
         <ul>
@@ -162,7 +162,7 @@
       
     </li>
   
-  <li class=" " data-id="grpc/GRPC/Health/ServingStatus" data-name="grpc::health::servingstatus">
+  <li class=" current" data-id="grpc/GRPC/Health/ServingStatus" data-name="grpc::health::servingstatus">
       <a href="../../GRPC/Health/ServingStatus.html">ServingStatus</a>
       
     </li>
@@ -332,7 +332,7 @@
       
     </li>
   
-  <li class="parent open current" data-id="grpc/GRPC/Transport" data-name="grpc::transport">
+  <li class="parent " data-id="grpc/GRPC/Transport" data-name="grpc::transport">
       <a href="../../GRPC/Transport.html">Transport</a>
       
         <ul>
@@ -387,7 +387,7 @@
       
     </li>
   
-  <li class=" current" data-id="grpc/GRPC/Transport/SendBuffer" data-name="grpc::transport::sendbuffer">
+  <li class=" " data-id="grpc/GRPC/Transport/SendBuffer" data-name="grpc::transport::sendbuffer">
       <a href="../../GRPC/Transport/SendBuffer.html">SendBuffer</a>
       
     </li>
@@ -462,27 +462,14 @@
 <h1 class="type-name">
 
   <span class="kind">
-    class
-  </span> GRPC::<wbr>Transport::<wbr>SendBuffer
+    enum
+  </span> GRPC::<wbr>Health::<wbr>ServingStatus
 
 </h1>
 
 
-  <ul class="superclass-hierarchy"><li class="superclass"><a href="../../GRPC/Transport/SendBuffer.html">GRPC::Transport::SendBuffer</a></li><li class="superclass">Reference</li><li class="superclass">Object</li></ul>
 
 
-
-
-  <h2>
-    <a id="overview" class="anchor" href="#overview">
-  <svg class="octicon-link" aria-hidden="true">
-    <use href="#octicon-link"/>
-  </svg>
-</a>
-    Overview
-  </h2>
-
-  <p>SendBuffer is used as a DataProvider source for outgoing DATA frames.</p>
 
 
 
@@ -509,8 +496,8 @@
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/transport/http2_connection.cr#L61" target="_blank">
-        grpc/transport/http2_connection.cr
+      <a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/health.cr#L3" target="_blank">
+        grpc/health.cr
       </a>
     
     <br/>
@@ -518,26 +505,43 @@
 
 
 
-
-
   
-  <h2>
-    <a id="constructors" class="anchor" href="#constructors">
+    <h2>
+      <a id="enum-members" class="anchor" href="#enum-members">
   <svg class="octicon-link" aria-hidden="true">
     <use href="#octicon-link"/>
   </svg>
 </a>
-    Constructors
-  </h2>
-  <ul class="list-summary">
+      Enum Members
+    </h2>
+  
+  <dl>
     
-      <li class="entry-summary">
-        <a href="#new%28data%3ABytes%29-class-method" class="signature"><strong>.new</strong>(data : Bytes)</a>
-        
-      </li>
+      <dt class="entry-const" id="UNKNOWN">
+        <strong>UNKNOWN</strong> = <code><span class="n">0</span></code>
+      </dt>
+      
     
-  </ul>
+      <dt class="entry-const" id="SERVING">
+        <strong>SERVING</strong> = <code><span class="n">1</span></code>
+      </dt>
+      
+    
+      <dt class="entry-const" id="NOT_SERVING">
+        <strong>NOT_SERVING</strong> = <code><span class="n">2</span></code>
+      </dt>
+      
+    
+      <dt class="entry-const" id="SERVICE_UNKNOWN">
+        <strong>SERVICE_UNKNOWN</strong> = <code><span class="n">3</span></code>
+      </dt>
+      
+    
+  </dl>
 
+
+
+  
 
   
 
@@ -555,27 +559,30 @@
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#data%3ABytes-instance-method" class="signature"><strong>#data</strong> : Bytes</a>
+        <a href="#not_serving%3F-instance-method" class="signature"><strong>#not_serving?</strong></a>
+        
+          <div class="summary"><p>Returns <code>true</code> if this enum value equals <code><a href="../../GRPC/Health/ServingStatus.html#NOT_SERVING">NOT_SERVING</a></code></p></div>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#data%3D%28data%3ABytes%29-instance-method" class="signature"><strong>#data=</strong>(data : Bytes)</a>
+        <a href="#service_unknown%3F-instance-method" class="signature"><strong>#service_unknown?</strong></a>
+        
+          <div class="summary"><p>Returns <code>true</code> if this enum value equals <code><a href="../../GRPC/Health/ServingStatus.html#SERVICE_UNKNOWN">SERVICE_UNKNOWN</a></code></p></div>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#offset%3AInt32-instance-method" class="signature"><strong>#offset</strong> : Int32</a>
+        <a href="#serving%3F-instance-method" class="signature"><strong>#serving?</strong></a>
+        
+          <div class="summary"><p>Returns <code>true</code> if this enum value equals <code><a href="../../GRPC/Health/ServingStatus.html#SERVING">SERVING</a></code></p></div>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#offset%3D%28offset%3AInt32%29-instance-method" class="signature"><strong>#offset=</strong>(offset : Int32)</a>
+        <a href="#unknown%3F-instance-method" class="signature"><strong>#unknown?</strong></a>
         
-      </li>
-    
-      <li class="entry-summary">
-        <a href="#remaining%3AInt32-instance-method" class="signature"><strong>#remaining</strong> : Int32</a>
+          <div class="summary"><p>Returns <code>true</code> if this enum value equals <code><a href="../../GRPC/Health/ServingStatus.html#UNKNOWN">UNKNOWN</a></code></p></div>
         
       </li>
     
@@ -611,35 +618,35 @@
 
 
     
+      
+
+
+      
+
+
+      
+
+
+      
+
+
+    
+      
+
+
+      
+
+
+      
+
+
+      
+
+
+    
   </div>
 
   
-  <h2>
-    <a id="constructor-detail" class="anchor" href="#constructor-detail">
-  <svg class="octicon-link" aria-hidden="true">
-    <use href="#octicon-link"/>
-  </svg>
-</a>
-    Constructor Detail
-  </h2>
-  
-    <div class="entry-detail" id="new(data:Bytes)-class-method">
-      <div class="signature">
-        
-        def self.<strong>new</strong>(data : Bytes)
-
-        <a class="method-permalink" href="#new%28data%3ABytes%29-class-method">#</a>
-      </div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/transport/http2_connection.cr#L65" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
-
 
   
 
@@ -655,82 +662,86 @@
     Instance Method Detail
   </h2>
   
-    <div class="entry-detail" id="data:Bytes-instance-method">
+    <div class="entry-detail" id="not_serving?-instance-method">
       <div class="signature">
         
-        def <strong>data</strong> : Bytes
+        def <strong>not_serving?</strong>
 
-        <a class="method-permalink" href="#data%3ABytes-instance-method">#</a>
+        <a class="method-permalink" href="#not_serving%3F-instance-method">#</a>
       </div>
+      
+        <div class="doc">
+          
+          <p>Returns <code>true</code> if this enum value equals <code><a href="../../GRPC/Health/ServingStatus.html#NOT_SERVING">NOT_SERVING</a></code></p>
+        </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/transport/http2_connection.cr#L62" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/health.cr#L6" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="data=(data:Bytes)-instance-method">
+    <div class="entry-detail" id="service_unknown?-instance-method">
       <div class="signature">
         
-        def <strong>data=</strong>(data : Bytes)
+        def <strong>service_unknown?</strong>
 
-        <a class="method-permalink" href="#data%3D%28data%3ABytes%29-instance-method">#</a>
+        <a class="method-permalink" href="#service_unknown%3F-instance-method">#</a>
       </div>
+      
+        <div class="doc">
+          
+          <p>Returns <code>true</code> if this enum value equals <code><a href="../../GRPC/Health/ServingStatus.html#SERVICE_UNKNOWN">SERVICE_UNKNOWN</a></code></p>
+        </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/transport/http2_connection.cr#L62" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/health.cr#L7" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="offset:Int32-instance-method">
+    <div class="entry-detail" id="serving?-instance-method">
       <div class="signature">
         
-        def <strong>offset</strong> : Int32
+        def <strong>serving?</strong>
 
-        <a class="method-permalink" href="#offset%3AInt32-instance-method">#</a>
+        <a class="method-permalink" href="#serving%3F-instance-method">#</a>
       </div>
+      
+        <div class="doc">
+          
+          <p>Returns <code>true</code> if this enum value equals <code><a href="../../GRPC/Health/ServingStatus.html#SERVING">SERVING</a></code></p>
+        </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/transport/http2_connection.cr#L63" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/health.cr#L5" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="offset=(offset:Int32)-instance-method">
+    <div class="entry-detail" id="unknown?-instance-method">
       <div class="signature">
         
-        def <strong>offset=</strong>(offset : Int32)
+        def <strong>unknown?</strong>
 
-        <a class="method-permalink" href="#offset%3D%28offset%3AInt32%29-instance-method">#</a>
+        <a class="method-permalink" href="#unknown%3F-instance-method">#</a>
       </div>
+      
+        <div class="doc">
+          
+          <p>Returns <code>true</code> if this enum value equals <code><a href="../../GRPC/Health/ServingStatus.html#UNKNOWN">UNKNOWN</a></code></p>
+        </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/transport/http2_connection.cr#L63" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
-    <div class="entry-detail" id="remaining:Int32-instance-method">
-      <div class="signature">
-        
-        def <strong>remaining</strong> : Int32
-
-        <a class="method-permalink" href="#remaining%3AInt32-instance-method">#</a>
-      </div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/transport/http2_connection.cr#L69" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/6e3d98fa6c5bc00047c1f8d24eef1830c56c52e8/src/grpc/health.cr#L4" target="_blank">View source</a>]
         
       </div>
     </div>
