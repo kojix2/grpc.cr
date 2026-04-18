@@ -329,6 +329,7 @@ module GRPC
       @tls_socket_anchor : OpenSSL::SSL::Socket::Client?
       @use_tls : Bool
       @endpoint_config : EndpointConfig
+      @target_authority : String
 
       def initialize(host : String, port : Int32, use_tls : Bool = false,
                      tls_context : OpenSSL::SSL::Context::Client? = nil,
@@ -346,6 +347,7 @@ module GRPC
         @tls_socket_anchor = nil
         @use_tls = use_tls
         @endpoint_config = endpoint_config
+        @target_authority = "#{host}:#{port}"
 
         io : IO
         if use_tls
@@ -640,7 +642,7 @@ module GRPC
           make_nv(":method", "POST"),
           make_nv(":scheme", @use_tls ? "https" : "http"),
           make_nv(":path", "/#{service}/#{method}"),
-          make_nv(":authority", @peer_address),
+          make_nv(":authority", @target_authority),
           make_nv("content-type", "application/grpc"),
           make_nv("te", "trailers"),
           make_nv("user-agent", "grpc-crystal/#{GRPC::VERSION}"),

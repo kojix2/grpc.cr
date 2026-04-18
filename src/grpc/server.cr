@@ -25,12 +25,14 @@ module GRPC
     @interceptors : Array(ServerInterceptor)
     @tls_context : OpenSSL::SSL::Context::Server?
     @transport_factory : ServerTransportFactory
+    @health_service : Health::Service?
 
     def initialize(transport_factory : ServerTransportFactory? = nil)
       @services = {} of String => Service
       @tcp_server = nil
       @interceptors = [] of ServerInterceptor
       @tls_context = nil
+      @health_service = nil
       @transport_factory = transport_factory || ->(io : IO, services : Hash(String, Service), interceptors : Array(ServerInterceptor), peer : String, tls_sock : OpenSSL::SSL::Socket::Server?) {
         Transport::Http2ServerConnection.new(io, services, interceptors, peer, tls_sock).as(Transport::ServerTransport)
       }
@@ -122,6 +124,24 @@ module GRPC
     # add_service is an alias for handle kept for backward compatibility.
     def add_service(service : Service) : self
       handle(service)
+    end
+
+    # enable_health_checking registers the built-in health service and returns it.
+    # Calling this multiple times returns the same instance.
+    def enable_health_checking(default_status : Health::ServingStatus = Health::ServingStatus::SERVING) : Health::Service
+      if service = @health_service
+        return service
+      end
+
+      service = Health::Service.new(default_status)
+      handle(service)
+      @health_service = service
+      service
+    end
+
+    # Returns the registered health service if enabled.
+    def health_service? : Health::Service?
+      @health_service
     end
 
     private def handle_connection(socket : TCPSocket, services : Hash(String, Service),

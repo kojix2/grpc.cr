@@ -39,14 +39,28 @@ end
 # ---------------------------------------------------------------------------
 
 class CrystalGrpcCodeGenerator
+  private record GeneratorOptions,
+    source_relative : Bool,
+    generate_server : Bool,
+    generate_stub : Bool,
+    emit_descriptor : Bool
+
   @resolver : Proto::Generator::TypeNameResolver
+  @options : GeneratorOptions
 
   def initialize
     @resolver = Proto::Generator::CanonicalTypeNameResolver.new
+    @options = GeneratorOptions.new(
+      source_relative: true,
+      generate_server: true,
+      generate_stub: true,
+      emit_descriptor: true,
+    )
   end
 
   # Entry point: process the request and return an encoded CodeGeneratorResponse.
   def run(request : PluginCodeGeneratorRequest) : Bytes
+    @options = parse_options(request.parameter)
     @resolver = Proto::Generator::TypeNameResolver.build(request.parameter, request.proto_file)
 
     file_index = {} of String => ProtoFileDescriptor
@@ -58,7 +72,7 @@ class CrystalGrpcCodeGenerator
       next unless fd
       next if fd.service.empty?
       content = generate_file(fd)
-      output_name = proto_name.sub(/\.proto$/, ".grpc.cr")
+      output_name = output_file_name(proto_name)
       generated << {output_name, content}
     end
 
@@ -96,9 +110,23 @@ class CrystalGrpcCodeGenerator
     str << "\n"
     str << "#{indent}module #{svc.name}\n"
     str << "#{indent}  FULL_NAME = #{full_name.inspect}\n"
-    generate_service_class(str, svc, fd, indent + "  ")
-    str << "\n"
-    generate_client_class(str, svc, fd, indent + "  ")
+    if @options.emit_descriptor
+      str << "#{indent}  FILE_DESCRIPTOR_PROTO_BYTES = "
+      descriptor_io = IO::Memory.new
+      fd.encode(descriptor_io)
+      emit_bytes_literal(str, descriptor_io.to_slice, indent + "  ")
+      str << "\n"
+    end
+
+    if @options.generate_server
+      generate_service_class(str, svc, fd, indent + "  ")
+      str << "\n" if @options.generate_stub
+    end
+
+    if @options.generate_stub
+      generate_client_class(str, svc, fd, indent + "  ")
+    end
+
     str << "#{indent}end\n"
   end
 
@@ -394,10 +422,30 @@ class CrystalGrpcCodeGenerator
 
   # "SayHello" → "say_hello", "GetFooBarBaz" → "get_foo_bar_baz"
   private def to_snake_case(name : String) : String
-    name
+    ident = name
       .gsub(/([A-Z]+)([A-Z][a-z])/, "\\1_\\2")
       .gsub(/([a-z\d])([A-Z])/, "\\1_\\2")
       .downcase
+
+    crystal_keyword?(ident) ? "#{ident}_" : ident
+  end
+
+  # Keep this intentionally small for now: only reserved keywords that would
+  # make generated method definitions invalid are escaped.
+  private def crystal_keyword?(name : String) : Bool
+    case name
+    when "abstract", "alias", "annotation", "as", "asm", "begin", "break",
+         "case", "class", "def", "do", "else", "elsif", "end", "ensure",
+         "enum", "extend", "for", "fun", "if", "in", "include", "instance_sizeof",
+         "is_a?", "lib", "macro", "module", "next", "nil", "nil?", "of", "out",
+         "pointerof", "private", "protected", "require", "rescue", "responds_to?",
+         "return", "select", "self", "sizeof", "struct", "super", "then", "type",
+         "typeof", "uninitialized", "union", "unless", "until", "verbatim", "when",
+         "while", "with", "yield"
+      true
+    else
+      false
+    end
   end
 
   # Emit a streaming predicate method that returns true for the listed RPC names.
@@ -414,5 +462,79 @@ class CrystalGrpcCodeGenerator
 
   private def full_service_name(fd : ProtoFileDescriptor, svc : ServiceDescriptor) : String
     fd.package.empty? ? svc.name : "#{fd.package}.#{svc.name}"
+  end
+
+  private def emit_bytes_literal(str : String::Builder, bytes : Bytes, indent : String) : Nil
+    if bytes.empty?
+      str << "Bytes.empty"
+      return
+    end
+
+    str << "Bytes[\n"
+    bytes.to_a.each_slice(16) do |chunk|
+      str << "#{indent}  "
+      chunk.each_with_index do |byte, idx|
+        str << "#{byte}_u8"
+        str << ", " unless idx == chunk.size - 1
+      end
+      str << ",\n"
+    end
+    str << "#{indent}]"
+  end
+
+  private def output_file_name(proto_name : String) : String
+    base = if @options.source_relative
+             proto_name
+           else
+             File.basename(proto_name)
+           end
+    base.sub(/\.proto$/, ".grpc.cr")
+  end
+
+  private def parse_options(parameter : String) : GeneratorOptions
+    source_relative = true
+    generate_server = true
+    generate_stub = true
+    emit_descriptor = true
+
+    parameter.split(',').each do |token|
+      key, value = split_once(token, '=')
+      key = key.strip
+      value = value.strip
+      next if key.empty?
+
+      case key
+      when "paths"
+        source_relative = value == "source_relative"
+      when "server"
+        generate_server = parse_bool_option(value, default: true)
+      when "stub"
+        generate_stub = parse_bool_option(value, default: true)
+      when "descriptor"
+        emit_descriptor = parse_bool_option(value, default: true)
+      end
+    end
+
+    GeneratorOptions.new(
+      source_relative: source_relative,
+      generate_server: generate_server,
+      generate_stub: generate_stub,
+      emit_descriptor: emit_descriptor,
+    )
+  end
+
+  private def parse_bool_option(value : String, default : Bool) : Bool
+    return default if value.empty?
+    case value.downcase
+    when "1", "true", "yes", "on"  then true
+    when "0", "false", "no", "off" then false
+    else                                default
+    end
+  end
+
+  private def split_once(text : String, delimiter : Char) : {String, String}
+    idx = text.index(delimiter)
+    return {text, ""} unless idx
+    {text[0, idx], text[idx + 1, text.bytesize - idx - 1]}
   end
 end

@@ -32,6 +32,16 @@ module GRPC
       @code == StatusCode::OK
     end
 
+    def ==(other : self) : Bool
+      @code == other.code && @message == other.message && @details == other.details
+    end
+
+    def hash(hasher)
+      hasher = @code.hash(hasher)
+      hasher = @message.hash(hasher)
+      @details.hash(hasher)
+    end
+
     def self.ok : Status
       new(StatusCode::OK)
     end

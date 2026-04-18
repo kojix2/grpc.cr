@@ -115,6 +115,7 @@ describe CrystalGrpcCodeGenerator do
 
     c.should contain("module Greeter")
     c.should contain("FULL_NAME = \"helloworld.Greeter\"")
+    c.should contain("FILE_DESCRIPTOR_PROTO_BYTES = Bytes[")
     c.should contain("abstract class Service < GRPC::Service")
     c.should contain(%("helloworld.Greeter"))
     c.should contain("abstract def say_hello(request : HelloRequest, ctx : GRPC::ServerContext) : HelloReply")
@@ -239,6 +240,19 @@ describe CrystalGrpcCodeGenerator do
     content.should contain("def get_user_by_id(")
   end
 
+  it "escapes Crystal keyword method names" do
+    method = TestProtoEncode.method_proto("Class", ".myapp.Foo", ".myapp.Bar")
+    svc = TestProtoEncode.service_proto("UserService", [method])
+    file = TestProtoEncode.file_proto("user.proto", "myapp", [svc])
+
+    content = run_generator(
+      TestProtoEncode.request(["user.proto"], [file]),
+      "user.grpc.cr"
+    )
+    content.should contain("def class_(")
+    content.should_not contain("def class(")
+  end
+
   it "skips files with no services" do
     file = TestProtoEncode.file_proto("empty.proto", "empty", [] of Bytes)
     req_bytes = TestProtoEncode.request(["empty.proto"], [file])
@@ -249,6 +263,53 @@ describe CrystalGrpcCodeGenerator do
 
     content = extract_file_content(response_bytes, "empty.grpc.cr")
     content.should be_nil
+  end
+
+  it "supports paths=import by emitting basename output" do
+    method = TestProtoEncode.method_proto("Ping", ".pkg.Req", ".pkg.Res")
+    svc = TestProtoEncode.service_proto("EchoService", [method])
+    file = TestProtoEncode.file_proto("dir/sub/echo.proto", "pkg", [svc])
+
+    request = parse_request(
+      TestProtoEncode.request(["dir/sub/echo.proto"], [file], "paths=import")
+    )
+    generator = CrystalGrpcCodeGenerator.new
+    response_bytes = generator.run(request)
+
+    extract_file_content(response_bytes, "echo.grpc.cr").should_not be_nil
+    extract_file_content(response_bytes, "dir/sub/echo.grpc.cr").should be_nil
+  end
+
+  it "supports server/stub toggles" do
+    method = TestProtoEncode.method_proto("Ping", ".pkg.Req", ".pkg.Res")
+    svc = TestProtoEncode.service_proto("EchoService", [method])
+    file = TestProtoEncode.file_proto("echo.proto", "pkg", [svc])
+
+    only_server = run_generator(
+      TestProtoEncode.request(["echo.proto"], [file], "stub=false,server=true"),
+      "echo.grpc.cr"
+    )
+    only_server.should contain("abstract class Service < GRPC::Service")
+    only_server.should_not contain("class Client")
+
+    only_stub = run_generator(
+      TestProtoEncode.request(["echo.proto"], [file], "stub=true,server=false"),
+      "echo.grpc.cr"
+    )
+    only_stub.should contain("class Client")
+    only_stub.should_not contain("abstract class Service < GRPC::Service")
+  end
+
+  it "supports descriptor=false" do
+    method = TestProtoEncode.method_proto("Ping", ".pkg.Req", ".pkg.Res")
+    svc = TestProtoEncode.service_proto("EchoService", [method])
+    file = TestProtoEncode.file_proto("echo.proto", "pkg", [svc])
+
+    content = run_generator(
+      TestProtoEncode.request(["echo.proto"], [file], "descriptor=false"),
+      "echo.grpc.cr"
+    )
+    content.should_not contain("FILE_DESCRIPTOR_PROTO_BYTES")
   end
 
   it "handles cross-package type references" do

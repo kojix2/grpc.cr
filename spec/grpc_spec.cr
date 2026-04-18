@@ -445,6 +445,81 @@ describe GRPC do
     end
   end
 
+  describe GRPC::Health::Service do
+    it "returns SERVING for empty service by default" do
+      service = GRPC::Health::Service.new
+      ctx = GRPC::ServerContext.new("peer")
+
+      body, status = service.dispatch("Check", GRPC::Health::CheckRequest.new.encode, ctx)
+      status.should eq(GRPC::Status.ok)
+      GRPC::Health::CheckResponse.decode(body).status.should eq(GRPC::Health::ServingStatus::SERVING)
+    end
+
+    it "returns SERVICE_UNKNOWN when named service has no status" do
+      service = GRPC::Health::Service.new
+      ctx = GRPC::ServerContext.new("peer")
+      req = GRPC::Health::CheckRequest.new("my.service")
+
+      body, status = service.dispatch("Check", req.encode, ctx)
+      status.should eq(GRPC::Status.ok)
+      GRPC::Health::CheckResponse.decode(body).status.should eq(GRPC::Health::ServingStatus::SERVICE_UNKNOWN)
+    end
+
+    it "returns configured status for named service" do
+      service = GRPC::Health::Service.new
+      service.set_status("my.service", GRPC::Health::ServingStatus::NOT_SERVING)
+      ctx = GRPC::ServerContext.new("peer")
+      req = GRPC::Health::CheckRequest.new("my.service")
+
+      body, status = service.dispatch("Check", req.encode, ctx)
+      status.should eq(GRPC::Status.ok)
+      GRPC::Health::CheckResponse.decode(body).status.should eq(GRPC::Health::ServingStatus::NOT_SERVING)
+    end
+
+    it "treats Watch as server-streaming" do
+      service = GRPC::Health::Service.new
+      service.server_streaming?("Watch").should be_true
+      service.server_streaming?("Check").should be_false
+    end
+
+    it "Watch sends one initial status and returns OK" do
+      service = GRPC::Health::Service.new
+      service.set_status("my.service", GRPC::Health::ServingStatus::NOT_SERVING)
+      ctx = GRPC::ServerContext.new("peer")
+      req = GRPC::Health::CheckRequest.new("my.service")
+      sent = [] of Bytes
+      writer = GRPC::RawResponseStream.new(->(bytes : Bytes) { sent << bytes; nil })
+
+      status = service.dispatch_server_stream("Watch", req.encode, ctx, writer)
+
+      status.should eq(GRPC::Status.ok)
+      sent.size.should eq(1)
+      body, consumed = GRPC::Codec.decode(sent[0])
+      consumed.should eq(sent[0].size)
+      GRPC::Health::CheckResponse.decode(body).status.should eq(GRPC::Health::ServingStatus::NOT_SERVING)
+    end
+  end
+
+  describe GRPC::Server do
+    it "registers health service via enable_health_checking" do
+      server = GRPC::Server.new
+
+      health = server.enable_health_checking
+
+      health.service_full_name.should eq("grpc.health.v1.Health")
+      server.health_service?.should be(health)
+    end
+
+    it "reuses existing health service on repeated calls" do
+      server = GRPC::Server.new
+
+      first = server.enable_health_checking
+      second = server.enable_health_checking(default_status: GRPC::Health::ServingStatus::NOT_SERVING)
+
+      second.should be(first)
+    end
+  end
+
   describe GRPC::Transport::PendingCall do
     it "decodes grpc-status-details-bin from trailers" do
       call = GRPC::Transport::PendingCall.new
