@@ -107,10 +107,13 @@ module GRPC
       end
 
       def grpc_status : Status
-        code_str = @trailers.get("grpc-status") || "0"
+        code_str = @trailers.get("grpc-status") || @headers.get("grpc-status") || "0"
         code_int = code_str.to_i? || 0
-        message = TrailerCodec.percent_decode(@trailers.get("grpc-message") || "")
-        details = @trailers.get_bin("grpc-status-details-bin") || TrailerCodec.decode_bin(@trailers.get("grpc-status-details-bin"))
+        message = TrailerCodec.percent_decode(@trailers.get("grpc-message") || @headers.get("grpc-message") || "")
+        details = @trailers.get_bin("grpc-status-details-bin") ||
+                  TrailerCodec.decode_bin(@trailers.get("grpc-status-details-bin")) ||
+                  @headers.get_bin("grpc-status-details-bin") ||
+                  TrailerCodec.decode_bin(@headers.get("grpc-status-details-bin"))
         Status.new(StatusCode.from_value?(code_int) || StatusCode::UNKNOWN, message, details)
       end
     end
@@ -151,10 +154,13 @@ module GRPC
       end
 
       def grpc_status : Status
-        code_str = @trailers.get("grpc-status") || "0"
+        code_str = @trailers.get("grpc-status") || @response_headers.get("grpc-status") || "0"
         code_int = code_str.to_i? || 0
-        message = TrailerCodec.percent_decode(@trailers.get("grpc-message") || "")
-        details = @trailers.get_bin("grpc-status-details-bin") || TrailerCodec.decode_bin(@trailers.get("grpc-status-details-bin"))
+        message = TrailerCodec.percent_decode(@trailers.get("grpc-message") || @response_headers.get("grpc-message") || "")
+        details = @trailers.get_bin("grpc-status-details-bin") ||
+                  TrailerCodec.decode_bin(@trailers.get("grpc-status-details-bin")) ||
+                  @response_headers.get_bin("grpc-status-details-bin") ||
+                  TrailerCodec.decode_bin(@response_headers.get("grpc-status-details-bin"))
         Status.new(StatusCode.from_value?(code_int) || StatusCode::UNKNOWN, message, details)
       end
 
