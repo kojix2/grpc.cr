@@ -553,7 +553,7 @@
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc/blob/98cc0e56b506270118d58ea05da430b1478ca64c/src/grpc/transport/http2_client_connection.cr#L296" target="_blank">
+      <a href="https://github.com/kojix2/grpc/blob/a6bfcdef36de9615265ee2e728c74fe5d56f6c72/src/grpc/transport/http2_client_connection.cr#L305" target="_blank">
         grpc/transport/http2_client_connection.cr
       </a>
     
@@ -593,9 +593,9 @@
       
     
       <dt class="entry-const" id="DATA_READ_CB_LIVE">
-        <strong>DATA_READ_CB_LIVE</strong> = <code><span class="t">LibNghttp2</span><span class="t">::</span><span class="t">DataSourceReadCallback</span>.new <span class="k">do</span> <span class="o">|</span>_session, _stream_id, buf, length, data_flags, source, _user_data<span class="o">|</span>
-  lsb <span class="o">=</span> <span class="t">Box</span>(<span class="t">LiveSendBuffer</span>).unbox(source.value.ptr)
-  lsb.read_into(buf, length, data_flags)
+        <strong>DATA_READ_CB_LIVE</strong> = <code><span class="t">LibNghttp2</span><span class="t">::</span><span class="t">DataSourceReadCallback</span>.new <span class="k">do</span> <span class="o">|</span>_session, stream_id, buf, length, data_flags, _source, user_data<span class="o">|</span>
+  conn <span class="o">=</span> <span class="t">Box</span>(<span class="t">Http2ClientConnection</span>).unbox(user_data)
+  conn.read_live_send_data(stream_id, buf, length, data_flags)
 <span class="k">end</span></code>
       </dt>
       
@@ -864,7 +864,7 @@
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/98cc0e56b506270118d58ea05da430b1478ca64c/src/grpc/transport/http2_client_connection.cr#L331" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/a6bfcdef36de9615265ee2e728c74fe5d56f6c72/src/grpc/transport/http2_client_connection.cr#L340" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -896,7 +896,7 @@
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/98cc0e56b506270118d58ea05da430b1478ca64c/src/grpc/transport/http2_client_connection.cr#L675" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/a6bfcdef36de9615265ee2e728c74fe5d56f6c72/src/grpc/transport/http2_client_connection.cr#L682" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -912,7 +912,7 @@
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/98cc0e56b506270118d58ea05da430b1478ca64c/src/grpc/transport/http2_client_connection.cr#L699" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/a6bfcdef36de9615265ee2e728c74fe5d56f6c72/src/grpc/transport/http2_client_connection.cr#L706" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -928,7 +928,7 @@
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/98cc0e56b506270118d58ea05da430b1478ca64c/src/grpc/transport/http2_client_connection.cr#L707" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/a6bfcdef36de9615265ee2e728c74fe5d56f6c72/src/grpc/transport/http2_client_connection.cr#L714" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -944,7 +944,7 @@
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/98cc0e56b506270118d58ea05da430b1478ca64c/src/grpc/transport/http2_client_connection.cr#L686" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/a6bfcdef36de9615265ee2e728c74fe5d56f6c72/src/grpc/transport/http2_client_connection.cr#L693" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -960,7 +960,7 @@
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/98cc0e56b506270118d58ea05da430b1478ca64c/src/grpc/transport/http2_client_connection.cr#L719" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/a6bfcdef36de9615265ee2e728c74fe5d56f6c72/src/grpc/transport/http2_client_connection.cr#L726" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -985,7 +985,7 @@ send_raw blocks the calling fiber (0 = unbounded).</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/98cc0e56b506270118d58ea05da430b1478ca64c/src/grpc/transport/http2_client_connection.cr#L406" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/a6bfcdef36de9615265ee2e728c74fe5d56f6c72/src/grpc/transport/http2_client_connection.cr#L415" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -1011,7 +1011,7 @@ send_raw blocks the calling fiber (0 = unbounded).</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/98cc0e56b506270118d58ea05da430b1478ca64c/src/grpc/transport/http2_client_connection.cr#L418" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/a6bfcdef36de9615265ee2e728c74fe5d56f6c72/src/grpc/transport/http2_client_connection.cr#L427" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -1033,7 +1033,7 @@ delivers server-pushed messages as they arrive.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/98cc0e56b506270118d58ea05da430b1478ca64c/src/grpc/transport/http2_client_connection.cr#L396" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/a6bfcdef36de9615265ee2e728c74fe5d56f6c72/src/grpc/transport/http2_client_connection.cr#L405" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -1054,7 +1054,7 @@ delivers server-pushed messages as they arrive.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/98cc0e56b506270118d58ea05da430b1478ca64c/src/grpc/transport/http2_client_connection.cr#L389" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/a6bfcdef36de9615265ee2e728c74fe5d56f6c72/src/grpc/transport/http2_client_connection.cr#L398" target="_blank">View source</a>]
         
       </div>
     </div>
