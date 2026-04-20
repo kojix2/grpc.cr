@@ -1444,6 +1444,56 @@ describe "GRPC full-duplex bidi streaming" do
       server.stop
     end
   end
+
+  it "continues delivering messages after an earlier deadline-exceeded unary call" do
+    deadline_port = find_free_port
+    deadline_server = GRPC::Server.new
+    deadline_server.handle DeadlineProbeService.new
+    deadline_server.bind("127.0.0.1:#{deadline_port}")
+    deadline_server.start
+    deadline_channel = GRPC::Channel.new("127.0.0.1:#{deadline_port}")
+
+    begin
+      ctx = GRPC::ClientContext.new(deadline: 30.milliseconds)
+      response = deadline_channel.unary_call("test.DeadlineProbe", "SlowUnary", Bytes.empty, ctx)
+      response.status.ok?.should be_false
+      response.status.code.should eq(GRPC::StatusCode::DEADLINE_EXCEEDED)
+    ensure
+      deadline_channel.close
+      deadline_server.stop
+    end
+
+    bidi_port = find_free_port
+    bidi_server = GRPC::Server.new
+    bidi_server.handle FullDuplexEchoService.new
+    bidi_server.bind("127.0.0.1:#{bidi_port}")
+    bidi_server.start
+    bidi_channel = GRPC::Channel.new("127.0.0.1:#{bidi_port}")
+
+    begin
+      raw = bidi_channel.open_bidi_stream_live("test.FullDuplexEcho", "EchoStream")
+      received = [] of String
+      done = ::Channel(Nil).new(1)
+
+      spawn do
+        raw.each { |bytes| received << TestProto.decode_string(bytes) }
+        done.send(nil)
+      end
+
+      raw.send_raw(TestProto.encode_string("alpha"))
+      sleep 200.milliseconds
+      raw.send_raw(TestProto.encode_string("beta"))
+      raw.send_raw(TestProto.encode_string("gamma"))
+      raw.close_send
+
+      done.receive
+      received.should eq(["alpha", "beta", "gamma"])
+      raw.status.ok?.should be_true
+    ensure
+      bidi_channel.close
+      bidi_server.stop
+    end
+  end
 end
 
 describe "GRPC live client streaming" do
