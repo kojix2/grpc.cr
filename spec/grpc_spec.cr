@@ -351,6 +351,49 @@ describe GRPC do
       String.new(drained2[0]).should eq("world")
       buffer.remainder_size.should eq(0)
     end
+
+    it "handles one-byte fragmented delivery without losing message boundaries" do
+      buffer = GRPC::Transport::GrpcDeframer.new
+      payload = "x" * 16_384
+      frame = GRPC::Codec.encode(payload.to_slice)
+      drained = [] of Bytes
+
+      frame.each do |byte|
+        chunk = Bytes.new(1)
+        chunk[0] = byte
+        buffer.append(chunk)
+        drained.concat(buffer.drain_messages)
+      end
+
+      drained.size.should eq(1)
+      String.new(drained[0]).should eq(payload)
+      buffer.remainder_size.should eq(0)
+    end
+
+    it "decodes multiple frames split across uneven chunk sizes" do
+      buffer = GRPC::Transport::GrpcDeframer.new
+      msg1 = GRPC::Codec.encode("alpha".to_slice)
+      msg2 = GRPC::Codec.encode("beta".to_slice)
+      msg3 = GRPC::Codec.encode("gamma".to_slice)
+      wire = msg1 + msg2 + msg3
+
+      drained = [] of Bytes
+      chunk_sizes = [2, 7, 1, 11, 3, 5] of Int32
+      offset = 0
+      index = 0
+
+      while offset < wire.size
+        requested = chunk_sizes[index % chunk_sizes.size]
+        size = Math.min(requested, wire.size - offset)
+        buffer.append(wire[offset, size])
+        drained.concat(buffer.drain_messages)
+        offset += size
+        index += 1
+      end
+
+      drained.map { |bytes| String.new(bytes) }.should eq(["alpha", "beta", "gamma"])
+      buffer.remainder_size.should eq(0)
+    end
   end
 
   describe GRPC::Transport::GrpcStatusInterpreter do
