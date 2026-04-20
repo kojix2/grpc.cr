@@ -554,7 +554,7 @@ It receives gRPC requests, dispatches to registered services, and sends response
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc/blob/219b10e146aad9c63bd0b8f17b4cea7178b68e83/src/grpc/transport/http2_server_connection.cr#L42" target="_blank">
+      <a href="https://github.com/kojix2/grpc/blob/98cc0e56b506270118d58ea05da430b1478ca64c/src/grpc/transport/http2_server_connection.cr#L42" target="_blank">
         grpc/transport/http2_server_connection.cr
       </a>
     
@@ -696,6 +696,11 @@ so the stream stays open for subsequent data or trailer submission.</p>
       </li>
     
       <li class="entry-summary">
+        <a href="#on_frame_send_cb%28frame%3APointer%28Void%29%29%3ANil-instance-method" class="signature"><strong>#on_frame_send_cb</strong>(frame : Pointer(Void)) : Nil</a>
+        
+      </li>
+    
+      <li class="entry-summary">
         <a href="#on_header_cb%28frame%3APointer%28Void%29%2Cname%3APointer%28UInt8%29%2Cnlen%3ALibC%3A%3ASizeT%2Cvalue%3APointer%28UInt8%29%2Cvlen%3ALibC%3A%3ASizeT%29%3ANil-instance-method" class="signature"><strong>#on_header_cb</strong>(frame : Pointer(Void), name : Pointer(UInt8), nlen : LibC::SizeT, value : Pointer(UInt8), vlen : LibC::SizeT) : Nil</a>
         
       </li>
@@ -761,6 +766,11 @@ so the stream stays open for subsequent data or trailer submission.</p>
     <a href="../../GRPC/Transport/Http2Connection.html#on_frame_recv_cb%28frame%3APointer%28Void%29%29%3ANil-instance-method" class="tooltip">
       <span>on_frame_recv_cb(frame : Pointer(Void)) : Nil</span>
     on_frame_recv_cb</a>, 
+    
+  
+    <a href="../../GRPC/Transport/Http2Connection.html#on_frame_send_cb%28frame%3APointer%28Void%29%29%3ANil-instance-method" class="tooltip">
+      <span>on_frame_send_cb(frame : Pointer(Void)) : Nil</span>
+    on_frame_send_cb</a>, 
     
   
     <a href="../../GRPC/Transport/Http2Connection.html#on_header_cb%28frame%3APointer%28Void%29%2Cname%3APointer%28UInt8%29%2Cnlen%3ALibC%3A%3ASizeT%2Cvalue%3APointer%28UInt8%29%2Cvlen%3ALibC%3A%3ASizeT%29%3ANil-instance-method" class="tooltip">
@@ -848,7 +858,7 @@ so the stream stays open for subsequent data or trailer submission.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/219b10e146aad9c63bd0b8f17b4cea7178b68e83/src/grpc/transport/http2_server_connection.cr#L156" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/98cc0e56b506270118d58ea05da430b1478ca64c/src/grpc/transport/http2_server_connection.cr#L164" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -880,7 +890,7 @@ so the stream stays open for subsequent data or trailer submission.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/219b10e146aad9c63bd0b8f17b4cea7178b68e83/src/grpc/transport/http2_server_connection.cr#L177" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/98cc0e56b506270118d58ea05da430b1478ca64c/src/grpc/transport/http2_server_connection.cr#L189" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -896,7 +906,7 @@ so the stream stays open for subsequent data or trailer submission.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/219b10e146aad9c63bd0b8f17b4cea7178b68e83/src/grpc/transport/http2_server_connection.cr#L201" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/98cc0e56b506270118d58ea05da430b1478ca64c/src/grpc/transport/http2_server_connection.cr#L213" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -912,7 +922,23 @@ so the stream stays open for subsequent data or trailer submission.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/219b10e146aad9c63bd0b8f17b4cea7178b68e83/src/grpc/transport/http2_server_connection.cr#L221" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/98cc0e56b506270118d58ea05da430b1478ca64c/src/grpc/transport/http2_server_connection.cr#L233" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="on_frame_send_cb(frame:Pointer(Void)):Nil-instance-method">
+      <div class="signature">
+        
+        def <strong>on_frame_send_cb</strong>(frame : Pointer(Void)) : Nil
+
+        <a class="method-permalink" href="#on_frame_send_cb%28frame%3APointer%28Void%29%29%3ANil-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc/blob/98cc0e56b506270118d58ea05da430b1478ca64c/src/grpc/transport/http2_server_connection.cr#L281" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -928,7 +954,7 @@ so the stream stays open for subsequent data or trailer submission.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/219b10e146aad9c63bd0b8f17b4cea7178b68e83/src/grpc/transport/http2_server_connection.cr#L188" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/98cc0e56b506270118d58ea05da430b1478ca64c/src/grpc/transport/http2_server_connection.cr#L200" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -944,7 +970,7 @@ so the stream stays open for subsequent data or trailer submission.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/219b10e146aad9c63bd0b8f17b4cea7178b68e83/src/grpc/transport/http2_server_connection.cr#L245" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/98cc0e56b506270118d58ea05da430b1478ca64c/src/grpc/transport/http2_server_connection.cr#L260" target="_blank">View source</a>]
         
       </div>
     </div>

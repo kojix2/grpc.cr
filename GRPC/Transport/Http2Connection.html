@@ -556,7 +556,7 @@ Subclasses implement server-specific or client-specific logic.</p>
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc/blob/219b10e146aad9c63bd0b8f17b4cea7178b68e83/src/grpc/transport/http2_connection.cr#L81" target="_blank">
+      <a href="https://github.com/kojix2/grpc/blob/98cc0e56b506270118d58ea05da430b1478ca64c/src/grpc/transport/http2_connection.cr#L81" target="_blank">
         grpc/transport/http2_connection.cr
       </a>
     
@@ -651,6 +651,11 @@ Subclasses implement server-specific or client-specific logic.</p>
       </li>
     
       <li class="entry-summary">
+        <a href="#on_frame_send_cb%28frame%3APointer%28Void%29%29%3ANil-instance-method" class="signature"><strong>#on_frame_send_cb</strong>(frame : Pointer(Void)) : Nil</a>
+        
+      </li>
+    
+      <li class="entry-summary">
         <a href="#on_header_cb%28frame%3APointer%28Void%29%2Cname%3APointer%28UInt8%29%2Cnlen%3ALibC%3A%3ASizeT%2Cvalue%3APointer%28UInt8%29%2Cvlen%3ALibC%3A%3ASizeT%29%3ANil-instance-method" class="signature"><strong>#on_header_cb</strong>(frame : Pointer(Void), name : Pointer(UInt8), nlen : LibC::SizeT, value : Pointer(UInt8), vlen : LibC::SizeT) : Nil</a>
         
       </li>
@@ -722,7 +727,7 @@ Subclasses implement server-specific or client-specific logic.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/219b10e146aad9c63bd0b8f17b4cea7178b68e83/src/grpc/transport/http2_connection.cr#L96" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/98cc0e56b506270118d58ea05da430b1478ca64c/src/grpc/transport/http2_connection.cr#L96" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -754,7 +759,7 @@ Subclasses implement server-specific or client-specific logic.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/219b10e146aad9c63bd0b8f17b4cea7178b68e83/src/grpc/transport/http2_connection.cr#L229" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/98cc0e56b506270118d58ea05da430b1478ca64c/src/grpc/transport/http2_connection.cr#L247" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -770,7 +775,7 @@ Subclasses implement server-specific or client-specific logic.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/219b10e146aad9c63bd0b8f17b4cea7178b68e83/src/grpc/transport/http2_connection.cr#L92" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/98cc0e56b506270118d58ea05da430b1478ca64c/src/grpc/transport/http2_connection.cr#L92" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -786,7 +791,7 @@ Subclasses implement server-specific or client-specific logic.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/219b10e146aad9c63bd0b8f17b4cea7178b68e83/src/grpc/transport/http2_connection.cr#L175" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/98cc0e56b506270118d58ea05da430b1478ca64c/src/grpc/transport/http2_connection.cr#L182" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -802,7 +807,7 @@ Subclasses implement server-specific or client-specific logic.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/219b10e146aad9c63bd0b8f17b4cea7178b68e83/src/grpc/transport/http2_connection.cr#L182" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/98cc0e56b506270118d58ea05da430b1478ca64c/src/grpc/transport/http2_connection.cr#L189" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -818,7 +823,23 @@ Subclasses implement server-specific or client-specific logic.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/219b10e146aad9c63bd0b8f17b4cea7178b68e83/src/grpc/transport/http2_connection.cr#L185" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/98cc0e56b506270118d58ea05da430b1478ca64c/src/grpc/transport/http2_connection.cr#L192" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="on_frame_send_cb(frame:Pointer(Void)):Nil-instance-method">
+      <div class="signature">
+        
+        def <strong>on_frame_send_cb</strong>(frame : Pointer(Void)) : Nil
+
+        <a class="method-permalink" href="#on_frame_send_cb%28frame%3APointer%28Void%29%29%3ANil-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc/blob/98cc0e56b506270118d58ea05da430b1478ca64c/src/grpc/transport/http2_connection.cr#L195" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -834,7 +855,7 @@ Subclasses implement server-specific or client-specific logic.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/219b10e146aad9c63bd0b8f17b4cea7178b68e83/src/grpc/transport/http2_connection.cr#L178" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/98cc0e56b506270118d58ea05da430b1478ca64c/src/grpc/transport/http2_connection.cr#L185" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -850,7 +871,7 @@ Subclasses implement server-specific or client-specific logic.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/219b10e146aad9c63bd0b8f17b4cea7178b68e83/src/grpc/transport/http2_connection.cr#L188" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/98cc0e56b506270118d58ea05da430b1478ca64c/src/grpc/transport/http2_connection.cr#L198" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -872,7 +893,7 @@ Runs until the connection closes.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/219b10e146aad9c63bd0b8f17b4cea7178b68e83/src/grpc/transport/http2_connection.cr#L209" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/98cc0e56b506270118d58ea05da430b1478ca64c/src/grpc/transport/http2_connection.cr#L227" target="_blank">View source</a>]
         
       </div>
     </div>
