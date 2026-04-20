@@ -161,6 +161,13 @@ module GRPC
             0
           end
         )
+        LibNghttp2.session_callbacks_set_on_frame_send_callback(callbacks,
+          LibNghttp2::OnFrameSendCallback.new do |_, frame, user_data|
+            conn = Box(Http2Connection).unbox(user_data)
+            conn.on_frame_send_cb(frame)
+            0
+          end
+        )
         LibNghttp2.session_callbacks_set_on_stream_close_callback(callbacks,
           LibNghttp2::OnStreamCloseCallback.new do |_, stream_id, error_code, user_data|
             conn = Box(Http2Connection).unbox(user_data)
@@ -183,6 +190,9 @@ module GRPC
       end
 
       def on_frame_recv_cb(frame : Void*) : Nil
+      end
+
+      def on_frame_send_cb(frame : Void*) : Nil
       end
 
       def on_stream_close_cb(stream_id : Int32, error_code : UInt32) : Nil

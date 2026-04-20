@@ -105,6 +105,9 @@ lib LibNghttp2
   # int on_frame_recv_callback(session, frame, user_data)
   alias OnFrameRecvCallback = (Session*, Void*, Void*) -> Int32
 
+  # int on_frame_send_callback(session, frame, user_data)
+  alias OnFrameSendCallback = (Session*, Void*, Void*) -> Int32
+
   # int on_begin_headers_callback(session, frame, user_data)
   alias OnBeginHeadersCallback = (Session*, Void*, Void*) -> Int32
 
@@ -136,6 +139,10 @@ lib LibNghttp2
 
   fun session_callbacks_set_on_frame_recv_callback = nghttp2_session_callbacks_set_on_frame_recv_callback(
     cbs : SessionCallbacks*, callback : OnFrameRecvCallback,
+  ) : Void
+
+  fun session_callbacks_set_on_frame_send_callback = nghttp2_session_callbacks_set_on_frame_send_callback(
+    cbs : SessionCallbacks*, callback : OnFrameSendCallback,
   ) : Void
 
   fun session_callbacks_set_on_begin_headers_callback = nghttp2_session_callbacks_set_on_begin_headers_callback(

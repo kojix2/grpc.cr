@@ -142,6 +142,14 @@ module GRPC
       @stream_boxes : Hash(Int32, Void*)
       # stream_id => SendBuffer (GC anchor for streaming chunk currently being flushed)
       @stream_send_bufs : Hash(Int32, SendBuffer)
+      # stream_id => [Void*] (GC anchors for nghttp2 DataSource.ptr boxes)
+      @stream_send_boxes : Hash(Int32, Array(Void*))
+      # stream_id => queued response chunks waiting for prior DATA send completion
+      @stream_pending_chunks : Hash(Int32, Deque(Bytes))
+      # stream_id => terminal trailers deferred until all DATA frames are sent
+      @stream_pending_trailers : Hash(Int32, Status)
+      # stream_id => whether a DATA frame is currently in flight
+      @stream_data_in_flight : Set(Int32)
       # stream_id => live request-streaming state
       @live_request_states : Hash(Int32, LiveRequestState)
       # stream_id => active server context (for deadline/cancel propagation)
@@ -164,6 +172,10 @@ module GRPC
         @response_ctxs = {} of Int32 => ResponseContext
         @stream_boxes = {} of Int32 => Void*
         @stream_send_bufs = {} of Int32 => SendBuffer
+        @stream_send_boxes = {} of Int32 => Array(Void*)
+        @stream_pending_chunks = {} of Int32 => Deque(Bytes)
+        @stream_pending_trailers = {} of Int32 => Status
+        @stream_data_in_flight = Set(Int32).new
         @live_request_states = {} of Int32 => LiveRequestState
         @stream_contexts = {} of Int32 => ServerContext
         @stream_headers_sent = Set(Int32).new
@@ -248,6 +260,11 @@ module GRPC
       def on_stream_close_cb(stream_id : Int32, error_code : UInt32) : Nil
         @stream_boxes.delete(stream_id)
         @response_ctxs.delete(stream_id)
+        @stream_send_bufs.delete(stream_id)
+        @stream_send_boxes.delete(stream_id)
+        @stream_pending_chunks.delete(stream_id)
+        @stream_pending_trailers.delete(stream_id)
+        @stream_data_in_flight.delete(stream_id)
         if state = @live_request_states.delete(stream_id)
           state.close
         end
@@ -259,6 +276,26 @@ module GRPC
         end
         @stream_headers_sent.delete(stream_id)
         @stream_terminated.delete(stream_id)
+      end
+
+      def on_frame_send_cb(frame : Void*) : Nil
+        return unless frame_type(frame) == LibNghttp2::FRAME_DATA
+        stream_id = frame_stream_id(frame)
+        return if stream_id <= 0
+
+        next_chunk : Bytes? = nil
+        @mutex.synchronize do
+          @stream_data_in_flight.delete(stream_id)
+          if queue = @stream_pending_chunks[stream_id]?
+            next_chunk = queue.shift?
+            @stream_pending_chunks.delete(stream_id) if queue.empty?
+          end
+          if chunk = next_chunk
+            submit_stream_chunk_now(stream_id, chunk, flush: false)
+          elsif trailer = @stream_pending_trailers.delete(stream_id)
+            submit_stream_trailers_now(stream_id, trailer, flush: false)
+          end
+        end
       end
 
       # ---- Dispatch ----
@@ -458,27 +495,45 @@ module GRPC
       private def send_stream_chunk(stream_id : Int32, framed_bytes : Bytes) : Nil
         @mutex.synchronize do
           return if stream_terminated?(stream_id)
-          sb = SendBuffer.new(framed_bytes)
-          @stream_send_bufs[stream_id] = sb
-          boxed = Box.box(sb)
-          src = LibNghttp2::DataSource.new
-          src.ptr = boxed
-          dp = LibNghttp2::DataProvider.new(source: src, read_callback: STREAMING_DATA_READ_CB)
-          rc = LibNghttp2.submit_data(@session, LibNghttp2::FLAG_NONE, stream_id, pointerof(dp))
-          LOGGER.error { "submit_data error: #{String.new(LibNghttp2.strerror(rc))}" } if rc < 0
-          flush_send
-          @stream_send_bufs.delete(stream_id)
+          if @stream_data_in_flight.includes?(stream_id)
+            (@stream_pending_chunks[stream_id] ||= Deque(Bytes).new) << framed_bytes
+          else
+            submit_stream_chunk_now(stream_id, framed_bytes, flush: true)
+          end
         end
+      end
+
+      private def submit_stream_chunk_now(stream_id : Int32, framed_bytes : Bytes, flush : Bool) : Nil
+        sb = SendBuffer.new(framed_bytes)
+        @stream_send_bufs[stream_id] = sb
+        boxed = Box.box(sb)
+        (@stream_send_boxes[stream_id] ||= [] of Void*) << boxed
+        src = LibNghttp2::DataSource.new
+        src.ptr = boxed
+        dp = LibNghttp2::DataProvider.new(source: src, read_callback: STREAMING_DATA_READ_CB)
+        rc = LibNghttp2.submit_data(@session, LibNghttp2::FLAG_NONE, stream_id, pointerof(dp))
+        raise ConnectionError.new("submit_data failed: #{String.new(LibNghttp2.strerror(rc))} (#{rc})") if rc < 0
+        @stream_data_in_flight.add(stream_id)
+        flush_send if flush
       end
 
       private def send_stream_trailers(stream_id : Int32, status : Status) : Nil
         @mutex.synchronize do
           return if stream_terminated?(stream_id)
-          mark_stream_terminated(stream_id)
-          trailer_nva = build_status_trailers(status)
-          LibNghttp2.submit_trailer(@session, stream_id, trailer_nva.to_unsafe, trailer_nva.size)
-          flush_send
+          if @stream_data_in_flight.includes?(stream_id) || @stream_pending_chunks[stream_id]?
+            @stream_pending_trailers[stream_id] = status
+          else
+            submit_stream_trailers_now(stream_id, status, flush: true)
+          end
         end
+      end
+
+      private def submit_stream_trailers_now(stream_id : Int32, status : Status, flush : Bool) : Nil
+        return if stream_terminated?(stream_id)
+        mark_stream_terminated(stream_id)
+        trailer_nva = build_status_trailers(status)
+        LibNghttp2.submit_trailer(@session, stream_id, trailer_nva.to_unsafe, trailer_nva.size)
+        flush_send if flush
       end
 
       private def send_response(stream_id : Int32, body : Bytes, status : Status) : Nil
