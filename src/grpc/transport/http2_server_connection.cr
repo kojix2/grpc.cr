@@ -220,7 +220,10 @@ module GRPC
 
       def on_frame_recv_cb(frame : Void*) : Nil
         return unless frame_end_stream?(frame)
+        # Ignore SETTINGS ACK: FLAG_ACK == FLAG_END_STREAM == 0x01.
+        return if frame_type(frame) == LibNghttp2::FRAME_SETTINGS
         stream_id = frame_stream_id(frame)
+        return if stream_id <= 0
         sd = stream_data_for(stream_id)
         return unless sd
 
