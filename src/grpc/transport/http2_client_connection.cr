@@ -236,7 +236,7 @@ module GRPC
       def take_resume_request : Bool
         @lsb_mutex.synchronize do
           should_resume = @resume_requested && @deferred
-          @resume_requested = false
+          @resume_requested = false if should_resume
           should_resume
         end
       end
