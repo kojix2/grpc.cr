@@ -45,6 +45,8 @@ module GRPC
 
       def add_header(key : String, value : String) : Nil
         @header_state.add_header(key, value)
+      rescue ex : ArgumentError
+        self.transport_error = Status.internal(ex.message || "invalid response metadata")
       end
 
       def receive_data(chunk : Bytes) : Nil
@@ -135,6 +137,8 @@ module GRPC
 
       def add_header(key : String, value : String) : Nil
         @header_state.add_header(key, value)
+      rescue ex : ArgumentError
+        self.transport_error = Status.internal(ex.message || "invalid response metadata")
       end
 
       def wait : Nil

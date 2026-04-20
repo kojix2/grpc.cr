@@ -95,6 +95,30 @@ describe GRPC do
 
       m.get_bin("trace-bin").should eq(Bytes[1, 2, 3])
     end
+
+    it "rejects text values for binary metadata keys" do
+      m = GRPC::Metadata.new
+
+      expect_raises(ArgumentError) do
+        m.add("trace-bin", "AQID")
+      end
+    end
+
+    it "rejects binary values for text metadata keys" do
+      m = GRPC::Metadata.new
+
+      expect_raises(ArgumentError) do
+        m.add_bin("trace", Bytes[1, 2, 3])
+      end
+    end
+
+    it "rejects invalid wire-format binary metadata" do
+      m = GRPC::Metadata.new
+
+      expect_raises(ArgumentError) do
+        m.add_wire("trace-bin", "!!!")
+      end
+    end
   end
 
   describe GRPC::Endpoint do
@@ -597,7 +621,7 @@ describe GRPC do
       call = GRPC::Transport::PendingCall.new
       call.trailers.add("grpc-status", GRPC::StatusCode::INVALID_ARGUMENT.value.to_s)
       call.trailers.add("grpc-message", "bad%20request")
-      call.trailers.add("grpc-status-details-bin", Base64.strict_encode(Bytes[0x0A, 0x01, 0x7F]))
+      call.trailers.add_bin("grpc-status-details-bin", Bytes[0x0A, 0x01, 0x7F])
 
       status = call.grpc_status
       status.code.should eq(GRPC::StatusCode::INVALID_ARGUMENT)
@@ -661,7 +685,7 @@ describe GRPC do
       stream = GRPC::Transport::PendingStream.new
       stream.trailers.add("grpc-status", "13")
       stream.trailers.add("grpc-message", "boom")
-      stream.trailers.add("grpc-status-details-bin", Base64.strict_encode(Bytes[0x01]))
+      stream.trailers.add_bin("grpc-status-details-bin", Bytes[0x01])
       stream.trailers.add("x-extra", "ok")
       stream.trailers.add("x-extra", "second")
 

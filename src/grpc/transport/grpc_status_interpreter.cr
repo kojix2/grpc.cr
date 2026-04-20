@@ -14,9 +14,7 @@ module GRPC
 
         message = TrailerCodec.percent_decode(trailers.get("grpc-message") || headers.get("grpc-message") || "")
         details = trailers.get_bin("grpc-status-details-bin") ||
-                  TrailerCodec.decode_bin(trailers.get("grpc-status-details-bin")) ||
-                  headers.get_bin("grpc-status-details-bin") ||
-                  TrailerCodec.decode_bin(headers.get("grpc-status-details-bin"))
+                  headers.get_bin("grpc-status-details-bin")
         code = StatusCode.from_value?(code_int)
         return Status.unknown("invalid grpc-status: #{code_str}") unless code
 

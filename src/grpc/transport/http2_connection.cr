@@ -34,7 +34,10 @@ module GRPC
 
       def decode_bin(data : String?) : Bytes?
         return if data.nil? || data.empty?
-        Base64.decode(data)
+        decoded = Base64.decode(data)
+        canonical = Base64.strict_encode(decoded)
+        return decoded if data == canonical || data == canonical.gsub(/=+$/, "")
+        nil
       rescue
         nil
       end
@@ -44,11 +47,13 @@ module GRPC
     class StreamData
       property headers : Metadata
       property body : IO::Memory
+      property header_error : Status?
       property? closed : Bool
 
       def initialize
         @headers = Metadata.new
         @body = IO::Memory.new
+        @header_error = nil
         @closed = false
       end
 

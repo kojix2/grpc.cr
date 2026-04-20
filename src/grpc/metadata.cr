@@ -18,36 +18,42 @@ module GRPC
     end
 
     def set(key : String, value : String) : Nil
-      values = values_for(normalize_key(key))
+      normalized = normalize_key(key)
+      validate_text_key!(normalized)
+      values = values_for(normalized)
       values.clear
       values << value
     end
 
     def add(key : String, value : String) : Nil
-      values_for(normalize_key(key)) << value
+      normalized = normalize_key(key)
+      validate_text_key!(normalized)
+      values_for(normalized) << value
     end
 
     def set_bin(key : String, value : Bytes) : Nil
-      values = values_for(normalize_key(key))
+      normalized = normalize_key(key)
+      validate_binary_key!(normalized)
+      values = values_for(normalized)
       values.clear
       values << value.dup
     end
 
     def add_bin(key : String, value : Bytes) : Nil
-      values_for(normalize_key(key)) << value.dup
+      normalized = normalize_key(key)
+      validate_binary_key!(normalized)
+      values_for(normalized) << value.dup
     end
 
     def add_wire(key : String, value : String) : Nil
       normalized = normalize_key(key)
       if binary_key?(normalized)
-        begin
-          add_bin(normalized, Base64.decode(value))
-        rescue
-          add(normalized, value)
-        end
+        add_bin(normalized, decode_binary_wire_value(value))
       else
         add(normalized, value)
       end
+    rescue ex
+      raise ArgumentError.new("invalid wire metadata for #{normalized}: #{ex.message}")
     end
 
     def get(key : String) : String?
@@ -160,6 +166,27 @@ module GRPC
 
     private def binary_key?(key : String) : Bool
       key.ends_with?("-bin")
+    end
+
+    private def decode_binary_wire_value(value : String) : Bytes
+      decoded = Base64.decode(value)
+      canonical = Base64.strict_encode(decoded)
+      return decoded if value == canonical || value == canonical.gsub(/=+$/, "")
+      raise ArgumentError.new("invalid base64")
+    rescue ex : ArgumentError
+      raise ex
+    rescue
+      raise ArgumentError.new("invalid base64")
+    end
+
+    private def validate_text_key!(key : String) : Nil
+      return unless binary_key?(key)
+      raise ArgumentError.new("binary metadata key #{key} requires Bytes via add_bin/set_bin")
+    end
+
+    private def validate_binary_key!(key : String) : Nil
+      return if binary_key?(key)
+      raise ArgumentError.new("text metadata key #{key} cannot store binary metadata")
     end
   end
 end

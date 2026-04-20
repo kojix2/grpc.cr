@@ -179,7 +179,11 @@ module GRPC
         sd = stream_data_for(stream_id)
         return unless sd
 
-        sd.headers.add_wire(String.new(name, nlen), String.new(value, vlen))
+        begin
+          sd.headers.add_wire(String.new(name, nlen), String.new(value, vlen))
+        rescue ex : ArgumentError
+          sd.header_error = Status.invalid_argument(ex.message || "invalid request metadata")
+        end
       end
 
       def on_data_chunk_cb(stream_id : Int32, data : UInt8*, len : LibC::SizeT) : Nil
@@ -237,6 +241,11 @@ module GRPC
       # ---- Dispatch ----
 
       private def dispatch_request(stream_id : Int32, sd : StreamData) : Nil
+        if error = sd.header_error
+          send_error(stream_id, error.code, error.message)
+          return
+        end
+
         path = sd.headers.get(":path") || ""
         meta = build_metadata(sd.headers)
         ctx = ServerContext.new(@peer_address, meta, parse_deadline(sd.headers))
@@ -267,6 +276,11 @@ module GRPC
       private def dispatch_live_request_stream(stream_id : Int32, sd : StreamData,
                                                service : Service, method_name : String,
                                                state : LiveRequestState) : Nil
+        if error = sd.header_error
+          send_error(stream_id, error.code, error.message)
+          return
+        end
+
         meta = build_metadata(sd.headers)
         ctx = ServerContext.new(@peer_address, meta, parse_deadline(sd.headers))
 
