@@ -303,6 +303,8 @@ module GRPC
       @pending_streams : Hash(Int32, PendingStream)
       # stream_id => Void* (GC anchor for stream user data)
       @stream_boxes : Hash(Int32, Void*)
+      # stream_id => Void* (GC anchor for nghttp2 DataSource.ptr boxes)
+      @data_source_boxes : Hash(Int32, Void*)
       # GC anchor for the TLS context and socket (prevents premature collection)
       @tls_context_anchor : OpenSSL::SSL::Context::Client?
       @tls_socket_anchor : OpenSSL::SSL::Socket::Client?
@@ -347,6 +349,7 @@ module GRPC
         @pending = {} of Int32 => PendingCall
         @pending_streams = {} of Int32 => PendingStream
         @stream_boxes = {} of Int32 => Void*
+        @data_source_boxes = {} of Int32 => Void*
 
         # nghttp2 client session automatically prepends the HTTP/2 connection preface
         # to the first session_mem_send output, so we must NOT write it manually.
@@ -484,7 +487,8 @@ module GRPC
           nvlen = nva_list.size
 
           src = LibNghttp2::DataSource.new
-          src.ptr = Box.box(sb)
+          boxed_src = Box.box(sb)
+          src.ptr = boxed_src
           dp = LibNghttp2::DataProvider.new(source: src, read_callback: DATA_READ_CB)
 
           boxed_call = Box.box(call)
@@ -493,6 +497,7 @@ module GRPC
 
           @pending[stream_id] = call
           @stream_boxes[stream_id] = boxed_call
+          @data_source_boxes[stream_id] = boxed_src
           flush_send
         end
 
@@ -549,7 +554,8 @@ module GRPC
           nvlen = nva_list.size
 
           src = LibNghttp2::DataSource.new
-          src.ptr = Box.box(sb)
+          boxed_src = Box.box(sb)
+          src.ptr = boxed_src
           dp = LibNghttp2::DataProvider.new(source: src, read_callback: DATA_READ_CB)
 
           boxed_ps = Box.box(ps)
@@ -558,6 +564,7 @@ module GRPC
 
           @pending_streams[stream_id] = ps
           @stream_boxes[stream_id] = boxed_ps
+          @data_source_boxes[stream_id] = boxed_src
 
           # Wire up the cancel proc so PendingStream.cancel can send RST_STREAM.
           ps.cancel_proc = -> {
@@ -591,7 +598,8 @@ module GRPC
           nvlen = nva_list.size
 
           src = LibNghttp2::DataSource.new
-          src.ptr = Box.box(lsb)
+          boxed_src = Box.box(lsb)
+          src.ptr = boxed_src
           dp = LibNghttp2::DataProvider.new(source: src, read_callback: DATA_READ_CB_LIVE)
 
           boxed_ps = Box.box(ps)
@@ -600,6 +608,7 @@ module GRPC
 
           @pending_streams[stream_id] = ps
           @stream_boxes[stream_id] = boxed_ps
+          @data_source_boxes[stream_id] = boxed_src
 
           ps.send_resume_proc = -> {
             @mutex.synchronize do
@@ -696,6 +705,7 @@ module GRPC
         end
         ps.finish if ps # wake up blocked reader on unexpected close
         @stream_boxes.delete(stream_id)
+        @data_source_boxes.delete(stream_id)
       end
 
       private def stream_close_status(error_code : UInt32) : Status
