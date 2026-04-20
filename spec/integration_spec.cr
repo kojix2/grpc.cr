@@ -218,6 +218,46 @@ class MetaEchoService < GRPC::Service
   end
 end
 
+# Used to verify deadline enforcement while handlers are still running.
+class DeadlineProbeService < GRPC::Service
+  SERVICE_FULL_NAME = "test.DeadlineProbe"
+
+  def service_full_name : String
+    SERVICE_FULL_NAME
+  end
+
+  def dispatch(method : String, request_body : Bytes, ctx : GRPC::ServerContext) : {Bytes, GRPC::Status}
+    case method
+    when "SlowUnary"
+      sleep 200.milliseconds
+      {TestProto.encode_string("late"), GRPC::Status.ok}
+    else
+      {Bytes.empty, GRPC::Status.unimplemented("unknown method")}
+    end
+  end
+
+  def server_streaming?(method : String) : Bool
+    method == "SlowServerStream"
+  end
+
+  def dispatch_server_stream(method : String, request_body : Bytes,
+                             ctx : GRPC::ServerContext, writer : GRPC::RawResponseStream) : GRPC::Status
+    case method
+    when "SlowServerStream"
+      i = 0
+      loop do
+        break if ctx.cancelled?
+        writer.send_raw(TestProto.encode_string("tick:#{i}"))
+        i += 1
+        sleep 10.milliseconds
+      end
+      GRPC::Status.ok
+    else
+      GRPC::Status.unimplemented("unknown method")
+    end
+  end
+end
+
 # --- Interceptors ---
 
 class RecordingClientInterceptor < GRPC::ClientInterceptor
@@ -1183,6 +1223,45 @@ describe "GRPC deadline" do
       response = channel.unary_call("test.MetaEcho", "HasDeadline", Bytes.empty, meta)
       response.status.ok?.should be_false
       response.status.code.should eq(GRPC::StatusCode::INVALID_ARGUMENT)
+    ensure
+      channel.close
+      server.stop
+    end
+  end
+
+  it "terminates a slow unary handler when deadline is exceeded mid-flight" do
+    port = find_free_port
+    server = GRPC::Server.new
+    server.handle DeadlineProbeService.new
+    server.bind("127.0.0.1:#{port}")
+    server.start
+    channel = GRPC::Channel.new("127.0.0.1:#{port}")
+
+    begin
+      ctx = GRPC::ClientContext.new(deadline: 30.milliseconds)
+      response = channel.unary_call("test.DeadlineProbe", "SlowUnary", Bytes.empty, ctx)
+      response.status.ok?.should be_false
+      response.status.code.should eq(GRPC::StatusCode::DEADLINE_EXCEEDED)
+    ensure
+      channel.close
+      server.stop
+    end
+  end
+
+  it "terminates a running server-stream handler on deadline expiry" do
+    port = find_free_port
+    server = GRPC::Server.new
+    server.handle DeadlineProbeService.new
+    server.bind("127.0.0.1:#{port}")
+    server.start
+    channel = GRPC::Channel.new("127.0.0.1:#{port}")
+
+    begin
+      ctx = GRPC::ClientContext.new(deadline: 40.milliseconds)
+      stream = channel.open_server_stream("test.DeadlineProbe", "SlowServerStream", Bytes.empty, ctx)
+      stream.each { |_bytes| }
+      stream.status.ok?.should be_false
+      stream.status.code.should eq(GRPC::StatusCode::DEADLINE_EXCEEDED)
     ensure
       channel.close
       server.stop

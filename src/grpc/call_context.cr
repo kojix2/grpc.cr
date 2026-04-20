@@ -12,19 +12,19 @@ module GRPC
     getter peer : String
     property deadline : Time?
 
-    @cancelled : Bool
+    @cancelled : Atomic(Bool)
 
     def initialize(@peer : String, @metadata : Metadata = Metadata.new, @deadline : Time? = nil)
-      @cancelled = false
+      @cancelled = Atomic(Bool).new(false)
     end
 
     # cancel marks this call as cancelled from the server side.
     def cancel : Nil
-      @cancelled = true
+      @cancelled.set(true)
     end
 
     def cancelled? : Bool
-      @cancelled
+      @cancelled.get || timed_out?
     end
 
     def timed_out? : Bool
@@ -33,6 +33,13 @@ module GRPC
       else
         false
       end
+    end
+
+    # check_active! raises a StatusError when the call is no longer active.
+    # This lets transport and handlers stop work promptly on cancellation/timeout.
+    def check_active! : Nil
+      raise StatusError.new(StatusCode::DEADLINE_EXCEEDED, "deadline exceeded") if timed_out?
+      raise StatusError.new(StatusCode::CANCELLED, "call cancelled") if @cancelled.get
     end
   end
 

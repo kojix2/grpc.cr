@@ -144,6 +144,14 @@ module GRPC
       @stream_send_bufs : Hash(Int32, SendBuffer)
       # stream_id => live request-streaming state
       @live_request_states : Hash(Int32, LiveRequestState)
+      # stream_id => active server context (for deadline/cancel propagation)
+      @stream_contexts : Hash(Int32, ServerContext)
+      # stream_id => whether response headers were already sent
+      @stream_headers_sent : Set(Int32)
+      # stream_id => whether terminal response/trailers were already sent
+      @stream_terminated : Set(Int32)
+      # stream_id => stop signal for deadline watcher fiber
+      @deadline_watch_stops : Hash(Int32, ::Channel(Nil))
 
       def initialize(socket : IO, services : Hash(String, Service),
                      interceptors : Array(ServerInterceptor) = [] of ServerInterceptor,
@@ -157,6 +165,10 @@ module GRPC
         @stream_boxes = {} of Int32 => Void*
         @stream_send_bufs = {} of Int32 => SendBuffer
         @live_request_states = {} of Int32 => LiveRequestState
+        @stream_contexts = {} of Int32 => ServerContext
+        @stream_headers_sent = Set(Int32).new
+        @stream_terminated = Set(Int32).new
+        @deadline_watch_stops = {} of Int32 => ::Channel(Nil)
         setup_session(server_side: true)
       end
 
@@ -236,11 +248,20 @@ module GRPC
         if state = @live_request_states.delete(stream_id)
           state.close
         end
+        if ctx = @stream_contexts.delete(stream_id)
+          ctx.cancel
+        end
+        if stop = @deadline_watch_stops.delete(stream_id)
+          stop.send(nil) rescue nil
+        end
+        @stream_headers_sent.delete(stream_id)
+        @stream_terminated.delete(stream_id)
       end
 
       # ---- Dispatch ----
 
       private def dispatch_request(stream_id : Int32, sd : StreamData) : Nil
+        ctx : ServerContext? = nil
         if error = sd.header_error
           send_error(stream_id, error.code, error.message)
           return
@@ -249,6 +270,7 @@ module GRPC
         path = sd.headers.get(":path") || ""
         meta = build_metadata(sd.headers)
         ctx = ServerContext.new(@peer_address, meta, parse_deadline(sd.headers))
+        register_stream_context(stream_id, ctx)
 
         if deadline_exceeded?(ctx)
           send_error(stream_id, StatusCode::DEADLINE_EXCEEDED, "deadline exceeded")
@@ -271,11 +293,14 @@ module GRPC
         send_error(stream_id, ex.code, ex.message)
       rescue ex
         send_error(stream_id, StatusCode::INTERNAL, ex.message || "internal error")
+      ensure
+        unregister_stream_context(stream_id, ctx)
       end
 
       private def dispatch_live_request_stream(stream_id : Int32, sd : StreamData,
                                                service : Service, method_name : String,
                                                state : LiveRequestState) : Nil
+        ctx : ServerContext? = nil
         if error = sd.header_error
           send_error(stream_id, error.code, error.message)
           return
@@ -283,6 +308,7 @@ module GRPC
 
         meta = build_metadata(sd.headers)
         ctx = ServerContext.new(@peer_address, meta, parse_deadline(sd.headers))
+        register_stream_context(stream_id, ctx)
 
         if deadline_exceeded?(ctx)
           send_error(stream_id, StatusCode::DEADLINE_EXCEEDED, "deadline exceeded")
@@ -314,6 +340,7 @@ module GRPC
       ensure
         state.close
         @mutex.synchronize { @live_request_states.delete(stream_id) }
+        unregister_stream_context(stream_id, ctx)
       end
 
       # route_request handles unary and server-streaming RPCs only.
@@ -326,6 +353,7 @@ module GRPC
           decoded, _ = decode_message(request_bytes)
           send_stream_headers(stream_id)
           writer = RawResponseStream.new(->(framed : Bytes) {
+            ctx.check_active!
             send_stream_chunk(stream_id, framed)
           })
           status = dispatch_server_stream(method_name, decoded, ctx, writer, service)
@@ -391,6 +419,7 @@ module GRPC
         decoded, _ = decode_message(request_bytes)
         if @interceptors.empty?
           response_bytes, status = service.dispatch(method_name, decoded, ctx)
+          ctx.check_active!
           send_response(stream_id, response_bytes, status)
         else
           full_path = "/#{service.service_full_name}/#{method_name}"
@@ -402,6 +431,7 @@ module GRPC
           end
           chain = Interceptors.build_server_chain(@interceptors, base)
           response = chain.call(full_path, request, ctx)
+          ctx.check_active!
           send_response(stream_id, response.raw, response.status)
         end
       end
@@ -410,18 +440,21 @@ module GRPC
 
       private def send_stream_headers(stream_id : Int32) : Nil
         @mutex.synchronize do
+          return if stream_terminated?(stream_id)
           nva = StaticArray[
             make_nv(":status", "200"),
             make_nv("content-type", "application/grpc"),
           ]
           LibNghttp2.submit_headers(@session, LibNghttp2::FLAG_NONE, stream_id, nil,
             nva.to_unsafe, nva.size, nil)
+          @stream_headers_sent.add(stream_id)
           flush_send
         end
       end
 
       private def send_stream_chunk(stream_id : Int32, framed_bytes : Bytes) : Nil
         @mutex.synchronize do
+          return if stream_terminated?(stream_id)
           sb = SendBuffer.new(framed_bytes)
           @stream_send_bufs[stream_id] = sb
           boxed = Box.box(sb)
@@ -437,6 +470,8 @@ module GRPC
 
       private def send_stream_trailers(stream_id : Int32, status : Status) : Nil
         @mutex.synchronize do
+          return if stream_terminated?(stream_id)
+          mark_stream_terminated(stream_id)
           trailer_nva = build_status_trailers(status)
           LibNghttp2.submit_trailer(@session, stream_id, trailer_nva.to_unsafe, trailer_nva.size)
           flush_send
@@ -445,6 +480,8 @@ module GRPC
 
       private def send_response(stream_id : Int32, body : Bytes, status : Status) : Nil
         @mutex.synchronize do
+          return if stream_terminated?(stream_id)
+          mark_stream_terminated(stream_id)
           framed = Codec.encode(body)
           resp_ctx = ResponseContext.new(
             framed, stream_id,
@@ -471,10 +508,13 @@ module GRPC
 
       private def send_error(stream_id : Int32, code : StatusCode, message : String) : Nil
         @mutex.synchronize do
+          return if stream_terminated?(stream_id)
+          mark_stream_terminated(stream_id)
           nva = StaticArray[
             make_nv(":status", "200"),
             make_nv("content-type", "application/grpc"),
           ]
+          @stream_headers_sent.add(stream_id)
           LibNghttp2.submit_headers(@session, LibNghttp2::FLAG_NONE, stream_id, nil,
             nva.to_unsafe, nva.size, nil)
 
@@ -531,6 +571,75 @@ module GRPC
           state.error_status = Status.internal("incomplete gRPC frame body")
         end
         state.close
+      end
+
+      private def register_stream_context(stream_id : Int32, ctx : ServerContext) : Nil
+        stop = ::Channel(Nil).new(1)
+        @mutex.synchronize do
+          @stream_contexts[stream_id] = ctx
+          @deadline_watch_stops[stream_id] = stop
+        end
+        start_deadline_watcher(stream_id, ctx, stop)
+      end
+
+      private def unregister_stream_context(stream_id : Int32, ctx : ServerContext?) : Nil
+        return unless ctx
+        @mutex.synchronize do
+          current = @stream_contexts[stream_id]?
+          if current.same?(ctx)
+            @stream_contexts.delete(stream_id)
+            if stop = @deadline_watch_stops.delete(stream_id)
+              stop.send(nil) rescue nil
+            end
+          end
+        end
+      end
+
+      private def start_deadline_watcher(stream_id : Int32, ctx : ServerContext, stop : ::Channel(Nil)) : Nil
+        deadline = ctx.deadline
+        return unless deadline
+
+        spawn do
+          remaining = deadline - Time.utc
+          timed_out = false
+          if remaining > Time::Span.zero
+            select
+            when stop.receive
+            when timeout(remaining)
+              timed_out = true
+            end
+          else
+            timed_out = true
+          end
+
+          if timed_out
+            should_enforce = @mutex.synchronize do
+              current = @stream_contexts[stream_id]?
+              !current.nil? && current.same?(ctx) && !stream_terminated?(stream_id)
+            end
+            if should_enforce
+              ctx.cancel
+              if state = @live_request_states[stream_id]?
+                state.close
+              end
+
+              status = Status.new(StatusCode::DEADLINE_EXCEEDED, "deadline exceeded")
+              if @mutex.synchronize { @stream_headers_sent.includes?(stream_id) }
+                send_stream_trailers(stream_id, status)
+              else
+                send_error(stream_id, status.code, status.message)
+              end
+            end
+          end
+        end
+      end
+
+      private def stream_terminated?(stream_id : Int32) : Bool
+        @stream_terminated.includes?(stream_id)
+      end
+
+      private def mark_stream_terminated(stream_id : Int32) : Nil
+        @stream_terminated.add(stream_id)
       end
 
       private def deadline_exceeded?(ctx : ServerContext) : Bool
