@@ -562,16 +562,15 @@ module GRPC
         return if timeout_str.nil? || timeout_str.empty?
 
         # Format: integer followed by unit (H=hours, M=minutes, S=seconds, m=ms, u=us, n=ns)
-        return if timeout_str.size < 2
+        raise StatusError.new(StatusCode::INVALID_ARGUMENT, "invalid grpc-timeout") if timeout_str.size < 2
         unit = timeout_str[-1]
         value = timeout_str[0..-2].to_i64?
-        return unless value
+        raise StatusError.new(StatusCode::INVALID_ARGUMENT, "invalid grpc-timeout") unless value
+        raise StatusError.new(StatusCode::INVALID_ARGUMENT, "invalid grpc-timeout") if value < 0
 
         span = timeout_unit_to_span(unit, value)
-        return unless span
+        raise StatusError.new(StatusCode::INVALID_ARGUMENT, "invalid grpc-timeout") unless span
         Time.utc + span
-      rescue
-        nil
       end
 
       private def timeout_unit_to_span(unit : Char, value : Int64) : Time::Span?

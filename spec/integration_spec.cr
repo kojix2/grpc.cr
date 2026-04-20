@@ -1168,6 +1168,26 @@ describe "GRPC deadline" do
       server.stop
     end
   end
+
+  it "fails with INVALID_ARGUMENT when grpc-timeout format is malformed" do
+    port = find_free_port
+    server = GRPC::Server.new
+    server.handle MetaEchoService.new
+    server.bind("127.0.0.1:#{port}")
+    server.start
+    channel = GRPC::Channel.new("127.0.0.1:#{port}")
+
+    begin
+      meta = GRPC::Metadata.new
+      meta.add("grpc-timeout", "oops")
+      response = channel.unary_call("test.MetaEcho", "HasDeadline", Bytes.empty, meta)
+      response.status.ok?.should be_false
+      response.status.code.should eq(GRPC::StatusCode::INVALID_ARGUMENT)
+    ensure
+      channel.close
+      server.stop
+    end
+  end
 end
 
 describe "GRPC ServerStream status and trailers" do

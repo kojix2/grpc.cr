@@ -555,6 +555,14 @@ describe GRPC do
       status.message.should contain("missing grpc-status")
     end
 
+    it "prefers grpc-status over transport error override when trailers are present" do
+      call = GRPC::Transport::PendingCall.new
+      call.trailers.add("grpc-status", "0")
+      call.transport_error = GRPC::Status.unknown("transport close")
+
+      call.grpc_status.code.should eq(GRPC::StatusCode::OK)
+    end
+
     it "complete is idempotent" do
       call = GRPC::Transport::PendingCall.new
 
@@ -612,6 +620,14 @@ describe GRPC do
       status = stream.grpc_status
       status.code.should eq(GRPC::StatusCode::UNKNOWN)
       status.message.should contain("missing grpc-status")
+    end
+
+    it "prefers grpc-status over transport error override when trailers are present" do
+      stream = GRPC::Transport::PendingStream.new
+      stream.trailers.add("grpc-status", "0")
+      stream.transport_error = GRPC::Status.unknown("transport close")
+
+      stream.grpc_status.code.should eq(GRPC::StatusCode::OK)
     end
 
     it "finish is idempotent" do

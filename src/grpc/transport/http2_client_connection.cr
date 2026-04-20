@@ -120,12 +120,13 @@ module GRPC
       end
 
       def grpc_status : Status
-        if status = @status_override
-          return status
-        end
-
         code_str = @trailers.get("grpc-status") || @headers.get("grpc-status")
-        return Status.unknown("missing grpc-status trailer") unless code_str
+        unless code_str
+          if status = @status_override
+            return status
+          end
+          return Status.unknown("missing grpc-status trailer")
+        end
 
         code_int = code_str.to_i?
         return Status.unknown("invalid grpc-status: #{code_str}") unless code_int
@@ -188,12 +189,13 @@ module GRPC
       end
 
       def grpc_status : Status
-        if status = @status_override
-          return status
-        end
-
         code_str = @trailers.get("grpc-status") || @response_headers.get("grpc-status")
-        return Status.unknown("missing grpc-status trailer") unless code_str
+        unless code_str
+          if status = @status_override
+            return status
+          end
+          return Status.unknown("missing grpc-status trailer")
+        end
 
         code_int = code_str.to_i?
         return Status.unknown("invalid grpc-status: #{code_str}") unless code_int
