@@ -193,10 +193,18 @@ module GRPC
       # flush_send writes all pending nghttp2 outbound data to the socket.
       protected def flush_send : Nil
         return if @closed
+        empty_send_count = 0
         loop do
           data_ptr = Pointer(UInt8).null
           n = LibNghttp2.session_mem_send(@session, pointerof(data_ptr))
-          break if n <= 0
+          raise ConnectionError.new("session_mem_send failed: #{String.new(LibNghttp2.strerror(n.to_i32))} (#{n})") if n < 0
+          if n == 0
+            break if LibNghttp2.session_want_write(@session) == 0
+            empty_send_count += 1
+            raise ConnectionError.new("session_mem_send made no progress while write work remained") if empty_send_count > 16
+            next
+          end
+          empty_send_count = 0
           @socket.write(Slice.new(data_ptr, n))
         end
         @socket.flush
