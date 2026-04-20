@@ -342,6 +342,16 @@
       
     </li>
   
+  <li class=" " data-id="grpc/GRPC/Transport/GrpcDeframer" data-name="grpc::transport::grpcdeframer">
+      <a href="../../../GRPC/Transport/GrpcDeframer.html">GrpcDeframer</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Transport/GrpcStatusInterpreter" data-name="grpc::transport::grpcstatusinterpreter">
+      <a href="../../../GRPC/Transport/GrpcStatusInterpreter.html">GrpcStatusInterpreter</a>
+      
+    </li>
+  
   <li class=" " data-id="grpc/GRPC/Transport/Http2ClientConnection" data-name="grpc::transport::http2clientconnection">
       <a href="../../../GRPC/Transport/Http2ClientConnection.html">Http2ClientConnection</a>
       
@@ -399,6 +409,16 @@
   
   <li class=" " data-id="grpc/GRPC/Transport/StreamData" data-name="grpc::transport::streamdata">
       <a href="../../../GRPC/Transport/StreamData.html">StreamData</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Transport/StreamHeaderState" data-name="grpc::transport::streamheaderstate">
+      <a href="../../../GRPC/Transport/StreamHeaderState.html">StreamHeaderState</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/GRPC/Transport/StreamTerminalState" data-name="grpc::transport::streamterminalstate">
+      <a href="../../../GRPC/Transport/StreamTerminalState.html">StreamTerminalState</a>
       
     </li>
   
@@ -509,7 +529,7 @@
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc/blob/b0bcb187d5c774195702ffc47cc9113e3277375f/src/grpc/transport/http2_server_connection.cr#L47" target="_blank">
+      <a href="https://github.com/kojix2/grpc/blob/abb9df0db8d687e54d57f1d04c404daa88375dd6/src/grpc/transport/http2_server_connection.cr#L48" target="_blank">
         grpc/transport/http2_server_connection.cr
       </a>
     
@@ -555,17 +575,12 @@
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#buffer%3ABytes-instance-method" class="signature"><strong>#buffer</strong> : Bytes</a>
-        
-      </li>
-    
-      <li class="entry-summary">
-        <a href="#buffer%3D%28buffer%3ABytes%29-instance-method" class="signature"><strong>#buffer=</strong>(buffer : Bytes)</a>
-        
-      </li>
-    
-      <li class="entry-summary">
         <a href="#close%3ANil-instance-method" class="signature"><strong>#close</strong> : Nil</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#deframer%3AGrpcDeframer-instance-method" class="signature"><strong>#deframer</strong> : GrpcDeframer</a>
         
       </li>
     
@@ -649,7 +664,7 @@
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/b0bcb187d5c774195702ffc47cc9113e3277375f/src/grpc/transport/http2_server_connection.cr#L53" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/abb9df0db8d687e54d57f1d04c404daa88375dd6/src/grpc/transport/http2_server_connection.cr#L54" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -670,38 +685,6 @@
     Instance Method Detail
   </h2>
   
-    <div class="entry-detail" id="buffer:Bytes-instance-method">
-      <div class="signature">
-        
-        def <strong>buffer</strong> : Bytes
-
-        <a class="method-permalink" href="#buffer%3ABytes-instance-method">#</a>
-      </div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/kojix2/grpc/blob/b0bcb187d5c774195702ffc47cc9113e3277375f/src/grpc/transport/http2_server_connection.cr#L50" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
-    <div class="entry-detail" id="buffer=(buffer:Bytes)-instance-method">
-      <div class="signature">
-        
-        def <strong>buffer=</strong>(buffer : Bytes)
-
-        <a class="method-permalink" href="#buffer%3D%28buffer%3ABytes%29-instance-method">#</a>
-      </div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/kojix2/grpc/blob/b0bcb187d5c774195702ffc47cc9113e3277375f/src/grpc/transport/http2_server_connection.cr#L50" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
     <div class="entry-detail" id="close:Nil-instance-method">
       <div class="signature">
         
@@ -713,7 +696,23 @@
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/b0bcb187d5c774195702ffc47cc9113e3277375f/src/grpc/transport/http2_server_connection.cr#L66" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/abb9df0db8d687e54d57f1d04c404daa88375dd6/src/grpc/transport/http2_server_connection.cr#L67" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="deframer:GrpcDeframer-instance-method">
+      <div class="signature">
+        
+        def <strong>deframer</strong> : <a href="../../../GRPC/Transport/GrpcDeframer.html">GrpcDeframer</a>
+
+        <a class="method-permalink" href="#deframer%3AGrpcDeframer-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc/blob/abb9df0db8d687e54d57f1d04c404daa88375dd6/src/grpc/transport/http2_server_connection.cr#L51" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -729,7 +728,7 @@
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/b0bcb187d5c774195702ffc47cc9113e3277375f/src/grpc/transport/http2_server_connection.cr#L51" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/abb9df0db8d687e54d57f1d04c404daa88375dd6/src/grpc/transport/http2_server_connection.cr#L52" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -745,7 +744,7 @@
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/b0bcb187d5c774195702ffc47cc9113e3277375f/src/grpc/transport/http2_server_connection.cr#L51" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/abb9df0db8d687e54d57f1d04c404daa88375dd6/src/grpc/transport/http2_server_connection.cr#L52" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -761,7 +760,7 @@
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/b0bcb187d5c774195702ffc47cc9113e3277375f/src/grpc/transport/http2_server_connection.cr#L49" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/abb9df0db8d687e54d57f1d04c404daa88375dd6/src/grpc/transport/http2_server_connection.cr#L50" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -777,7 +776,7 @@
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/b0bcb187d5c774195702ffc47cc9113e3277375f/src/grpc/transport/http2_server_connection.cr#L61" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/abb9df0db8d687e54d57f1d04c404daa88375dd6/src/grpc/transport/http2_server_connection.cr#L62" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -793,7 +792,7 @@
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/b0bcb187d5c774195702ffc47cc9113e3277375f/src/grpc/transport/http2_server_connection.cr#L48" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/abb9df0db8d687e54d57f1d04c404daa88375dd6/src/grpc/transport/http2_server_connection.cr#L49" target="_blank">View source</a>]
         
       </div>
     </div>
