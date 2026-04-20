@@ -545,7 +545,7 @@ end</p>
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc/blob/21d0de659e0095adc876a7362c81e2dceb17579e/src/grpc/call_context.cr#L10" target="_blank">
+      <a href="https://github.com/kojix2/grpc/blob/fe41c4a63276f0656211580e4d832a9d1f7e73a7/src/grpc/call_context.cr#L10" target="_blank">
         grpc/call_context.cr
       </a>
     
@@ -599,6 +599,13 @@ end</p>
     
       <li class="entry-summary">
         <a href="#cancelled%3F%3ABool-instance-method" class="signature"><strong>#cancelled?</strong> : Bool</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#check_active%21%3ANil-instance-method" class="signature"><strong>#check_active!</strong> : Nil</a>
+        
+          <div class="summary"><p>check_active! raises a StatusError when the call is no longer active.</p></div>
         
       </li>
     
@@ -682,7 +689,7 @@ end</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/21d0de659e0095adc876a7362c81e2dceb17579e/src/grpc/call_context.cr#L17" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/fe41c4a63276f0656211580e4d832a9d1f7e73a7/src/grpc/call_context.cr#L17" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -719,7 +726,7 @@ end</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/21d0de659e0095adc876a7362c81e2dceb17579e/src/grpc/call_context.cr#L22" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/fe41c4a63276f0656211580e4d832a9d1f7e73a7/src/grpc/call_context.cr#L22" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -735,7 +742,29 @@ end</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/21d0de659e0095adc876a7362c81e2dceb17579e/src/grpc/call_context.cr#L26" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/fe41c4a63276f0656211580e4d832a9d1f7e73a7/src/grpc/call_context.cr#L26" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="check_active!:Nil-instance-method">
+      <div class="signature">
+        
+        def <strong>check_active!</strong> : Nil
+
+        <a class="method-permalink" href="#check_active%21%3ANil-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>check_active! raises a StatusError when the call is no longer active.
+This lets transport and handlers stop work promptly on cancellation/timeout.</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc/blob/fe41c4a63276f0656211580e4d832a9d1f7e73a7/src/grpc/call_context.cr#L40" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -751,7 +780,7 @@ end</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/21d0de659e0095adc876a7362c81e2dceb17579e/src/grpc/call_context.cr#L13" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/fe41c4a63276f0656211580e4d832a9d1f7e73a7/src/grpc/call_context.cr#L13" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -767,7 +796,7 @@ end</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/21d0de659e0095adc876a7362c81e2dceb17579e/src/grpc/call_context.cr#L13" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/fe41c4a63276f0656211580e4d832a9d1f7e73a7/src/grpc/call_context.cr#L13" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -783,7 +812,7 @@ end</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/21d0de659e0095adc876a7362c81e2dceb17579e/src/grpc/call_context.cr#L11" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/fe41c4a63276f0656211580e4d832a9d1f7e73a7/src/grpc/call_context.cr#L11" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -799,7 +828,7 @@ end</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/21d0de659e0095adc876a7362c81e2dceb17579e/src/grpc/call_context.cr#L12" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/fe41c4a63276f0656211580e4d832a9d1f7e73a7/src/grpc/call_context.cr#L12" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -815,7 +844,7 @@ end</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/21d0de659e0095adc876a7362c81e2dceb17579e/src/grpc/call_context.cr#L30" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/fe41c4a63276f0656211580e4d832a9d1f7e73a7/src/grpc/call_context.cr#L30" target="_blank">View source</a>]
         
       </div>
     </div>
