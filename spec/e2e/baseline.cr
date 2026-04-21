@@ -389,6 +389,18 @@ def run_grpcurl(
   {status, stdout.to_s, stderr.to_s}
 end
 
+def with_default_grpcurl_timeout(
+  flags : Array(String),
+  timeout_seconds : String = "5",
+) : Array(String)
+  return flags if flags.each_cons_pair.any? { |left, _right| left == "-max-time" }
+
+  args = flags.dup
+  args.unshift(timeout_seconds)
+  args.unshift("-max-time")
+  args
+end
+
 def grpcurl_base_flags : Array(String)
   proto_dir = File.expand_path("../fixtures/grpcurl", __DIR__)
   [
@@ -406,7 +418,7 @@ def grpcurl_call_args(
 ) : Array(String)
   args = [] of String
   args.concat(grpcurl_base_flags) if include_proto
-  args.concat(flags)
+  args.concat(with_default_grpcurl_timeout(flags))
   args << "127.0.0.1:#{port}"
   args << method
   args
@@ -419,7 +431,7 @@ def grpcurl_reflection_args(
   flags : Array(String) = [] of String,
 ) : Array(String)
   args = ["-plaintext"]
-  args.concat(flags)
+  args.concat(with_default_grpcurl_timeout(flags))
   args << "127.0.0.1:#{port}"
   args << command
   if value = subject
