@@ -32,9 +32,6 @@ module GRPC
     end
   end
 
-  # CallError is kept as an alias for StatusError.
-  CallError = StatusError
-
   # ConnectionError is raised when transport connectivity fails.
   # It surfaces to callers as StatusCode::UNAVAILABLE.
   class ConnectionError < Exception

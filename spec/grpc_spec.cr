@@ -270,10 +270,6 @@ describe GRPC do
 
       ex.trailers.get("x-extra").should eq("value")
     end
-
-    it "CallError is an alias for StatusError" do
-      GRPC::CallError.should eq(GRPC::StatusError)
-    end
   end
 
   describe GRPC::Transport::LiveSendBuffer do

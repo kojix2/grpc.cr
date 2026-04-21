@@ -123,7 +123,4 @@ module GRPC
       Status.unimplemented("bidi streaming not implemented for #{method}")
     end
   end
-
-  # ServiceHandler is kept as an alias for Service.
-  ServiceHandler = Service
 end

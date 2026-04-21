@@ -134,11 +134,6 @@ module GRPC
       end
     end
 
-    # add_service is an alias for handle kept for backward compatibility.
-    def add_service(service : Service) : self
-      handle(service)
-    end
-
     # enable_health_checking registers the built-in health service and returns it.
     # Calling this multiple times returns the same instance.
     def enable_health_checking(default_status : Health::ServingStatus = Health::ServingStatus::SERVING) : Health::Service
