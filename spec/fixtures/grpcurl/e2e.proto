@@ -17,3 +17,7 @@ message EchoRequest {
 message EchoReply {
   string message = 1;
 }
+
+message StringMessage {
+  string message = 1;
+}
