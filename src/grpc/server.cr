@@ -26,6 +26,8 @@ module GRPC
     @tls_context : OpenSSL::SSL::Context::Server?
     @transport_factory : ServerTransportFactory
     @health_service : Health::Service?
+    @active_transports : Hash(UInt64, Transport::ServerTransport)
+    @transport_mutex : Mutex
 
     def initialize(transport_factory : ServerTransportFactory? = nil)
       @services = {} of String => Service
@@ -33,6 +35,8 @@ module GRPC
       @interceptors = [] of ServerInterceptor
       @tls_context = nil
       @health_service = nil
+      @active_transports = {} of UInt64 => Transport::ServerTransport
+      @transport_mutex = Mutex.new
       @transport_factory = transport_factory || ->(io : IO, services : Hash(String, Service), interceptors : Array(ServerInterceptor), peer : String, tls_sock : OpenSSL::SSL::Socket::Server?) {
         Transport::Http2ServerConnection.new(io, services, interceptors, peer, tls_sock).as(Transport::ServerTransport)
       }
@@ -118,7 +122,16 @@ module GRPC
     end
 
     def stop : Nil
-      @tcp_server.try &.close
+      tcp = @tcp_server
+      @tcp_server = nil
+      tcp.try &.close
+
+      transports = @transport_mutex.synchronize do
+        @active_transports.values.dup
+      end
+      transports.each do |transport|
+        transport.close unless transport.closed?
+      end
     end
 
     # add_service is an alias for handle kept for backward compatibility.
@@ -154,11 +167,25 @@ module GRPC
         io = tls_sock
       end
       conn = @transport_factory.call(io, services, interceptors, peer, tls_sock)
+      register_transport(conn)
       conn.run_recv_loop
     rescue ex
       LOGGER.error(exception: ex) { "grpc connection error" }
     ensure
+      unregister_transport(conn) if conn
       socket.close rescue nil
+    end
+
+    private def register_transport(transport : Transport::ServerTransport) : Nil
+      @transport_mutex.synchronize do
+        @active_transports[transport.object_id] = transport
+      end
+    end
+
+    private def unregister_transport(transport : Transport::ServerTransport) : Nil
+      @transport_mutex.synchronize do
+        @active_transports.delete(transport.object_id)
+      end
     end
 
     private def split_address(address : String) : {String, Int32}

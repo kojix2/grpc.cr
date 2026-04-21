@@ -333,11 +333,50 @@ end
 class FakeServerTransport
   include GRPC::Transport::ServerTransport
 
+  @closed = false
+
   def initialize(@started : ::Channel(Nil))
   end
 
   def run_recv_loop : Nil
     @started.send(nil)
+  end
+
+  def closed? : Bool
+    @closed
+  end
+
+  def close : Nil
+    @closed = true
+  end
+end
+
+class BlockingServerTransport
+  include GRPC::Transport::ServerTransport
+
+  getter started : ::Channel(Nil)
+  getter closed_signal : ::Channel(Nil)
+
+  def initialize
+    @started = ::Channel(Nil).new(1)
+    @closed_signal = ::Channel(Nil).new(1)
+    @released = ::Channel(Nil).new(1)
+    @closed = Atomic(Bool).new(false)
+  end
+
+  def run_recv_loop : Nil
+    @started.send(nil)
+    @released.receive
+  end
+
+  def closed? : Bool
+    @closed.get
+  end
+
+  def close : Nil
+    return unless @closed.compare_and_set(false, true)[1]
+    @released.send(nil)
+    @closed_signal.send(nil)
   end
 end
 
@@ -392,6 +431,45 @@ describe "GRPC transport factory injection" do
       end
 
       created.should eq(1)
+    ensure
+      server.stop
+    end
+  end
+
+  it "closes active server transports on stop" do
+    transport = BlockingServerTransport.new
+
+    factory = ->(_io : IO, _services : Hash(String, GRPC::Service), _interceptors : Array(GRPC::ServerInterceptor), _peer : String, _tls_sock : OpenSSL::SSL::Socket::Server?) {
+      transport.as(GRPC::Transport::ServerTransport)
+    }
+
+    port_server = TCPServer.new("127.0.0.1", 0)
+    port = port_server.local_address.port
+    port_server.close
+
+    server = GRPC::Server.new(transport_factory: factory)
+    server.bind("127.0.0.1:#{port}")
+    server.start
+
+    begin
+      client = TCPSocket.new("127.0.0.1", port)
+      client.close
+
+      select
+      when transport.started.receive
+      when timeout(1.second)
+        fail "server transport did not start"
+      end
+
+      server.stop
+
+      select
+      when transport.closed_signal.receive
+      when timeout(1.second)
+        fail "server stop did not close the active transport"
+      end
+
+      transport.closed?.should be_true
     ensure
       server.stop
     end

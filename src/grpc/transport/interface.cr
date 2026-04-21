@@ -27,6 +27,8 @@ module GRPC
     # Concrete implementations (Http2ServerConnection) include this module.
     module ServerTransport
       abstract def run_recv_loop : Nil
+      abstract def closed? : Bool
+      abstract def close : Nil
     end
   end
 end

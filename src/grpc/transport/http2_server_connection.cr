@@ -109,7 +109,8 @@ module GRPC
                 flags: LibNghttp2::NV_FLAG_NONE)
             end
           end
-          LibNghttp2.submit_trailer(session, stream_id, trailer_nva.to_unsafe, trailer_nva.size)
+          rc = LibNghttp2.submit_trailer(session, stream_id, trailer_nva.to_unsafe, trailer_nva.size)
+          next LibNghttp2::ERR_CALLBACK_FAILURE.to_i64 if rc < 0
         end
         to_copy.to_i64
       end
@@ -490,8 +491,9 @@ module GRPC
             make_nv(":status", "200"),
             make_nv("content-type", "application/grpc"),
           ]
-          LibNghttp2.submit_headers(@session, LibNghttp2::FLAG_NONE, stream_id, nil,
+          rc = LibNghttp2.submit_headers(@session, LibNghttp2::FLAG_NONE, stream_id, nil,
             nva.to_unsafe, nva.size, nil)
+          raise_submit_error("submit_headers", rc) if rc < 0
           @stream_headers_sent.add(stream_id)
           flush_send
         end
@@ -537,7 +539,8 @@ module GRPC
         return if stream_terminated?(stream_id)
         mark_stream_terminated(stream_id)
         trailer_nva = build_status_trailers(status)
-        LibNghttp2.submit_trailer(@session, stream_id, trailer_nva.to_unsafe, trailer_nva.size)
+        rc = LibNghttp2.submit_trailer(@session, stream_id, trailer_nva.to_unsafe, trailer_nva.size)
+        raise_submit_error("submit_trailer", rc) if rc < 0
         flush_send if flush
       end
 
@@ -564,7 +567,7 @@ module GRPC
           dp = LibNghttp2::DataProvider.new(source: src, read_callback: DATA_READ_CB)
 
           rc = LibNghttp2.submit_response(@session, stream_id, nva.to_unsafe, nva.size, pointerof(dp))
-          LOGGER.error { "submit_response error: #{String.new(LibNghttp2.strerror(rc))}" } if rc != 0
+          raise_submit_error("submit_response", rc) if rc < 0
           flush_send
         end
       end
@@ -578,11 +581,13 @@ module GRPC
             make_nv("content-type", "application/grpc"),
           ]
           @stream_headers_sent.add(stream_id)
-          LibNghttp2.submit_headers(@session, LibNghttp2::FLAG_NONE, stream_id, nil,
+          headers_rc = LibNghttp2.submit_headers(@session, LibNghttp2::FLAG_NONE, stream_id, nil,
             nva.to_unsafe, nva.size, nil)
+          raise_submit_error("submit_headers", headers_rc) if headers_rc < 0
 
           trailer_nva = build_status_trailers(Status.new(code, message))
-          LibNghttp2.submit_trailer(@session, stream_id, trailer_nva.to_unsafe, trailer_nva.size)
+          trailer_rc = LibNghttp2.submit_trailer(@session, stream_id, trailer_nva.to_unsafe, trailer_nva.size)
+          raise_submit_error("submit_trailer", trailer_rc) if trailer_rc < 0
           flush_send
         end
       end
@@ -599,6 +604,10 @@ module GRPC
       end
 
       # ---- Helpers ----
+
+      private def raise_submit_error(operation : String, rc : Int32) : NoReturn
+        raise ConnectionError.new("#{operation} failed: #{String.new(LibNghttp2.strerror(rc))} (#{rc})")
+      end
 
       private def decode_message(data : Bytes) : {Bytes, Int32}
         Codec.decode(data)
