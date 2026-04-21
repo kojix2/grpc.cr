@@ -552,7 +552,7 @@ Concrete implementations (Http2ServerConnection) include this module.</p>
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc/blob/aee4c4134baecc2b9e3f6f0426d413428a92252d/src/grpc/transport/interface.cr#L28" target="_blank">
+      <a href="https://github.com/kojix2/grpc/blob/cc975ea2132009ae204f6be0f0079fc41faa5b5e/src/grpc/transport/interface.cr#L28" target="_blank">
         grpc/transport/interface.cr
       </a>
     
@@ -579,6 +579,16 @@ Concrete implementations (Http2ServerConnection) include this module.</p>
     Instance Method Summary
   </h2>
   <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#close%3ANil-instance-method" class="signature"><strong>#close</strong> : Nil</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#closed%3F%3ABool-instance-method" class="signature"><strong>#closed?</strong> : Bool</a>
+        
+      </li>
     
       <li class="entry-summary">
         <a href="#run_recv_loop%3ANil-instance-method" class="signature"><strong>#run_recv_loop</strong> : Nil</a>
@@ -609,6 +619,38 @@ Concrete implementations (Http2ServerConnection) include this module.</p>
     Instance Method Detail
   </h2>
   
+    <div class="entry-detail" id="close:Nil-instance-method">
+      <div class="signature">
+        abstract 
+        def <strong>close</strong> : Nil
+
+        <a class="method-permalink" href="#close%3ANil-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc/blob/cc975ea2132009ae204f6be0f0079fc41faa5b5e/src/grpc/transport/interface.cr#L31" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="closed?:Bool-instance-method">
+      <div class="signature">
+        abstract 
+        def <strong>closed?</strong> : Bool
+
+        <a class="method-permalink" href="#closed%3F%3ABool-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc/blob/cc975ea2132009ae204f6be0f0079fc41faa5b5e/src/grpc/transport/interface.cr#L30" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
     <div class="entry-detail" id="run_recv_loop:Nil-instance-method">
       <div class="signature">
         abstract 
@@ -620,7 +662,7 @@ Concrete implementations (Http2ServerConnection) include this module.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/aee4c4134baecc2b9e3f6f0426d413428a92252d/src/grpc/transport/interface.cr#L29" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/cc975ea2132009ae204f6be0f0079fc41faa5b5e/src/grpc/transport/interface.cr#L29" target="_blank">View source</a>]
         
       </div>
     </div>
