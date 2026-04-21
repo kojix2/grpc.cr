@@ -25,6 +25,21 @@ class TestDummyMarshaller < GRPC::Marshaller(DummyMessage)
   end
 end
 
+class ReflectionRegistryProbeService < GRPC::Service
+  SERVICE_FULL_NAME = "demo.Greeter"
+
+  def service_full_name : String
+    SERVICE_FULL_NAME
+  end
+
+  def dispatch(method : String, request_body : Bytes, ctx : GRPC::ServerContext) : {Bytes, GRPC::Status}
+    _ = method
+    _ = request_body
+    _ = ctx
+    {Bytes.empty, GRPC::Status.ok}
+  end
+end
+
 module ReflectionSpecWire
   LABEL_OPTIONAL = 1_u64
   TYPE_STRING    = 9_u64
@@ -831,7 +846,8 @@ describe GRPC do
 
     describe GRPC::Reflection::Service do
       it "lists registered services" do
-        service = GRPC::Reflection::Service.new(-> { ["demo.Greeter", GRPC::Reflection::Service::SERVICE_FULL_NAME] })
+        service = GRPC::Reflection::Service.new
+        service.register_service("demo.Greeter")
         sent = [] of Bytes
         writer = GRPC::RawResponseStream.new(->(framed : Bytes) {
           body, _ = GRPC::Codec.decode(framed)
@@ -858,7 +874,8 @@ describe GRPC do
 
       it "returns the matching file descriptor for symbol lookups" do
         descriptor = ReflectionSpecWire.build_demo_file_descriptor_proto
-        service = GRPC::Reflection::Service.new(-> { ["demo.Greeter"] })
+        service = GRPC::Reflection::Service.new
+        service.register_service("demo.Greeter")
         service.add_file_descriptor(descriptor)
 
         sent = [] of Bytes
@@ -888,7 +905,8 @@ describe GRPC do
           request_name: "RenamedRequest",
           reply_name: "RenamedReply",
         )
-        service = GRPC::Reflection::Service.new(-> { ["demo.Greeter"] })
+        service = GRPC::Reflection::Service.new
+        service.register_service("demo.Greeter")
         service.add_file_descriptor(original_descriptor)
         service.add_file_descriptor(replacement_descriptor)
 
@@ -913,6 +931,36 @@ describe GRPC do
         status.ok?.should be_true
         ReflectionSpecWire.decode_error_response(sent[0]).should eq({5, "symbol not found: demo.HelloRequest"})
         ReflectionSpecWire.decode_file_descriptor_response(sent[1]).should eq([replacement_descriptor])
+      end
+
+      it "server registers existing and later services with reflection" do
+        server = GRPC::Server.new
+        server.handle(ReflectionRegistryProbeService.new)
+
+        reflection = server.enable_reflection
+
+        reflection.register_service("extra.Debug")
+
+        sent = [] of Bytes
+        writer = GRPC::RawResponseStream.new(->(framed : Bytes) {
+          body, _ = GRPC::Codec.decode(framed)
+          sent << body
+          nil
+        })
+        requests = ::Channel(Bytes?).new(1)
+        requests.send(ReflectionSpecWire.encode_request(7, ""))
+        requests.close
+
+        status = reflection.dispatch_bidi_stream(
+          "ServerReflectionInfo",
+          GRPC::RawRequestStream.new(requests),
+          GRPC::ServerContext.new("peer", GRPC::Metadata.new),
+          writer,
+        )
+
+        status.ok?.should be_true
+        ReflectionSpecWire.decode_list_services_response(sent[0]).should contain("demo.Greeter")
+        ReflectionSpecWire.decode_list_services_response(sent[0]).should contain("extra.Debug")
       end
     end
   end

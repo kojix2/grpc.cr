@@ -47,6 +47,7 @@ module GRPC
     # handle registers a service implementation with the server.
     def handle(service : Service) : self
       @services[service.service_full_name] = service
+      @reflection_service.try &.register_service(service.service_full_name)
       self
     end
 
@@ -161,7 +162,10 @@ module GRPC
         return service
       end
 
-      service = Reflection::Service.new(-> { @services.keys.to_a.sort })
+      service = Reflection::Service.new
+      @services.each_key do |service_name|
+        service.register_service(service_name)
+      end
       handle(service)
       @reflection_service = service
       service

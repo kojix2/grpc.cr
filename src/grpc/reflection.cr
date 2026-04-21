@@ -390,12 +390,13 @@ module GRPC
     class Service < GRPC::Service
       SERVICE_FULL_NAME = "grpc.reflection.v1alpha.ServerReflection"
 
-      @service_names : Proc(Array(String))
+      @service_names : Set(String)
       @descriptor_indexes : Hash(String, DescriptorIndex)
       @descriptors_by_name : Hash(String, Bytes)
       @descriptor_files_by_symbol : Hash(String, Array(String))
 
-      def initialize(@service_names : Proc(Array(String)) = -> { [SERVICE_FULL_NAME] })
+      def initialize
+        @service_names = Set{SERVICE_FULL_NAME}
         @descriptor_indexes = {} of String => DescriptorIndex
         @descriptors_by_name = {} of String => Bytes
         @descriptor_files_by_symbol = {} of String => Array(String)
@@ -403,6 +404,11 @@ module GRPC
 
       def service_full_name : String
         SERVICE_FULL_NAME
+      end
+
+      def register_service(service_name : String) : self
+        @service_names.add(service_name)
+        self
       end
 
       def add_file_descriptor(bytes : Bytes) : self
@@ -526,7 +532,7 @@ module GRPC
 
       private def encode_list_services_response : Bytes
         io = IO::Memory.new
-        service_names = @service_names.call.uniq
+        service_names = @service_names.to_a
         service_names.sort!
         service_names.each do |service_name|
           entry = IO::Memory.new
