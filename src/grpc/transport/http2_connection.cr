@@ -230,6 +230,7 @@ module GRPC
           n = @socket.read(buf)
           break if n == 0
           @mutex.synchronize do
+            break if @closed || @session.null?
             result = LibNghttp2.session_mem_recv(@session, buf.to_unsafe, n)
             if result < 0
               @closed = true
@@ -245,11 +246,21 @@ module GRPC
       end
 
       def close : Nil
-        return if @closed
-        @closed = true
-        LibNghttp2.submit_goaway(@session, LibNghttp2::FLAG_NONE, 0, LibNghttp2::NO_ERROR, nil, 0)
-        flush_send rescue nil
-        LibNghttp2.session_del(@session)
+        @mutex.synchronize do
+          return if @closed || @session.null?
+
+          begin
+            rc = LibNghttp2.submit_goaway(@session, LibNghttp2::FLAG_NONE, 0, LibNghttp2::NO_ERROR, nil, 0)
+            if rc >= 0
+              flush_send rescue nil
+            end
+          ensure
+            LibNghttp2.session_del(@session)
+            @session = Pointer(LibNghttp2::Session).null
+            @closed = true
+          end
+        end
+
         @socket.close rescue nil
       end
 

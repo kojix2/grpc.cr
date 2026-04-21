@@ -486,7 +486,7 @@ module GRPC
 
       private def send_stream_headers(stream_id : Int32) : Nil
         @mutex.synchronize do
-          return if stream_terminated?(stream_id)
+          return if @closed || @session.null? || stream_terminated?(stream_id)
           nva = StaticArray[
             make_nv(":status", "200"),
             make_nv("content-type", "application/grpc"),
@@ -501,7 +501,7 @@ module GRPC
 
       private def send_stream_chunk(stream_id : Int32, framed_bytes : Bytes) : Nil
         @mutex.synchronize do
-          return if stream_terminated?(stream_id)
+          return if @closed || @session.null? || stream_terminated?(stream_id)
           if @stream_data_in_flight.includes?(stream_id)
             (@stream_pending_chunks[stream_id] ||= Deque(Bytes).new) << framed_bytes
           else
@@ -511,6 +511,7 @@ module GRPC
       end
 
       private def submit_stream_chunk_now(stream_id : Int32, framed_bytes : Bytes, flush : Bool) : Nil
+        return if @closed || @session.null?
         sb = SendBuffer.new(framed_bytes)
         @stream_send_bufs[stream_id] = sb
         boxed = Box.box(sb)
@@ -526,7 +527,7 @@ module GRPC
 
       private def send_stream_trailers(stream_id : Int32, status : Status) : Nil
         @mutex.synchronize do
-          return if stream_terminated?(stream_id)
+          return if @closed || @session.null? || stream_terminated?(stream_id)
           if @stream_data_in_flight.includes?(stream_id) || @stream_pending_chunks[stream_id]?
             @stream_pending_trailers[stream_id] = status
           else
@@ -536,7 +537,7 @@ module GRPC
       end
 
       private def submit_stream_trailers_now(stream_id : Int32, status : Status, flush : Bool) : Nil
-        return if stream_terminated?(stream_id)
+        return if @closed || @session.null? || stream_terminated?(stream_id)
         mark_stream_terminated(stream_id)
         trailer_nva = build_status_trailers(status)
         rc = LibNghttp2.submit_trailer(@session, stream_id, trailer_nva.to_unsafe, trailer_nva.size)
@@ -546,7 +547,7 @@ module GRPC
 
       private def send_response(stream_id : Int32, body : Bytes, status : Status) : Nil
         @mutex.synchronize do
-          return if stream_terminated?(stream_id)
+          return if @closed || @session.null? || stream_terminated?(stream_id)
           mark_stream_terminated(stream_id)
           framed = Codec.encode(body)
           resp_ctx = ResponseContext.new(
@@ -574,7 +575,7 @@ module GRPC
 
       private def send_error(stream_id : Int32, code : StatusCode, message : String) : Nil
         @mutex.synchronize do
-          return if stream_terminated?(stream_id)
+          return if @closed || @session.null? || stream_terminated?(stream_id)
           mark_stream_terminated(stream_id)
           nva = StaticArray[
             make_nv(":status", "200"),
