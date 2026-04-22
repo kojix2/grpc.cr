@@ -797,7 +797,7 @@ def wait_for_probe_observation(
     if observed = observer.last
       return observed
     end
-    return nil if Time.instant >= deadline
+    return if Time.instant >= deadline
     sleep 10.milliseconds
   end
 end

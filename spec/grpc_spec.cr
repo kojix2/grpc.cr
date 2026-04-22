@@ -264,6 +264,43 @@ describe GRPC do
       m.get_bin("trace-bin").should eq(Bytes[1, 2, 3])
     end
 
+    it "merge! duplicates binary metadata values" do
+      source = GRPC::Metadata.new
+      bytes = Bytes[1, 2, 3]
+      source.add_bin("trace-bin", bytes)
+
+      merged = GRPC::Metadata.new
+      merged.merge!(source)
+      bytes[0] = 9
+
+      source.get_bin("trace-bin").should eq(Bytes[1, 2, 3])
+      merged.get_bin("trace-bin").should eq(Bytes[1, 2, 3])
+
+      source_bin = source.get_bin("trace-bin")
+      merged_bin = merged.get_bin("trace-bin")
+      if source_bin && merged_bin
+        merged_bin.should_not be(source_bin)
+      end
+    end
+
+    it "dup duplicates binary metadata values" do
+      original = GRPC::Metadata.new
+      bytes = Bytes[4, 5, 6]
+      original.add_bin("trace-bin", bytes)
+
+      copy = original.dup
+      bytes[0] = 9
+
+      original.get_bin("trace-bin").should eq(Bytes[4, 5, 6])
+      copy.get_bin("trace-bin").should eq(Bytes[4, 5, 6])
+
+      original_bin = original.get_bin("trace-bin")
+      copy_bin = copy.get_bin("trace-bin")
+      if original_bin && copy_bin
+        copy_bin.should_not be(original_bin)
+      end
+    end
+
     it "rejects text values for binary metadata keys" do
       m = GRPC::Metadata.new
 
