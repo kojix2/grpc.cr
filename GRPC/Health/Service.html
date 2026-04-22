@@ -147,13 +147,13 @@
       
         <ul>
   
-  <li class=" " data-id="grpc/GRPC/Health/CheckRequest" data-name="grpc::health::checkrequest">
-      <a href="../../GRPC/Health/CheckRequest.html">CheckRequest</a>
+  <li class=" " data-id="grpc/GRPC/Health/Registry" data-name="grpc::health::registry">
+      <a href="../../GRPC/Health/Registry.html">Registry</a>
       
     </li>
   
-  <li class=" " data-id="grpc/GRPC/Health/CheckResponse" data-name="grpc::health::checkresponse">
-      <a href="../../GRPC/Health/CheckResponse.html">CheckResponse</a>
+  <li class=" " data-id="grpc/GRPC/Health/Reporter" data-name="grpc::health::reporter">
+      <a href="../../GRPC/Health/Reporter.html">Reporter</a>
       
     </li>
   
@@ -492,6 +492,96 @@
       
     </li>
   
+  <li class="parent " data-id="grpc/Grpc" data-name="grpc">
+      <a href="../../Grpc.html">Grpc</a>
+      
+        <ul>
+  
+  <li class="parent " data-id="grpc/Grpc/Health" data-name="grpc::health">
+      <a href="../../Grpc/Health.html">Health</a>
+      
+        <ul>
+  
+  <li class="parent " data-id="grpc/Grpc/Health/V1" data-name="grpc::health::v1">
+      <a href="../../Grpc/Health/V1.html">V1</a>
+      
+        <ul>
+  
+  <li class="parent " data-id="grpc/Grpc/Health/V1/Health" data-name="grpc::health::v1::health">
+      <a href="../../Grpc/Health/V1/Health.html">Health</a>
+      
+        <ul>
+  
+  <li class=" " data-id="grpc/Grpc/Health/V1/Health/Client" data-name="grpc::health::v1::health::client">
+      <a href="../../Grpc/Health/V1/Health/Client.html">Client</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/Grpc/Health/V1/Health/Service" data-name="grpc::health::v1::health::service">
+      <a href="../../Grpc/Health/V1/Health/Service.html">Service</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="grpc/Grpc/Health/V1/HealthCheckRequest" data-name="grpc::health::v1::healthcheckrequest">
+      <a href="../../Grpc/Health/V1/HealthCheckRequest.html">HealthCheckRequest</a>
+      
+    </li>
+  
+  <li class="parent " data-id="grpc/Grpc/Health/V1/HealthCheckResponse" data-name="grpc::health::v1::healthcheckresponse">
+      <a href="../../Grpc/Health/V1/HealthCheckResponse.html">HealthCheckResponse</a>
+      
+        <ul>
+  
+  <li class=" " data-id="grpc/Grpc/Health/V1/HealthCheckResponse/ServingStatus" data-name="grpc::health::v1::healthcheckresponse::servingstatus">
+      <a href="../../Grpc/Health/V1/HealthCheckResponse/ServingStatus.html">ServingStatus</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="grpc/Grpc/Health/V1/HealthListRequest" data-name="grpc::health::v1::healthlistrequest">
+      <a href="../../Grpc/Health/V1/HealthListRequest.html">HealthListRequest</a>
+      
+    </li>
+  
+  <li class="parent " data-id="grpc/Grpc/Health/V1/HealthListResponse" data-name="grpc::health::v1::healthlistresponse">
+      <a href="../../Grpc/Health/V1/HealthListResponse.html">HealthListResponse</a>
+      
+        <ul>
+  
+  <li class=" " data-id="grpc/Grpc/Health/V1/HealthListResponse/StatusesEntry" data-name="grpc::health::v1::healthlistresponse::statusesentry">
+      <a href="../../Grpc/Health/V1/HealthListResponse/StatusesEntry.html">StatusesEntry</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
   <li class=" " data-id="grpc/MethodDescriptor" data-name="methoddescriptor">
       <a href="../../MethodDescriptor.html">MethodDescriptor</a>
       
@@ -528,7 +618,7 @@
 </h1>
 
 
-  <ul class="superclass-hierarchy"><li class="superclass"><a href="../../GRPC/Health/Service.html">GRPC::Health::Service</a></li><li class="superclass"><a href="../../GRPC/Service.html">GRPC::Service</a></li><li class="superclass">Reference</li><li class="superclass">Object</li></ul>
+  <ul class="superclass-hierarchy"><li class="superclass"><a href="../../GRPC/Health/Service.html">GRPC::Health::Service</a></li><li class="superclass"><a href="../../Grpc/Health/V1/Health/Service.html">Grpc::Health::V1::Health::Service</a></li><li class="superclass"><a href="../../GRPC/Service.html">GRPC::Service</a></li><li class="superclass">Reference</li><li class="superclass">Object</li></ul>
 
 
 
@@ -542,8 +632,8 @@
     Overview
   </h2>
 
-  <p>Minimal standard health checking service.
-This step intentionally implements unary Check only (no Watch yet).</p>
+  <p>Built-in standard health checking service.
+State is owned by Registry/Reporter; Service only serves RPCs.</p>
 
 
 
@@ -570,7 +660,7 @@ This step intentionally implements unary Check only (no Watch yet).</p>
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc/blob/86a9418586034b6e87f5f69abd939f86d7a2b00a/src/grpc/health.cr#L146" target="_blank">
+      <a href="https://github.com/kojix2/grpc/blob/49d95dcb91d781c8a7ca630c24d9438d80df4d89/src/grpc/health.cr#L153" target="_blank">
         grpc/health.cr
       </a>
     
@@ -591,8 +681,13 @@ This step intentionally implements unary Check only (no Watch yet).</p>
   
   <dl>
     
+      <dt class="entry-const" id="FILE_DESCRIPTOR_PROTO_BYTES">
+        <strong>FILE_DESCRIPTOR_PROTO_BYTES</strong> = <code><span class="t">::</span><span class="t">Grpc</span><span class="t">::</span><span class="t">Health</span><span class="t">::</span><span class="t">V1</span><span class="t">::</span><span class="t">Health</span><span class="t">::</span><span class="t">FILE_DESCRIPTOR_PROTO_BYTES</span></code>
+      </dt>
+      
+    
       <dt class="entry-const" id="SERVICE_FULL_NAME">
-        <strong>SERVICE_FULL_NAME</strong> = <code><span class="s">&quot;grpc.health.v1.Health&quot;</span></code>
+        <strong>SERVICE_FULL_NAME</strong> = <code><span class="t">::</span><span class="t">Grpc</span><span class="t">::</span><span class="t">Health</span><span class="t">::</span><span class="t">V1</span><span class="t">::</span><span class="t">Health</span><span class="t">::</span><span class="t">FULL_NAME</span></code>
       </dt>
       
     
@@ -635,40 +730,22 @@ This step intentionally implements unary Check only (no Watch yet).</p>
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#clear_status%28service%3AString%29%3Aself-instance-method" class="signature"><strong>#clear_status</strong>(service : String) : <span class="k">self</span></a>
+        <a href="#check%28request%3AGrpc%3A%3AHealth%3A%3AV1%3A%3AHealthCheckRequest%2Cctx%3AGRPC%3A%3AServerContext%29%3AGrpc%3A%3AHealth%3A%3AV1%3A%3AHealthCheckResponse-instance-method" class="signature"><strong>#check</strong>(request : Grpc::Health::V1::HealthCheckRequest, ctx : GRPC::ServerContext) : Grpc::Health::V1::HealthCheckResponse</a>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#dispatch%28method%3AString%2Crequest_body%3ABytes%2Cctx%3AServerContext%29%3ATuple%28Bytes%2CStatus%29-instance-method" class="signature"><strong>#dispatch</strong>(method : String, request_body : Bytes, ctx : ServerContext) : Tuple(Bytes, Status)</a>
-        
-          <div class="summary"><p>dispatch routes an incoming unary RPC call to the correct method implementation.</p></div>
+        <a href="#list%28request%3AGrpc%3A%3AHealth%3A%3AV1%3A%3AHealthListRequest%2Cctx%3AGRPC%3A%3AServerContext%29%3AGrpc%3A%3AHealth%3A%3AV1%3A%3AHealthListResponse-instance-method" class="signature"><strong>#list</strong>(request : Grpc::Health::V1::HealthListRequest, ctx : GRPC::ServerContext) : Grpc::Health::V1::HealthListResponse</a>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#dispatch_server_stream%28method%3AString%2Crequest_body%3ABytes%2Cctx%3AServerContext%2Cwriter%3ARawResponseStream%29%3AStatus-instance-method" class="signature"><strong>#dispatch_server_stream</strong>(method : String, request_body : Bytes, ctx : ServerContext, writer : RawResponseStream) : Status</a>
-        
-          <div class="summary"><p>dispatch_server_stream dispatches a server-streaming RPC.</p></div>
+        <a href="#reporter%3AReporter-instance-method" class="signature"><strong>#reporter</strong> : Reporter</a>
         
       </li>
     
       <li class="entry-summary">
-        <a href="#server_streaming%3F%28method%3AString%29%3ABool-instance-method" class="signature"><strong>#server_streaming?</strong>(method : String) : Bool</a>
-        
-          <div class="summary"><p>server_streaming? returns true if <em>method</em> is a server-streaming RPC.</p></div>
-        
-      </li>
-    
-      <li class="entry-summary">
-        <a href="#service_full_name%3AString-instance-method" class="signature"><strong>#service_full_name</strong> : String</a>
-        
-          <div class="summary"><p>service_full_name returns the full gRPC service name (e.g.</p></div>
-        
-      </li>
-    
-      <li class="entry-summary">
-        <a href="#set_status%28service%3AString%2Cstatus%3AServingStatus%29%3Aself-instance-method" class="signature"><strong>#set_status</strong>(service : String, status : ServingStatus) : <span class="k">self</span></a>
+        <a href="#watch%28request%3AGrpc%3A%3AHealth%3A%3AV1%3A%3AHealthCheckRequest%2Cwriter%3AGRPC%3A%3AResponseStream%28Grpc%3A%3AHealth%3A%3AV1%3A%3AHealthCheckResponse%29%2Cctx%3AGRPC%3A%3AServerContext%29%3AGRPC%3A%3AStatus-instance-method" class="signature"><strong>#watch</strong>(request : Grpc::Health::V1::HealthCheckRequest, writer : GRPC::ResponseStream(Grpc::Health::V1::HealthCheckResponse), ctx : GRPC::ServerContext) : GRPC::Status</a>
         
       </li>
     
@@ -677,6 +754,58 @@ This step intentionally implements unary Check only (no Watch yet).</p>
 
 
   <div class="methods-inherited">
+    
+      
+
+  <h3>Instance methods inherited from class <code><a href="../../Grpc/Health/V1/Health/Service.html">Grpc::Health::V1::Health::Service</a></code></h3>
+  
+  
+    <a href="../../Grpc/Health/V1/Health/Service.html#check%28request%3AHealthCheckRequest%2Cctx%3AGRPC%3A%3AServerContext%29%3AHealthCheckResponse-instance-method" class="tooltip">
+      <span>check(request : HealthCheckRequest, ctx : GRPC::ServerContext) : HealthCheckResponse</span>
+    check</a>, 
+    
+  
+    <a href="../../Grpc/Health/V1/Health/Service.html#dispatch%28method%3AString%2Cbody%3ABytes%2Cctx%3AGRPC%3A%3AServerContext%29%3ATuple%28Bytes%2CGRPC%3A%3AStatus%29-instance-method" class="tooltip">
+      <span>dispatch(method : String, body : Bytes, ctx : GRPC::ServerContext) : Tuple(Bytes, GRPC::Status)</span>
+    dispatch</a>, 
+    
+  
+    <a href="../../Grpc/Health/V1/Health/Service.html#dispatch_server_stream%28method%3AString%2Cbody%3ABytes%2Cctx%3AGRPC%3A%3AServerContext%2Cwriter%3AGRPC%3A%3ARawResponseStream%29%3AGRPC%3A%3AStatus-instance-method" class="tooltip">
+      <span>dispatch_server_stream(method : String, body : Bytes, ctx : GRPC::ServerContext, writer : GRPC::RawResponseStream) : GRPC::Status</span>
+    dispatch_server_stream</a>, 
+    
+  
+    <a href="../../Grpc/Health/V1/Health/Service.html#list%28request%3AHealthListRequest%2Cctx%3AGRPC%3A%3AServerContext%29%3AHealthListResponse-instance-method" class="tooltip">
+      <span>list(request : HealthListRequest, ctx : GRPC::ServerContext) : HealthListResponse</span>
+    list</a>, 
+    
+  
+    <a href="../../Grpc/Health/V1/Health/Service.html#server_streaming%3F%28method%3AString%29%3ABool-instance-method" class="tooltip">
+      <span>server_streaming?(method : String) : Bool</span>
+    server_streaming?</a>, 
+    
+  
+    <a href="../../Grpc/Health/V1/Health/Service.html#service_full_name%3AString-instance-method" class="tooltip">
+      <span>service_full_name : String</span>
+    service_full_name</a>, 
+    
+  
+    <a href="../../Grpc/Health/V1/Health/Service.html#watch%28request%3AHealthCheckRequest%2Cwriter%3AGRPC%3A%3AResponseStream%28HealthCheckResponse%29%2Cctx%3AGRPC%3A%3AServerContext%29%3AGRPC%3A%3AStatus-instance-method" class="tooltip">
+      <span>watch(request : HealthCheckRequest, writer : GRPC::ResponseStream(HealthCheckResponse), ctx : GRPC::ServerContext) : GRPC::Status</span>
+    watch</a>
+    
+  
+
+
+      
+
+
+      
+
+
+      
+
+
     
       
 
@@ -784,7 +913,7 @@ This step intentionally implements unary Check only (no Watch yet).</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/86a9418586034b6e87f5f69abd939f86d7a2b00a/src/grpc/health.cr#L152" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/49d95dcb91d781c8a7ca630c24d9438d80df4d89/src/grpc/health.cr#L159" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -805,138 +934,66 @@ This step intentionally implements unary Check only (no Watch yet).</p>
     Instance Method Detail
   </h2>
   
-    <div class="entry-detail" id="clear_status(service:String):self-instance-method">
+    <div class="entry-detail" id="check(request:Grpc::Health::V1::HealthCheckRequest,ctx:GRPC::ServerContext):Grpc::Health::V1::HealthCheckResponse-instance-method">
       <div class="signature">
         
-        def <strong>clear_status</strong>(service : String) : <span class="k">self</span>
+        def <strong>check</strong>(request : <a href="../../Grpc/Health/V1/HealthCheckRequest.html">Grpc::Health::V1::HealthCheckRequest</a>, ctx : <a href="../../GRPC/ServerContext.html">GRPC::ServerContext</a>) : <a href="../../Grpc/Health/V1/HealthCheckResponse.html">Grpc::Health::V1::HealthCheckResponse</a>
 
-        <a class="method-permalink" href="#clear_status%28service%3AString%29%3Aself-instance-method">#</a>
+        <a class="method-permalink" href="#check%28request%3AGrpc%3A%3AHealth%3A%3AV1%3A%3AHealthCheckRequest%2Cctx%3AGRPC%3A%3AServerContext%29%3AGrpc%3A%3AHealth%3A%3AV1%3A%3AHealthCheckResponse-instance-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/86a9418586034b6e87f5f69abd939f86d7a2b00a/src/grpc/health.cr#L166" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/49d95dcb91d781c8a7ca630c24d9438d80df4d89/src/grpc/health.cr#L164" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="dispatch(method:String,request_body:Bytes,ctx:ServerContext):Tuple(Bytes,Status)-instance-method">
+    <div class="entry-detail" id="list(request:Grpc::Health::V1::HealthListRequest,ctx:GRPC::ServerContext):Grpc::Health::V1::HealthListResponse-instance-method">
       <div class="signature">
         
-        def <strong>dispatch</strong>(method : String, request_body : Bytes, ctx : <a href="../../GRPC/ServerContext.html">ServerContext</a>) : Tuple(Bytes, <a href="../../GRPC/Status.html">Status</a>)
+        def <strong>list</strong>(request : <a href="../../Grpc/Health/V1/HealthListRequest.html">Grpc::Health::V1::HealthListRequest</a>, ctx : <a href="../../GRPC/ServerContext.html">GRPC::ServerContext</a>) : <a href="../../Grpc/Health/V1/HealthListResponse.html">Grpc::Health::V1::HealthListResponse</a>
 
-        <a class="method-permalink" href="#dispatch%28method%3AString%2Crequest_body%3ABytes%2Cctx%3AServerContext%29%3ATuple%28Bytes%2CStatus%29-instance-method">#</a>
+        <a class="method-permalink" href="#list%28request%3AGrpc%3A%3AHealth%3A%3AV1%3A%3AHealthListRequest%2Cctx%3AGRPC%3A%3AServerContext%29%3AGrpc%3A%3AHealth%3A%3AV1%3A%3AHealthListResponse-instance-method">#</a>
       </div>
-      
-        <div class="doc">
-          
-            <div class="doc-inherited">
-              Description copied from class <a href="../../GRPC/Service.html">GRPC::Service</a>
-            </div>
-          
-          <p>dispatch routes an incoming unary RPC call to the correct method implementation.
-Returns {response_body : Bytes, status : Status}.</p>
-        </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/86a9418586034b6e87f5f69abd939f86d7a2b00a/src/grpc/health.cr#L190" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/49d95dcb91d781c8a7ca630c24d9438d80df4d89/src/grpc/health.cr#L173" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="dispatch_server_stream(method:String,request_body:Bytes,ctx:ServerContext,writer:RawResponseStream):Status-instance-method">
+    <div class="entry-detail" id="reporter:Reporter-instance-method">
       <div class="signature">
         
-        def <strong>dispatch_server_stream</strong>(method : String, request_body : Bytes, ctx : <a href="../../GRPC/ServerContext.html">ServerContext</a>, writer : <a href="../../GRPC/RawResponseStream.html">RawResponseStream</a>) : <a href="../../GRPC/Status.html">Status</a>
+        def <strong>reporter</strong> : <a href="../../GRPC/Health/Reporter.html">Reporter</a>
 
-        <a class="method-permalink" href="#dispatch_server_stream%28method%3AString%2Crequest_body%3ABytes%2Cctx%3AServerContext%2Cwriter%3ARawResponseStream%29%3AStatus-instance-method">#</a>
+        <a class="method-permalink" href="#reporter%3AReporter-instance-method">#</a>
       </div>
-      
-        <div class="doc">
-          
-            <div class="doc-inherited">
-              Description copied from class <a href="../../GRPC/Service.html">GRPC::Service</a>
-            </div>
-          
-          <p>dispatch_server_stream dispatches a server-streaming RPC.
-The transport passes a RawResponseStream; generated subclasses wrap it in a
-typed ResponseStream(T) before handing off to the user implementation.</p>
-        </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/86a9418586034b6e87f5f69abd939f86d7a2b00a/src/grpc/health.cr#L175" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/49d95dcb91d781c8a7ca630c24d9438d80df4d89/src/grpc/health.cr#L157" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="server_streaming?(method:String):Bool-instance-method">
+    <div class="entry-detail" id="watch(request:Grpc::Health::V1::HealthCheckRequest,writer:GRPC::ResponseStream(Grpc::Health::V1::HealthCheckResponse),ctx:GRPC::ServerContext):GRPC::Status-instance-method">
       <div class="signature">
         
-        def <strong>server_streaming?</strong>(method : String) : Bool
+        def <strong>watch</strong>(request : <a href="../../Grpc/Health/V1/HealthCheckRequest.html">Grpc::Health::V1::HealthCheckRequest</a>, writer : <a href="../../GRPC/ResponseStream.html">GRPC::ResponseStream</a>(<a href="../../Grpc/Health/V1/HealthCheckResponse.html">Grpc::Health::V1::HealthCheckResponse</a>), ctx : <a href="../../GRPC/ServerContext.html">GRPC::ServerContext</a>) : <a href="../../GRPC/Status.html">GRPC::Status</a>
 
-        <a class="method-permalink" href="#server_streaming%3F%28method%3AString%29%3ABool-instance-method">#</a>
-      </div>
-      
-        <div class="doc">
-          
-            <div class="doc-inherited">
-              Description copied from class <a href="../../GRPC/Service.html">GRPC::Service</a>
-            </div>
-          
-          <p>server_streaming? returns true if <em>method</em> is a server-streaming RPC.
-Generated service base classes override this; the default is false (unary).</p>
-        </div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/kojix2/grpc/blob/86a9418586034b6e87f5f69abd939f86d7a2b00a/src/grpc/health.cr#L171" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
-    <div class="entry-detail" id="service_full_name:String-instance-method">
-      <div class="signature">
-        
-        def <strong>service_full_name</strong> : String
-
-        <a class="method-permalink" href="#service_full_name%3AString-instance-method">#</a>
-      </div>
-      
-        <div class="doc">
-          
-            <div class="doc-inherited">
-              Description copied from class <a href="../../GRPC/Service.html">GRPC::Service</a>
-            </div>
-          
-          <p>service_full_name returns the full gRPC service name (e.g. &quot;helloworld.Greeter&quot;).</p>
-        </div>
-      
-      <br/>
-      <div>
-        
-          [<a href="https://github.com/kojix2/grpc/blob/86a9418586034b6e87f5f69abd939f86d7a2b00a/src/grpc/health.cr#L157" target="_blank">View source</a>]
-        
-      </div>
-    </div>
-  
-    <div class="entry-detail" id="set_status(service:String,status:ServingStatus):self-instance-method">
-      <div class="signature">
-        
-        def <strong>set_status</strong>(service : String, status : <a href="../../GRPC/Health/ServingStatus.html">ServingStatus</a>) : <span class="k">self</span>
-
-        <a class="method-permalink" href="#set_status%28service%3AString%2Cstatus%3AServingStatus%29%3Aself-instance-method">#</a>
+        <a class="method-permalink" href="#watch%28request%3AGrpc%3A%3AHealth%3A%3AV1%3A%3AHealthCheckRequest%2Cwriter%3AGRPC%3A%3AResponseStream%28Grpc%3A%3AHealth%3A%3AV1%3A%3AHealthCheckResponse%29%2Cctx%3AGRPC%3A%3AServerContext%29%3AGRPC%3A%3AStatus-instance-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/86a9418586034b6e87f5f69abd939f86d7a2b00a/src/grpc/health.cr#L161" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/49d95dcb91d781c8a7ca630c24d9438d80df4d89/src/grpc/health.cr#L183" target="_blank">View source</a>]
         
       </div>
     </div>

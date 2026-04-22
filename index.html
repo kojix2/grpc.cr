@@ -147,13 +147,13 @@
       
         <ul>
   
-  <li class=" " data-id="grpc/GRPC/Health/CheckRequest" data-name="grpc::health::checkrequest">
-      <a href="GRPC/Health/CheckRequest.html">CheckRequest</a>
+  <li class=" " data-id="grpc/GRPC/Health/Registry" data-name="grpc::health::registry">
+      <a href="GRPC/Health/Registry.html">Registry</a>
       
     </li>
   
-  <li class=" " data-id="grpc/GRPC/Health/CheckResponse" data-name="grpc::health::checkresponse">
-      <a href="GRPC/Health/CheckResponse.html">CheckResponse</a>
+  <li class=" " data-id="grpc/GRPC/Health/Reporter" data-name="grpc::health::reporter">
+      <a href="GRPC/Health/Reporter.html">Reporter</a>
       
     </li>
   
@@ -492,6 +492,96 @@
       
     </li>
   
+  <li class="parent " data-id="grpc/Grpc" data-name="grpc">
+      <a href="Grpc.html">Grpc</a>
+      
+        <ul>
+  
+  <li class="parent " data-id="grpc/Grpc/Health" data-name="grpc::health">
+      <a href="Grpc/Health.html">Health</a>
+      
+        <ul>
+  
+  <li class="parent " data-id="grpc/Grpc/Health/V1" data-name="grpc::health::v1">
+      <a href="Grpc/Health/V1.html">V1</a>
+      
+        <ul>
+  
+  <li class="parent " data-id="grpc/Grpc/Health/V1/Health" data-name="grpc::health::v1::health">
+      <a href="Grpc/Health/V1/Health.html">Health</a>
+      
+        <ul>
+  
+  <li class=" " data-id="grpc/Grpc/Health/V1/Health/Client" data-name="grpc::health::v1::health::client">
+      <a href="Grpc/Health/V1/Health/Client.html">Client</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/Grpc/Health/V1/Health/Service" data-name="grpc::health::v1::health::service">
+      <a href="Grpc/Health/V1/Health/Service.html">Service</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="grpc/Grpc/Health/V1/HealthCheckRequest" data-name="grpc::health::v1::healthcheckrequest">
+      <a href="Grpc/Health/V1/HealthCheckRequest.html">HealthCheckRequest</a>
+      
+    </li>
+  
+  <li class="parent " data-id="grpc/Grpc/Health/V1/HealthCheckResponse" data-name="grpc::health::v1::healthcheckresponse">
+      <a href="Grpc/Health/V1/HealthCheckResponse.html">HealthCheckResponse</a>
+      
+        <ul>
+  
+  <li class=" " data-id="grpc/Grpc/Health/V1/HealthCheckResponse/ServingStatus" data-name="grpc::health::v1::healthcheckresponse::servingstatus">
+      <a href="Grpc/Health/V1/HealthCheckResponse/ServingStatus.html">ServingStatus</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="grpc/Grpc/Health/V1/HealthListRequest" data-name="grpc::health::v1::healthlistrequest">
+      <a href="Grpc/Health/V1/HealthListRequest.html">HealthListRequest</a>
+      
+    </li>
+  
+  <li class="parent " data-id="grpc/Grpc/Health/V1/HealthListResponse" data-name="grpc::health::v1::healthlistresponse">
+      <a href="Grpc/Health/V1/HealthListResponse.html">HealthListResponse</a>
+      
+        <ul>
+  
+  <li class=" " data-id="grpc/Grpc/Health/V1/HealthListResponse/StatusesEntry" data-name="grpc::health::v1::healthlistresponse::statusesentry">
+      <a href="Grpc/Health/V1/HealthListResponse/StatusesEntry.html">StatusesEntry</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
   <li class=" " data-id="grpc/MethodDescriptor" data-name="methoddescriptor">
       <a href="MethodDescriptor.html">MethodDescriptor</a>
       
@@ -634,6 +724,17 @@ client  <span class="o">=</span> <span class="t">Helloworld</span><span class="t
 reply   <span class="o">=</span> client.say_hello(<span class="t">Helloworld</span><span class="t">::</span><span class="t">HelloRequest</span>.new(name: <span class="s">&quot;Alice&quot;</span>))
 puts reply.message
 channel.close</code></pre>
+<h2><a id="health-checking" class="anchor" href="#health-checking">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Health Checking</h2>
+<p><code>enable_health_checking</code> registers the built-in <code>grpc.health.v1.Health</code> service and returns a reporter for status updates.</p>
+<pre><code class="language-crystal">server <span class="o">=</span> <span class="t">GRPC</span><span class="t">::</span><span class="t">Server</span>.new
+reporter <span class="o">=</span> server.enable_health_checking
+
+reporter.set_status(<span class="s">&quot;&quot;</span>, <span class="t">GRPC</span><span class="t">::</span><span class="t">Health</span><span class="t">::</span><span class="t">ServingStatus</span><span class="t">::</span><span class="t">SERVING</span>)
+reporter.set_status(<span class="t">Helloworld</span><span class="t">::</span><span class="t">Greeter</span><span class="t">::</span><span class="t">FULL_NAME</span>, <span class="t">GRPC</span><span class="t">::</span><span class="t">Health</span><span class="t">::</span><span class="t">ServingStatus</span><span class="t">::</span><span class="t">SERVING</span>)</code></pre>
 <h2><a id="metadata-deadlines-and-errors" class="anchor" href="#metadata-deadlines-and-errors">
   <svg class="octicon-link" aria-hidden="true">
     <use href="#octicon-link"/>

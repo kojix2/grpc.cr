@@ -147,13 +147,13 @@
       
         <ul>
   
-  <li class=" " data-id="grpc/GRPC/Health/CheckRequest" data-name="grpc::health::checkrequest">
-      <a href="../GRPC/Health/CheckRequest.html">CheckRequest</a>
+  <li class=" " data-id="grpc/GRPC/Health/Registry" data-name="grpc::health::registry">
+      <a href="../GRPC/Health/Registry.html">Registry</a>
       
     </li>
   
-  <li class=" " data-id="grpc/GRPC/Health/CheckResponse" data-name="grpc::health::checkresponse">
-      <a href="../GRPC/Health/CheckResponse.html">CheckResponse</a>
+  <li class=" " data-id="grpc/GRPC/Health/Reporter" data-name="grpc::health::reporter">
+      <a href="../GRPC/Health/Reporter.html">Reporter</a>
       
     </li>
   
@@ -492,6 +492,96 @@
       
     </li>
   
+  <li class="parent " data-id="grpc/Grpc" data-name="grpc">
+      <a href="../Grpc.html">Grpc</a>
+      
+        <ul>
+  
+  <li class="parent " data-id="grpc/Grpc/Health" data-name="grpc::health">
+      <a href="../Grpc/Health.html">Health</a>
+      
+        <ul>
+  
+  <li class="parent " data-id="grpc/Grpc/Health/V1" data-name="grpc::health::v1">
+      <a href="../Grpc/Health/V1.html">V1</a>
+      
+        <ul>
+  
+  <li class="parent " data-id="grpc/Grpc/Health/V1/Health" data-name="grpc::health::v1::health">
+      <a href="../Grpc/Health/V1/Health.html">Health</a>
+      
+        <ul>
+  
+  <li class=" " data-id="grpc/Grpc/Health/V1/Health/Client" data-name="grpc::health::v1::health::client">
+      <a href="../Grpc/Health/V1/Health/Client.html">Client</a>
+      
+    </li>
+  
+  <li class=" " data-id="grpc/Grpc/Health/V1/Health/Service" data-name="grpc::health::v1::health::service">
+      <a href="../Grpc/Health/V1/Health/Service.html">Service</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="grpc/Grpc/Health/V1/HealthCheckRequest" data-name="grpc::health::v1::healthcheckrequest">
+      <a href="../Grpc/Health/V1/HealthCheckRequest.html">HealthCheckRequest</a>
+      
+    </li>
+  
+  <li class="parent " data-id="grpc/Grpc/Health/V1/HealthCheckResponse" data-name="grpc::health::v1::healthcheckresponse">
+      <a href="../Grpc/Health/V1/HealthCheckResponse.html">HealthCheckResponse</a>
+      
+        <ul>
+  
+  <li class=" " data-id="grpc/Grpc/Health/V1/HealthCheckResponse/ServingStatus" data-name="grpc::health::v1::healthcheckresponse::servingstatus">
+      <a href="../Grpc/Health/V1/HealthCheckResponse/ServingStatus.html">ServingStatus</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="grpc/Grpc/Health/V1/HealthListRequest" data-name="grpc::health::v1::healthlistrequest">
+      <a href="../Grpc/Health/V1/HealthListRequest.html">HealthListRequest</a>
+      
+    </li>
+  
+  <li class="parent " data-id="grpc/Grpc/Health/V1/HealthListResponse" data-name="grpc::health::v1::healthlistresponse">
+      <a href="../Grpc/Health/V1/HealthListResponse.html">HealthListResponse</a>
+      
+        <ul>
+  
+  <li class=" " data-id="grpc/Grpc/Health/V1/HealthListResponse/StatusesEntry" data-name="grpc::health::v1::healthlistresponse::statusesentry">
+      <a href="../Grpc/Health/V1/HealthListResponse/StatusesEntry.html">StatusesEntry</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
   <li class=" " data-id="grpc/MethodDescriptor" data-name="methoddescriptor">
       <a href="../MethodDescriptor.html">MethodDescriptor</a>
       
@@ -578,7 +668,7 @@ server.listen &quot;0.0.0.0&quot;, 50051</p>
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc/blob/86a9418586034b6e87f5f69abd939f86d7a2b00a/src/grpc/server.cr#L18" target="_blank">
+      <a href="https://github.com/kojix2/grpc/blob/49d95dcb91d781c8a7ca630c24d9438d80df4d89/src/grpc/server.cr#L18" target="_blank">
         grpc/server.cr
       </a>
     
@@ -650,9 +740,9 @@ server.listen &quot;0.0.0.0&quot;, 50051</p>
       </li>
     
       <li class="entry-summary">
-        <a href="#enable_health_checking%28default_status%3AHealth%3A%3AServingStatus%3DHealth%3A%3AServingStatus%3A%3ASERVING%29%3AHealth%3A%3AService-instance-method" class="signature"><strong>#enable_health_checking</strong>(default_status : Health::ServingStatus = <span class="t">Health</span><span class="t">::</span><span class="t">ServingStatus</span><span class="t">::</span><span class="t">SERVING</span>) : Health::Service</a>
+        <a href="#enable_health_checking%28default_status%3AHealth%3A%3AServingStatus%3DHealth%3A%3AServingStatus%3A%3ASERVING%29%3AHealth%3A%3AReporter-instance-method" class="signature"><strong>#enable_health_checking</strong>(default_status : Health::ServingStatus = <span class="t">Health</span><span class="t">::</span><span class="t">ServingStatus</span><span class="t">::</span><span class="t">SERVING</span>) : Health::Reporter</a>
         
-          <div class="summary"><p>enable_health_checking registers the built-in health service and returns it.</p></div>
+          <div class="summary"><p>enable_health_checking registers the built-in health service and returns its reporter.</p></div>
         
       </li>
     
@@ -667,6 +757,13 @@ server.listen &quot;0.0.0.0&quot;, 50051</p>
         <a href="#handle%28service%3AService%29%3Aself-instance-method" class="signature"><strong>#handle</strong>(service : Service) : <span class="k">self</span></a>
         
           <div class="summary"><p>handle registers a service implementation with the server.</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#health_reporter%3F%3AHealth%3A%3AReporter%7CNil-instance-method" class="signature"><strong>#health_reporter?</strong> : Health::Reporter | Nil</a>
+        
+          <div class="summary"><p>Returns the registered health reporter if enabled.</p></div>
         
       </li>
     
@@ -800,7 +897,7 @@ server.listen &quot;0.0.0.0&quot;, 50051</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/86a9418586034b6e87f5f69abd939f86d7a2b00a/src/grpc/server.cr#L33" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/49d95dcb91d781c8a7ca630c24d9438d80df4d89/src/grpc/server.cr#L34" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -838,29 +935,29 @@ Call serve (or start for non-blocking) afterward.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/86a9418586034b6e87f5f69abd939f86d7a2b00a/src/grpc/server.cr#L100" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/49d95dcb91d781c8a7ca630c24d9438d80df4d89/src/grpc/server.cr#L105" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="enable_health_checking(default_status:Health::ServingStatus=Health::ServingStatus::SERVING):Health::Service-instance-method">
+    <div class="entry-detail" id="enable_health_checking(default_status:Health::ServingStatus=Health::ServingStatus::SERVING):Health::Reporter-instance-method">
       <div class="signature">
         
-        def <strong>enable_health_checking</strong>(default_status : <a href="../GRPC/Health/ServingStatus.html">Health::ServingStatus</a> = <span class="t">Health</span><span class="t">::</span><span class="t">ServingStatus</span><span class="t">::</span><span class="t">SERVING</span>) : <a href="../GRPC/Health/Service.html">Health::Service</a>
+        def <strong>enable_health_checking</strong>(default_status : <a href="../GRPC/Health/ServingStatus.html">Health::ServingStatus</a> = <span class="t">Health</span><span class="t">::</span><span class="t">ServingStatus</span><span class="t">::</span><span class="t">SERVING</span>) : <a href="../GRPC/Health/Reporter.html">Health::Reporter</a>
 
-        <a class="method-permalink" href="#enable_health_checking%28default_status%3AHealth%3A%3AServingStatus%3DHealth%3A%3AServingStatus%3A%3ASERVING%29%3AHealth%3A%3AService-instance-method">#</a>
+        <a class="method-permalink" href="#enable_health_checking%28default_status%3AHealth%3A%3AServingStatus%3DHealth%3A%3AServingStatus%3A%3ASERVING%29%3AHealth%3A%3AReporter-instance-method">#</a>
       </div>
       
         <div class="doc">
           
-          <p>enable_health_checking registers the built-in health service and returns it.
+          <p>enable_health_checking registers the built-in health service and returns its reporter.
 Calling this multiple times returns the same instance.</p>
         </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/86a9418586034b6e87f5f69abd939f86d7a2b00a/src/grpc/server.cr#L142" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/49d95dcb91d781c8a7ca630c24d9438d80df4d89/src/grpc/server.cr#L149" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -882,7 +979,7 @@ Register FileDescriptorProto bytes on the returned service via add_file_descript
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/86a9418586034b6e87f5f69abd939f86d7a2b00a/src/grpc/server.cr#L160" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/49d95dcb91d781c8a7ca630c24d9438d80df4d89/src/grpc/server.cr#L173" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -903,7 +1000,28 @@ Register FileDescriptorProto bytes on the returned service via add_file_descript
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/86a9418586034b6e87f5f69abd939f86d7a2b00a/src/grpc/server.cr#L48" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/49d95dcb91d781c8a7ca630c24d9438d80df4d89/src/grpc/server.cr#L50" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="health_reporter?:Health::Reporter|Nil-instance-method">
+      <div class="signature">
+        
+        def <strong>health_reporter?</strong> : <a href="../GRPC/Health/Reporter.html">Health::Reporter</a> | Nil
+
+        <a class="method-permalink" href="#health_reporter%3F%3AHealth%3A%3AReporter%7CNil-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>Returns the registered health reporter if enabled.</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc/blob/49d95dcb91d781c8a7ca630c24d9438d80df4d89/src/grpc/server.cr#L162" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -924,7 +1042,7 @@ Register FileDescriptorProto bytes on the returned service via add_file_descript
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/86a9418586034b6e87f5f69abd939f86d7a2b00a/src/grpc/server.cr#L154" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/49d95dcb91d781c8a7ca630c24d9438d80df4d89/src/grpc/server.cr#L167" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -947,7 +1065,7 @@ Must be called before listen/bind.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/86a9418586034b6e87f5f69abd939f86d7a2b00a/src/grpc/server.cr#L76" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/49d95dcb91d781c8a7ca630c24d9438d80df4d89/src/grpc/server.cr#L81" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -968,7 +1086,7 @@ Must be called before listen/bind.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/86a9418586034b6e87f5f69abd939f86d7a2b00a/src/grpc/server.cr#L82" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/49d95dcb91d781c8a7ca630c24d9438d80df4d89/src/grpc/server.cr#L87" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -989,7 +1107,7 @@ Must be called before listen/bind.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/86a9418586034b6e87f5f69abd939f86d7a2b00a/src/grpc/server.cr#L88" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/49d95dcb91d781c8a7ca630c24d9438d80df4d89/src/grpc/server.cr#L93" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -1010,7 +1128,7 @@ Must be called before listen/bind.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/86a9418586034b6e87f5f69abd939f86d7a2b00a/src/grpc/server.cr#L93" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/49d95dcb91d781c8a7ca630c24d9438d80df4d89/src/grpc/server.cr#L98" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -1031,7 +1149,7 @@ Must be called before listen/bind.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/86a9418586034b6e87f5f69abd939f86d7a2b00a/src/grpc/server.cr#L175" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/49d95dcb91d781c8a7ca630c24d9438d80df4d89/src/grpc/server.cr#L191" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -1052,7 +1170,7 @@ Must be called before listen/bind.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/86a9418586034b6e87f5f69abd939f86d7a2b00a/src/grpc/server.cr#L107" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/49d95dcb91d781c8a7ca630c24d9438d80df4d89/src/grpc/server.cr#L112" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -1074,7 +1192,7 @@ Useful for tests and embedded servers.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/86a9418586034b6e87f5f69abd939f86d7a2b00a/src/grpc/server.cr#L122" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/49d95dcb91d781c8a7ca630c24d9438d80df4d89/src/grpc/server.cr#L127" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -1090,7 +1208,7 @@ Useful for tests and embedded servers.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/86a9418586034b6e87f5f69abd939f86d7a2b00a/src/grpc/server.cr#L127" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/49d95dcb91d781c8a7ca630c24d9438d80df4d89/src/grpc/server.cr#L132" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -1114,7 +1232,7 @@ Must be called before listen/bind.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/86a9418586034b6e87f5f69abd939f86d7a2b00a/src/grpc/server.cr#L58" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/49d95dcb91d781c8a7ca630c24d9438d80df4d89/src/grpc/server.cr#L63" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -1135,7 +1253,7 @@ Must be called before listen/bind.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/86a9418586034b6e87f5f69abd939f86d7a2b00a/src/grpc/server.cr#L68" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/49d95dcb91d781c8a7ca630c24d9438d80df4d89/src/grpc/server.cr#L73" target="_blank">View source</a>]
         
       </div>
     </div>
