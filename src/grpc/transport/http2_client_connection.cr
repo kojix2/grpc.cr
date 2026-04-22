@@ -636,37 +636,48 @@ module GRPC
           @pending_streams[stream_id] = ps
           @stream_boxes[stream_id] = boxed_ps
 
-          ps.send_resume_proc = -> {
-            @mutex.synchronize do
-              next if @closed || @session.null?
-              ps.live_send_buf.try do |live_send_buf|
-                if live_send_buf.take_resume_request
-                  rc = LibNghttp2.session_resume_data(@session, stream_id)
-                  if rc < 0 && rc != LibNghttp2::ERR_INVALID_ARGUMENT
-                    raise ConnectionError.new("session_resume_data failed: #{String.new(LibNghttp2.strerror(rc))} (#{rc})")
-                  end
-                end
-              end
-              flush_send
-            end
-          }
-
-          ps.cancel_proc = -> {
-            @mutex.synchronize do
-              next if @closed || @session.null?
-              rc = LibNghttp2.submit_rst_stream(@session, LibNghttp2::FLAG_NONE, stream_id,
-                LibNghttp2::NGHTTP2_CANCEL)
-              next if rc == LibNghttp2::ERR_INVALID_ARGUMENT
-              raise ConnectionError.new("submit_rst_stream failed: #{String.new(LibNghttp2.strerror(rc))} (#{rc})") if rc < 0
-              flush_send rescue nil
-            end
-          }
+          ps.send_resume_proc = build_live_resume_proc(ps, stream_id)
+          ps.cancel_proc = build_cancel_proc(stream_id)
 
           # Send HTTP/2 HEADERS frame immediately; DATA will follow on-demand.
           flush_send
         end
 
         ps
+      end
+
+      private def build_live_resume_proc(ps : PendingStream, stream_id : Int32) : Proc(Nil)
+        -> {
+          @mutex.synchronize do
+            next if @closed || @session.null?
+            resume_live_stream_if_requested(ps, stream_id)
+            flush_send
+          end
+        }
+      end
+
+      private def resume_live_stream_if_requested(ps : PendingStream, stream_id : Int32) : Nil
+        ps.live_send_buf.try do |live_send_buf|
+          return unless live_send_buf.take_resume_request
+
+          rc = LibNghttp2.session_resume_data(@session, stream_id)
+          if rc < 0 && rc != LibNghttp2::ERR_INVALID_ARGUMENT
+            raise ConnectionError.new("session_resume_data failed: #{String.new(LibNghttp2.strerror(rc))} (#{rc})")
+          end
+        end
+      end
+
+      private def build_cancel_proc(stream_id : Int32) : Proc(Nil)
+        -> {
+          @mutex.synchronize do
+            next if @closed || @session.null?
+            rc = LibNghttp2.submit_rst_stream(@session, LibNghttp2::FLAG_NONE, stream_id,
+              LibNghttp2::NGHTTP2_CANCEL)
+            next if rc == LibNghttp2::ERR_INVALID_ARGUMENT
+            raise ConnectionError.new("submit_rst_stream failed: #{String.new(LibNghttp2.strerror(rc))} (#{rc})") if rc < 0
+            flush_send rescue nil
+          end
+        }
       end
 
       private def build_request_headers(service : String, method : String,
