@@ -148,8 +148,8 @@ channel.close
 server = GRPC::Server.new
 reporter = server.enable_health_checking
 
-reporter.set_status("", GRPC::Health::ServingStatus::SERVING)
-reporter.set_status(Helloworld::Greeter::FULL_NAME, GRPC::Health::ServingStatus::SERVING)
+reporter.set_status("", Grpc::Health::V1::HealthCheckResponse::ServingStatus::SERVING)
+reporter.set_status(Helloworld::Greeter::FULL_NAME, Grpc::Health::V1::HealthCheckResponse::ServingStatus::SERVING)
 ```
 
 ## Metadata, Deadlines, and Errors

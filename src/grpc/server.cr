@@ -146,7 +146,7 @@ module GRPC
 
     # enable_health_checking registers the built-in health service and returns its reporter.
     # Calling this multiple times returns the same instance.
-    def enable_health_checking(default_status : Health::ServingStatus = Health::ServingStatus::SERVING) : Health::Reporter
+    def enable_health_checking(default_status : ::Grpc::Health::V1::HealthCheckResponse::ServingStatus = ::Grpc::Health::V1::HealthCheckResponse::ServingStatus::SERVING) : Health::Reporter
       if reporter = @health_reporter
         return reporter
       end
@@ -156,16 +156,6 @@ module GRPC
       @health_reporter = service.reporter
       @health_service = service
       service.reporter
-    end
-
-    # Returns the registered health reporter if enabled.
-    def health_reporter? : Health::Reporter?
-      @health_reporter
-    end
-
-    # Returns the registered health service if enabled.
-    def health_service? : Health::Service?
-      @health_service
     end
 
     # enable_reflection registers the built-in reflection service and returns it.

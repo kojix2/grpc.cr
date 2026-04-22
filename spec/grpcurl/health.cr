@@ -8,7 +8,7 @@ describe "grpcurl e2e health" do
     port = find_free_port
     server = GRPC::Server.new
     reporter = server.enable_health_checking
-    reporter.set_status("demo.Service", GRPC::Health::ServingStatus::NOT_SERVING)
+    reporter.set_status("demo.Service", Grpc::Health::V1::HealthCheckResponse::ServingStatus::NOT_SERVING)
     server.bind("127.0.0.1:#{port}")
     server.start
 
@@ -73,7 +73,7 @@ describe "grpcurl e2e health" do
 
       spawn do
         sleep 200.milliseconds
-        reporter.set_status("watch.Service", GRPC::Health::ServingStatus::SERVING)
+        reporter.set_status("watch.Service", Grpc::Health::V1::HealthCheckResponse::ServingStatus::SERVING)
       end
 
       args = grpcurl_call_args(

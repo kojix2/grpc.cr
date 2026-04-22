@@ -3,59 +3,57 @@ require "./health/v1/health.grpc"
 
 module GRPC
   module Health
-    alias ServingStatus = ::Grpc::Health::V1::HealthCheckResponse::ServingStatus
-
-    def self.generated_check_response(status : ServingStatus) : ::Grpc::Health::V1::HealthCheckResponse
+    def self.generated_check_response(status : ::Grpc::Health::V1::HealthCheckResponse::ServingStatus) : ::Grpc::Health::V1::HealthCheckResponse
       response = ::Grpc::Health::V1::HealthCheckResponse.new
-      response.status = Proto::OpenEnum(ServingStatus).new(status)
+      response.status = Proto::OpenEnum(::Grpc::Health::V1::HealthCheckResponse::ServingStatus).new(status)
       response
     end
 
-    def self.serving_status_from_wire(status : Proto::OpenEnum(ServingStatus)) : ServingStatus
-      status.known || ServingStatus::UNKNOWN
+    def self.serving_status_from_wire(status : Proto::OpenEnum(::Grpc::Health::V1::HealthCheckResponse::ServingStatus)) : ::Grpc::Health::V1::HealthCheckResponse::ServingStatus
+      status.known || ::Grpc::Health::V1::HealthCheckResponse::ServingStatus::UNKNOWN
     end
 
     class Registry
       @mutex : Mutex
-      @statuses : Hash(String, ServingStatus)
-      @watchers : Hash(String, Array(::Channel(ServingStatus)))
-      @overall_default_status : ServingStatus
+      @statuses : Hash(String, ::Grpc::Health::V1::HealthCheckResponse::ServingStatus)
+      @watchers : Hash(String, Array(::Channel(::Grpc::Health::V1::HealthCheckResponse::ServingStatus)))
+      @overall_default_status : ::Grpc::Health::V1::HealthCheckResponse::ServingStatus
 
-      def initialize(default_status : ServingStatus = ServingStatus::SERVING)
+      def initialize(default_status : ::Grpc::Health::V1::HealthCheckResponse::ServingStatus = ::Grpc::Health::V1::HealthCheckResponse::ServingStatus::SERVING)
         @mutex = Mutex.new
-        @statuses = {"" => default_status} of String => ServingStatus
-        @watchers = {} of String => Array(::Channel(ServingStatus))
+        @statuses = {"" => default_status} of String => ::Grpc::Health::V1::HealthCheckResponse::ServingStatus
+        @watchers = {} of String => Array(::Channel(::Grpc::Health::V1::HealthCheckResponse::ServingStatus))
         @overall_default_status = default_status
       end
 
-      def check_status(service : String) : ServingStatus?
+      def check_status(service : String) : ::Grpc::Health::V1::HealthCheckResponse::ServingStatus?
         @mutex.synchronize do
           @statuses[normalize_service_name(service)]?
         end
       end
 
-      def list_statuses : Hash(String, ServingStatus)
+      def list_statuses : Hash(String, ::Grpc::Health::V1::HealthCheckResponse::ServingStatus)
         @mutex.synchronize do
           @statuses.dup
         end
       end
 
-      def subscribe(service : String) : {::Channel(ServingStatus), ServingStatus}
+      def subscribe(service : String) : {::Channel(::Grpc::Health::V1::HealthCheckResponse::ServingStatus), ::Grpc::Health::V1::HealthCheckResponse::ServingStatus}
         normalized = normalize_service_name(service)
 
         @mutex.synchronize do
-          channel = ::Channel(ServingStatus).new(8)
+          channel = ::Channel(::Grpc::Health::V1::HealthCheckResponse::ServingStatus).new(8)
           watchers = @watchers[normalized]? || begin
-            created = [] of ::Channel(ServingStatus)
+            created = [] of ::Channel(::Grpc::Health::V1::HealthCheckResponse::ServingStatus)
             @watchers[normalized] = created
             created
           end
           watchers << channel
-          {channel, @statuses[normalized]? || ServingStatus::SERVICE_UNKNOWN}
+          {channel, @statuses[normalized]? || ::Grpc::Health::V1::HealthCheckResponse::ServingStatus::SERVICE_UNKNOWN}
         end
       end
 
-      def unsubscribe(service : String, channel : ::Channel(ServingStatus)) : Nil
+      def unsubscribe(service : String, channel : ::Channel(::Grpc::Health::V1::HealthCheckResponse::ServingStatus)) : Nil
         normalized = normalize_service_name(service)
         @mutex.synchronize do
           return unless watchers = @watchers[normalized]?
@@ -64,16 +62,16 @@ module GRPC
         end
       end
 
-      def set_status(service : String, status : ServingStatus) : Nil
+      def set_status(service : String, status : ::Grpc::Health::V1::HealthCheckResponse::ServingStatus) : Nil
         normalized = normalize_service_name(service)
-        watchers = [] of ::Channel(ServingStatus)
+        watchers = [] of ::Channel(::Grpc::Health::V1::HealthCheckResponse::ServingStatus)
 
         changed = @mutex.synchronize do
           previous = @statuses[normalized]?
           next false if previous == status
 
           @statuses[normalized] = status
-          watchers = (@watchers[normalized]? || [] of ::Channel(ServingStatus)).dup
+          watchers = (@watchers[normalized]? || [] of ::Channel(::Grpc::Health::V1::HealthCheckResponse::ServingStatus)).dup
           true
         end
 
@@ -84,26 +82,26 @@ module GRPC
         normalized = normalize_service_name(service)
         return set_status("", @overall_default_status) if normalized.empty?
 
-        watchers = [] of ::Channel(ServingStatus)
+        watchers = [] of ::Channel(::Grpc::Health::V1::HealthCheckResponse::ServingStatus)
         cleared = @mutex.synchronize do
           removed = @statuses.delete(normalized)
-          watchers = (@watchers[normalized]? || [] of ::Channel(ServingStatus)).dup
+          watchers = (@watchers[normalized]? || [] of ::Channel(::Grpc::Health::V1::HealthCheckResponse::ServingStatus)).dup
           !removed.nil?
         end
 
-        notify_watchers(watchers, ServingStatus::SERVICE_UNKNOWN) if cleared
+        notify_watchers(watchers, ::Grpc::Health::V1::HealthCheckResponse::ServingStatus::SERVICE_UNKNOWN) if cleared
       end
 
       def set_all_not_serving : Nil
-        notifications = [] of {Array(::Channel(ServingStatus)), ServingStatus}
+        notifications = [] of {Array(::Channel(::Grpc::Health::V1::HealthCheckResponse::ServingStatus)), ::Grpc::Health::V1::HealthCheckResponse::ServingStatus}
 
         @mutex.synchronize do
           @statuses.each do |service, current|
-            next if current == ServingStatus::NOT_SERVING
+            next if current == ::Grpc::Health::V1::HealthCheckResponse::ServingStatus::NOT_SERVING
 
-            @statuses[service] = ServingStatus::NOT_SERVING
-            watchers = (@watchers[service]? || [] of ::Channel(ServingStatus)).dup
-            notifications << {watchers, ServingStatus::NOT_SERVING}
+            @statuses[service] = ::Grpc::Health::V1::HealthCheckResponse::ServingStatus::NOT_SERVING
+            watchers = (@watchers[service]? || [] of ::Channel(::Grpc::Health::V1::HealthCheckResponse::ServingStatus)).dup
+            notifications << {watchers, ::Grpc::Health::V1::HealthCheckResponse::ServingStatus::NOT_SERVING}
           end
         end
 
@@ -112,7 +110,7 @@ module GRPC
         end
       end
 
-      private def notify_watchers(watchers : Array(::Channel(ServingStatus)), status : ServingStatus) : Nil
+      private def notify_watchers(watchers : Array(::Channel(::Grpc::Health::V1::HealthCheckResponse::ServingStatus)), status : ::Grpc::Health::V1::HealthCheckResponse::ServingStatus) : Nil
         watchers.each do |watcher|
           watcher.send(status)
         rescue
@@ -128,7 +126,7 @@ module GRPC
       def initialize(@registry : Registry)
       end
 
-      def set_status(service : String, status : ServingStatus) : self
+      def set_status(service : String, status : ::Grpc::Health::V1::HealthCheckResponse::ServingStatus) : self
         @registry.set_status(service, status)
         self
       end
@@ -156,7 +154,7 @@ module GRPC
 
       getter reporter : Reporter
 
-      def initialize(default_status : ServingStatus = ServingStatus::SERVING)
+      def initialize(default_status : ::Grpc::Health::V1::HealthCheckResponse::ServingStatus = ::Grpc::Health::V1::HealthCheckResponse::ServingStatus::SERVING)
         @registry = Registry.new(default_status)
         @reporter = Reporter.new(@registry)
       end
