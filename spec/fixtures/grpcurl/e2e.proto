@@ -4,6 +4,8 @@ package e2e;
 service Probe {
   rpc UnaryEcho(EchoRequest) returns (EchoReply);
   rpc UnaryFail(EchoRequest) returns (EchoReply);
+  rpc UnaryFailedPrecondition(EchoRequest) returns (EchoReply);
+  rpc UnaryDataLoss(EchoRequest) returns (EchoReply);
   rpc SlowUnary(EchoRequest) returns (EchoReply);
   rpc ServerStream(EchoRequest) returns (stream EchoReply);
   rpc ServerStreamFailAfterTwo(EchoRequest) returns (stream EchoReply);

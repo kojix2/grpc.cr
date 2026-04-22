@@ -88,6 +88,60 @@ describe "grpcurl e2e proto source" do
     end
   end
 
+  it "returns FAILED_PRECONDITION for user-code unary rejection" do
+    next unless grpcurl_available?
+
+    port = find_free_port
+    server = GRPC::Server.new
+    server.handle E2EProbeService.new
+    server.bind("127.0.0.1:#{port}")
+    server.start
+
+    begin
+      wait_for_server(port)
+      args = grpcurl_call_args(
+        port,
+        "e2e.Probe/UnaryFailedPrecondition",
+        ["-d", "{\"message\":\"locked\"}"],
+      )
+      status, stdout_text, stderr_text = run_grpcurl(args)
+      raise "expected grpc error but got success" if status.success?
+
+      detail = "#{stdout_text}\n#{stderr_text}".downcase
+      detail.should contain("failedprecondition")
+      detail.should contain("state blocked:locked")
+    ensure
+      server.stop
+    end
+  end
+
+  it "returns DATA_LOSS for user-code unary corruption signal" do
+    next unless grpcurl_available?
+
+    port = find_free_port
+    server = GRPC::Server.new
+    server.handle E2EProbeService.new
+    server.bind("127.0.0.1:#{port}")
+    server.start
+
+    begin
+      wait_for_server(port)
+      args = grpcurl_call_args(
+        port,
+        "e2e.Probe/UnaryDataLoss",
+        ["-d", "{\"message\":\"segment-a\"}"],
+      )
+      status, stdout_text, stderr_text = run_grpcurl(args)
+      raise "expected grpc error but got success" if status.success?
+
+      detail = "#{stdout_text}\n#{stderr_text}".downcase
+      detail.should contain("dataloss")
+      detail.should contain("corrupted:segment-a")
+    ensure
+      server.stop
+    end
+  end
+
   it "enforces max-time timeout and server observes deadline" do
     next unless grpcurl_available?
 

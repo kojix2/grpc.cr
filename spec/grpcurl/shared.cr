@@ -122,6 +122,12 @@ class E2EProbeService < GRPC::Service
     when "UnaryFail"
       observe(method, input, ctx)
       {Bytes.empty, GRPC::Status.new(GRPC::StatusCode::NOT_FOUND, "missing:#{input}")}
+    when "UnaryFailedPrecondition"
+      observe(method, input, ctx)
+      {Bytes.empty, GRPC::Status.new(GRPC::StatusCode::FAILED_PRECONDITION, "state blocked:#{input}")}
+    when "UnaryDataLoss"
+      observe(method, input, ctx)
+      {Bytes.empty, GRPC::Status.new(GRPC::StatusCode::DATA_LOSS, "corrupted:#{input}")}
     when "SlowUnary"
       sleep 300.milliseconds
       observe(method, input, ctx)
@@ -436,6 +442,8 @@ module E2EReflectionWire
     methods = [
       {"UnaryEcho", false, false},
       {"UnaryFail", false, false},
+      {"UnaryFailedPrecondition", false, false},
+      {"UnaryDataLoss", false, false},
       {"SlowUnary", false, false},
       {"ServerStream", false, true},
       {"ServerStreamFailAfterTwo", false, true},
