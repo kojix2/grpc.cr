@@ -1576,7 +1576,22 @@ describe GRPC do
     it "fails only the saturated response stream instead of blocking the connection callback" do
       stream = GRPC::Transport::PendingStream.new
       frame = GRPC::Codec.encode(Bytes[1_u8])
-      129.times { stream.receive_data(frame) }
+      connection_lock = Mutex.new
+      finished = ::Channel(Nil).new(1)
+      stream.cancel_proc = -> {
+        connection_lock.synchronize { finished.send(nil) }
+        nil
+      }
+
+      spawn do
+        connection_lock.synchronize { 129.times { stream.receive_data(frame) } }
+      end
+
+      select
+      when finished.receive
+      when timeout(100.milliseconds)
+        fail("saturated response stream cancellation deadlocked")
+      end
 
       stream.grpc_status.code.should eq(GRPC::StatusCode::RESOURCE_EXHAUSTED)
     end

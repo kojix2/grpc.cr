@@ -53,6 +53,7 @@ module GRPC
       end
 
       def receive_data(chunk : Bytes) : Nil
+        return if @terminal_state.finished? || @terminal_state.cancelled?
         @deframer.append(chunk)
         @deframer.drain_messages.each do |msg|
           delivered = select
@@ -63,14 +64,21 @@ module GRPC
           end
           unless delivered
             self.transport_error = Status.resource_exhausted("response stream receive buffer exhausted")
-            @cancel_proc.try &.call
             finish
+            # receive_data runs from nghttp2's DATA callback while the
+            # connection mutex is held. The transport cancel proc acquires the
+            # same mutex, so invoke it on another fiber after this callback can
+            # return and release the lock.
+            spawn { @cancel_proc.try &.call }
             break
           end
         end
       rescue ex : StatusError
         self.transport_error = ex.status
         finish
+      rescue ::Channel::ClosedError
+        # Cancellation can close the delivery channel while a final DATA
+        # callback is already in flight. The stream is terminal, so discard it.
       end
 
       def finish : Nil
