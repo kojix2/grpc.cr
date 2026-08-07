@@ -125,6 +125,7 @@ describe CrystalGrpcCodeGenerator do
     c.should contain("protected def marshaller_for(type : T.class) : GRPC::Marshaller(T) forall T")
     c.should contain("res_marshaller = marshaller_for(HelloReply)")
     c.should contain("res_marshaller.decode(response.raw)")
+    c.should contain("response.status.ok? ? res_marshaller.decode(response.raw) : nil")
   end
 
   it "generates a server-streaming stub" do
@@ -172,6 +173,7 @@ describe CrystalGrpcCodeGenerator do
     content.should contain("res_marshaller = marshaller_for(Number)")
     content.should contain("raw.send_raw(req_marshaller.encode(msg))")
     content.should contain("result_chan.send(res_marshaller.decode(body))")
+    content.should_not contain("result_chan.send(res_marshaller.decode(body)) rescue nil")
   end
 
   it "generates a bidirectional-streaming stub" do
@@ -195,6 +197,7 @@ describe CrystalGrpcCodeGenerator do
     content.should contain("req_marshaller = marshaller_for(Number)")
     content.should contain("res_marshaller = marshaller_for(Number)")
     content.should contain("recv_chan.send(res_marshaller.decode(bytes))")
+    content.should_not contain("recv_chan.send(res_marshaller.decode(bytes)) rescue nil")
     content.should contain("raw.send_raw(req_marshaller.encode(msg))")
   end
 

@@ -368,7 +368,7 @@ module Grpc::Health::V1
         req_marshaller = marshaller_for(HealthCheckRequest)
         res_marshaller = marshaller_for(HealthCheckResponse)
         response = @channel.unary_call(FULL_NAME, "Check", req_marshaller.encode(request), ctx)
-        message = response.raw.empty? ? nil : res_marshaller.decode(response.raw)
+        message = response.status.ok? ? res_marshaller.decode(response.raw) : nil
         GRPC::UnaryResponse(HealthCheckResponse).new(message, response.initial_metadata, response.trailing_metadata, response.status)
       end
 
@@ -380,7 +380,7 @@ module Grpc::Health::V1
         req_marshaller = marshaller_for(HealthListRequest)
         res_marshaller = marshaller_for(HealthListResponse)
         response = @channel.unary_call(FULL_NAME, "List", req_marshaller.encode(request), ctx)
-        message = response.raw.empty? ? nil : res_marshaller.decode(response.raw)
+        message = response.status.ok? ? res_marshaller.decode(response.raw) : nil
         GRPC::UnaryResponse(HealthListResponse).new(message, response.initial_metadata, response.trailing_metadata, response.status)
       end
 
