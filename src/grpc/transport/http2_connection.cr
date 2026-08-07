@@ -221,8 +221,12 @@ module GRPC
           @socket.write(Slice.new(data_ptr, n))
         end
         @socket.flush
-      rescue IO::Error
+      rescue ex
         @closed = true
+        teardown_session
+        @socket.close rescue nil
+        raise ex if ex.is_a?(ConnectionError)
+        raise ConnectionError.new("HTTP/2 socket write failed: #{ex.message}")
       end
 
       # run_recv_loop reads from the socket and feeds data to nghttp2.
@@ -250,22 +254,29 @@ module GRPC
 
       def close : Nil
         @mutex.synchronize do
-          return if @closed || @session.null?
+          return if @session.null?
 
           begin
-            rc = LibNghttp2.submit_goaway(@session, LibNghttp2::FLAG_NONE, 0, LibNghttp2::NO_ERROR, nil, 0)
-            if rc >= 0
-              flush_send rescue nil
+            unless @closed
+              rc = LibNghttp2.submit_goaway(@session, LibNghttp2::FLAG_NONE, 0, LibNghttp2::NO_ERROR, nil, 0)
+              if rc >= 0
+                flush_send rescue nil
+              end
             end
           ensure
-            @closed = true
-            shutdown_local_state
-            LibNghttp2.session_del(@session)
-            @session = Pointer(LibNghttp2::Session).null
+            teardown_session
           end
         end
 
         @socket.close rescue nil
+      end
+
+      private def teardown_session : Nil
+        return if @session.null?
+        @closed = true
+        shutdown_local_state
+        LibNghttp2.session_del(@session)
+        @session = Pointer(LibNghttp2::Session).null
       end
 
       # --- Helpers ---
