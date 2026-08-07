@@ -11,12 +11,14 @@ module GRPC
     getter metadata : Metadata
     getter peer : String
     getter trailing_metadata : Metadata
+    getter initial_metadata : Metadata
     property deadline : Time?
 
     @cancelled : Atomic(Bool)
 
     def initialize(@peer : String, @metadata : Metadata = Metadata.new, @deadline : Time? = nil)
       @trailing_metadata = Metadata.new
+      @initial_metadata = Metadata.new
       @cancelled = Atomic(Bool).new(false)
     end
 
@@ -42,6 +44,12 @@ module GRPC
     def check_active! : Nil
       raise StatusError.new(StatusCode::DEADLINE_EXCEEDED, "deadline exceeded") if timed_out?
       raise StatusError.new(StatusCode::CANCELLED, "call cancelled") if @cancelled.get
+    end
+
+    # Adds metadata to the initial HTTP/2 response headers. This must be called
+    # before the first response message is written.
+    def send_initial_metadata(metadata : Metadata) : Nil
+      @initial_metadata.merge!(metadata)
     end
   end
 

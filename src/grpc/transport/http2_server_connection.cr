@@ -331,7 +331,8 @@ module GRPC
           return
         end
 
-        route_request(stream_id, service, method_name, sd.body_bytes, ctx)
+        route_request(stream_id, service, method_name, sd.body_bytes, ctx,
+          sd.headers.get("grpc-encoding"))
       rescue ex : StatusError
         send_error(stream_id, ex.code, ex.message)
       rescue ex
@@ -364,14 +365,15 @@ module GRPC
           if err = state.error_status
             send_error(stream_id, err.code, err.message)
           else
-            send_response(stream_id, response_bytes, status, ctx.trailing_metadata)
+            send_response(stream_id, response_bytes, status, ctx.trailing_metadata, ctx.initial_metadata)
           end
         when :bidi
-          send_stream_headers(stream_id)
           writer = RawResponseStream.new(->(framed : Bytes) {
+            send_stream_headers(stream_id, ctx.initial_metadata)
             send_stream_chunk(stream_id, framed)
           })
           status = dispatch_bidi_stream(method_name, state.requests, ctx, writer, service)
+          send_stream_headers(stream_id, ctx.initial_metadata)
           send_stream_trailers(stream_id, state.error_status || status, ctx.trailing_metadata)
         else
           send_error(stream_id, StatusCode::UNIMPLEMENTED, "unknown streaming kind")
@@ -391,18 +393,19 @@ module GRPC
       # (driven by on_data_chunk_cb / on_frame_recv_cb) and never reach this method.
       private def route_request(stream_id : Int32, service : Service,
                                 method_name : String, request_bytes : Bytes,
-                                ctx : ServerContext) : Nil
+                                ctx : ServerContext, encoding : String?) : Nil
         if service.server_streaming?(method_name)
-          decoded, _ = decode_message(request_bytes)
-          send_stream_headers(stream_id)
+          decoded, _ = decode_message(request_bytes, encoding)
           writer = RawResponseStream.new(->(framed : Bytes) {
             ctx.check_active!
+            send_stream_headers(stream_id, ctx.initial_metadata)
             send_stream_chunk(stream_id, framed)
           })
           status = dispatch_server_stream(method_name, decoded, ctx, writer, service)
+          send_stream_headers(stream_id, ctx.initial_metadata)
           send_stream_trailers(stream_id, status, ctx.trailing_metadata)
         else
-          dispatch_unary(stream_id, method_name, request_bytes, ctx, service)
+          dispatch_unary(stream_id, method_name, request_bytes, ctx, service, encoding)
         end
       end
 
@@ -437,6 +440,8 @@ module GRPC
           full_path = "/#{service.service_full_name}/#{method_name}"
           chain = Interceptors.build_server_chain(@interceptors, base)
           response = chain.call(full_path, requests, ctx)
+          ctx.initial_metadata.merge!(response.initial_metadata)
+          ctx.trailing_metadata.merge!(response.trailing_metadata)
           {response.raw, response.status}
         end
       end
@@ -458,12 +463,12 @@ module GRPC
 
       private def dispatch_unary(stream_id : Int32, method_name : String,
                                  request_bytes : Bytes, ctx : ServerContext,
-                                 service : Service) : Nil
-        decoded, _ = decode_message(request_bytes)
+                                 service : Service, encoding : String?) : Nil
+        decoded, _ = decode_message(request_bytes, encoding)
         if @interceptors.empty?
           response_bytes, status = service.dispatch(method_name, decoded, ctx)
           ctx.check_active!
-          send_response(stream_id, response_bytes, status, ctx.trailing_metadata)
+          send_response(stream_id, response_bytes, status, ctx.trailing_metadata, ctx.initial_metadata)
         else
           full_path = "/#{service.service_full_name}/#{method_name}"
           info = CallInfo.new(full_path, RPCKind::Unary)
@@ -475,21 +480,21 @@ module GRPC
           chain = Interceptors.build_server_chain(@interceptors, base)
           response = chain.call(full_path, request, ctx)
           ctx.check_active!
+          initial = ctx.initial_metadata.dup
+          initial.merge!(response.initial_metadata)
           trailers = ctx.trailing_metadata.dup
           trailers.merge!(response.trailing_metadata)
-          send_response(stream_id, response.raw, response.status, trailers)
+          send_response(stream_id, response.raw, response.status, trailers, initial)
         end
       end
 
       # ---- Response sending ----
 
-      private def send_stream_headers(stream_id : Int32) : Nil
+      private def send_stream_headers(stream_id : Int32, metadata : Metadata = Metadata.new) : Nil
         @mutex.synchronize do
           return if @closed || @session.null? || stream_terminated?(stream_id)
-          nva = StaticArray[
-            make_nv(":status", "200"),
-            make_nv("content-type", "application/grpc"),
-          ]
+          return if @stream_headers_sent.includes?(stream_id)
+          nva = build_initial_headers(metadata)
           rc = LibNghttp2.submit_headers(@session, LibNghttp2::FLAG_NONE, stream_id, nil,
             nva.to_unsafe, nva.size, nil)
           raise_submit_error("submit_headers", rc) if rc < 0
@@ -548,7 +553,8 @@ module GRPC
       end
 
       private def send_response(stream_id : Int32, body : Bytes, status : Status,
-                                trailers : Metadata = Metadata.new) : Nil
+                                trailers : Metadata = Metadata.new,
+                                initial_metadata : Metadata = Metadata.new) : Nil
         @mutex.synchronize do
           return if @closed || @session.null? || stream_terminated?(stream_id)
           mark_stream_terminated(stream_id)
@@ -559,10 +565,7 @@ module GRPC
           )
           @response_ctxs[stream_id] = resp_ctx
 
-          nva = StaticArray[
-            make_nv(":status", "200"),
-            make_nv("content-type", "application/grpc"),
-          ]
+          nva = build_initial_headers(initial_metadata)
 
           src = LibNghttp2::DataSource.new
           src.ptr = Box.box(resp_ctx)
@@ -607,6 +610,19 @@ module GRPC
         trailers
       end
 
+      private def build_initial_headers(metadata : Metadata) : Array(LibNghttp2::Nv)
+        headers = [
+          make_nv(":status", "200"),
+          make_nv("content-type", "application/grpc"),
+          make_nv("grpc-accept-encoding", "gzip"),
+        ] of LibNghttp2::Nv
+        metadata.each_wire do |key, value|
+          next if key.starts_with?(":") || key == "content-type" || key.starts_with?("grpc-")
+          headers << make_nv(key, value)
+        end
+        headers
+      end
+
       private def build_trailer_nva(entries : Array(Tuple(String, String))) : Array(LibNghttp2::Nv)
         entries.map { |name, value| make_nv(name, value) }
       end
@@ -642,8 +658,17 @@ module GRPC
         end
       end
 
-      private def decode_message(data : Bytes) : {Bytes, Int32}
-        Codec.decode(data)
+      private def decode_message(data : Bytes, encoding : String?) : {Bytes, Int32}
+        message, consumed = Codec.decode(data, encoding, validate_encoding: true)
+        if consumed != data.size
+          raise StatusError.new(StatusCode::INVALID_ARGUMENT, "unary request must contain exactly one complete gRPC frame")
+        end
+        {message, consumed}
+      rescue ex : StatusError
+        if ex.code == StatusCode::INTERNAL
+          raise StatusError.new(StatusCode::INVALID_ARGUMENT, ex.message)
+        end
+        raise ex
       end
 
       private def request_stream_target(sd : StreamData) : {Service, String, Symbol}?

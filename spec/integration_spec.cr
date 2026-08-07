@@ -212,6 +212,11 @@ class MetaEchoService < GRPC::Service
       {TestProto.encode_string(value), GRPC::Status.ok}
     when "HasDeadline"
       {TestProto.encode_string(ctx.deadline.nil? ? "no" : "yes"), GRPC::Status.ok}
+    when "InitialMetadata"
+      metadata = GRPC::Metadata.new
+      metadata.add("x-context-initial", "present")
+      ctx.send_initial_metadata(metadata)
+      {TestProto.encode_string("ok"), GRPC::Status.ok}
     else
       {Bytes.empty, GRPC::Status.unimplemented("unknown method")}
     end
@@ -318,6 +323,30 @@ class RecordingServerInterceptor < GRPC::ServerInterceptor
     result = next_call.call(request.info.method_path, request, ctx)
     @calls << "after:#{request.info.method}"
     result
+  end
+end
+
+class InitialMetadataServerInterceptor < GRPC::ServerInterceptor
+  def call(
+    request : GRPC::RequestEnvelope,
+    ctx : GRPC::ServerContext,
+    next_call : GRPC::UnaryServerCall,
+  ) : GRPC::ResponseEnvelope
+    response = next_call.call(request.info.method_path, request, ctx)
+    initial = response.initial_metadata.dup
+    initial.add("x-interceptor-initial", "unary")
+    GRPC::ResponseEnvelope.new(response.info, response.raw, response.status,
+      initial, response.trailing_metadata, response.codec, response.descriptor)
+  end
+
+  def call_server_stream(
+    request : GRPC::RequestEnvelope,
+    ctx : GRPC::ServerContext,
+    writer : GRPC::RawResponseStream,
+    next_call : GRPC::ServerStreamServerCall,
+  ) : GRPC::Status
+    ctx.initial_metadata.add("x-interceptor-initial", "stream")
+    next_call.call(request.info.method_path, request, ctx, writer)
   end
 end
 
@@ -496,15 +525,13 @@ describe "GRPC compression integration" do
     channel = GRPC::Channel.new("127.0.0.1:#{port}")
 
     begin
-      # Encode the proto payload, then wrap in a compressed gRPC frame
       raw = TestProto.encode_string("compressed")
-      compressed_frame = GRPC::Codec.encode(raw, compress: true)
-      # The server's Codec.decode (called by Http2ServerConnection.decode_message)
-      # should transparently decompress the frame.
-      response = channel.unary_call("test.Echo", "Echo",
-        GRPC::Codec.decode(compressed_frame).first)
+      metadata = GRPC::Metadata.new
+      metadata.add("grpc-encoding", "gzip")
+      response = channel.unary_call("test.Echo", "Echo", raw, metadata)
       response.status.ok?.should be_true
       TestProto.decode_string(response.raw).should eq("echo:compressed")
+      response.initial_metadata.get("grpc-accept-encoding").should eq("gzip")
     ensure
       channel.close
       server.stop
@@ -1044,6 +1071,48 @@ describe "GRPC metadata" do
         TestProto.encode_string("x-test-header"), ctx)
       response.status.ok?.should be_true
       TestProto.decode_string(response.raw).should eq("hello-world")
+    ensure
+      channel.close
+      server.stop
+    end
+  end
+
+  it "sends initial metadata accumulated on ServerContext" do
+    port = find_free_port
+    server = GRPC::Server.new
+    server.handle MetaEchoService.new
+    server.bind("127.0.0.1:#{port}")
+    server.start
+    channel = GRPC::Channel.new("127.0.0.1:#{port}")
+
+    begin
+      response = channel.unary_call("test.MetaEcho", "InitialMetadata", Bytes.empty)
+      response.status.ok?.should be_true
+      response.initial_metadata.get("x-context-initial").should eq("present")
+    ensure
+      channel.close
+      server.stop
+    end
+  end
+
+  it "sends initial metadata returned by unary and streaming interceptors" do
+    port = find_free_port
+    server = GRPC::Server.new
+    server.handle EchoService.new
+    server.handle StreamingEchoService.new
+    server.intercept InitialMetadataServerInterceptor.new
+    server.bind("127.0.0.1:#{port}")
+    server.start
+    channel = GRPC::Channel.new("127.0.0.1:#{port}")
+
+    begin
+      unary = channel.unary_call("test.Echo", "Echo", TestProto.encode_string("meta"))
+      unary.initial_metadata.get("x-interceptor-initial").should eq("unary")
+
+      stream = channel.open_server_stream("test.StreamingEcho", "ServerStream",
+        TestProto.encode_string("meta"))
+      stream.to_a.size.should eq(3)
+      stream.headers.get("x-interceptor-initial").should eq("stream")
     ensure
       channel.close
       server.stop
