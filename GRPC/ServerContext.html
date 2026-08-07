@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Crystal Docs 1.19.1">
+<meta name="generator" content="Crystal Docs 1.20.3">
 <meta name="crystal_docs.project_version" content="main">
 <meta name="crystal_docs.project_name" content="grpc">
 
@@ -660,7 +660,7 @@ end</p>
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc/blob/06b480bf6145606f143d16da74fb7c17da7cf351/src/grpc/call_context.cr#L10" target="_blank">
+      <a href="https://github.com/kojix2/grpc/blob/2fc663493472d0e2af17919c54e85444f0e2ebab/src/grpc/call_context.cr#L10" target="_blank">
         grpc/call_context.cr
       </a>
     
@@ -735,12 +735,24 @@ end</p>
       </li>
     
       <li class="entry-summary">
+        <a href="#initial_metadata%3AMetadata-instance-method" class="signature"><strong>#initial_metadata</strong> : Metadata</a>
+        
+      </li>
+    
+      <li class="entry-summary">
         <a href="#metadata%3AMetadata-instance-method" class="signature"><strong>#metadata</strong> : Metadata</a>
         
       </li>
     
       <li class="entry-summary">
         <a href="#peer%3AString-instance-method" class="signature"><strong>#peer</strong> : String</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#send_initial_metadata%28metadata%3AMetadata%29%3ANil-instance-method" class="signature"><strong>#send_initial_metadata</strong>(metadata : Metadata) : Nil</a>
+        
+          <div class="summary"><p>Adds metadata to the initial HTTP/2 response headers.</p></div>
         
       </li>
     
@@ -809,7 +821,7 @@ end</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/06b480bf6145606f143d16da74fb7c17da7cf351/src/grpc/call_context.cr#L18" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/2fc663493472d0e2af17919c54e85444f0e2ebab/src/grpc/call_context.cr#L19" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -846,7 +858,7 @@ end</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/06b480bf6145606f143d16da74fb7c17da7cf351/src/grpc/call_context.cr#L24" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/2fc663493472d0e2af17919c54e85444f0e2ebab/src/grpc/call_context.cr#L26" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -862,7 +874,7 @@ end</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/06b480bf6145606f143d16da74fb7c17da7cf351/src/grpc/call_context.cr#L28" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/2fc663493472d0e2af17919c54e85444f0e2ebab/src/grpc/call_context.cr#L30" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -884,7 +896,7 @@ This lets transport and handlers stop work promptly on cancellation/timeout.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/06b480bf6145606f143d16da74fb7c17da7cf351/src/grpc/call_context.cr#L42" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/2fc663493472d0e2af17919c54e85444f0e2ebab/src/grpc/call_context.cr#L44" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -900,7 +912,7 @@ This lets transport and handlers stop work promptly on cancellation/timeout.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/06b480bf6145606f143d16da74fb7c17da7cf351/src/grpc/call_context.cr#L14" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/2fc663493472d0e2af17919c54e85444f0e2ebab/src/grpc/call_context.cr#L15" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -916,7 +928,23 @@ This lets transport and handlers stop work promptly on cancellation/timeout.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/06b480bf6145606f143d16da74fb7c17da7cf351/src/grpc/call_context.cr#L14" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/2fc663493472d0e2af17919c54e85444f0e2ebab/src/grpc/call_context.cr#L15" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="initial_metadata:Metadata-instance-method">
+      <div class="signature">
+        
+        def <strong>initial_metadata</strong> : <a href="../GRPC/Metadata.html">Metadata</a>
+
+        <a class="method-permalink" href="#initial_metadata%3AMetadata-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc/blob/2fc663493472d0e2af17919c54e85444f0e2ebab/src/grpc/call_context.cr#L14" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -932,7 +960,7 @@ This lets transport and handlers stop work promptly on cancellation/timeout.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/06b480bf6145606f143d16da74fb7c17da7cf351/src/grpc/call_context.cr#L11" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/2fc663493472d0e2af17919c54e85444f0e2ebab/src/grpc/call_context.cr#L11" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -948,7 +976,29 @@ This lets transport and handlers stop work promptly on cancellation/timeout.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/06b480bf6145606f143d16da74fb7c17da7cf351/src/grpc/call_context.cr#L12" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/2fc663493472d0e2af17919c54e85444f0e2ebab/src/grpc/call_context.cr#L12" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="send_initial_metadata(metadata:Metadata):Nil-instance-method">
+      <div class="signature">
+        
+        def <strong>send_initial_metadata</strong>(metadata : <a href="../GRPC/Metadata.html">Metadata</a>) : Nil
+
+        <a class="method-permalink" href="#send_initial_metadata%28metadata%3AMetadata%29%3ANil-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p>Adds metadata to the initial HTTP/2 response headers. This must be called
+before the first response message is written.</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/kojix2/grpc/blob/2fc663493472d0e2af17919c54e85444f0e2ebab/src/grpc/call_context.cr#L51" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -964,7 +1014,7 @@ This lets transport and handlers stop work promptly on cancellation/timeout.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/06b480bf6145606f143d16da74fb7c17da7cf351/src/grpc/call_context.cr#L32" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/2fc663493472d0e2af17919c54e85444f0e2ebab/src/grpc/call_context.cr#L34" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -980,7 +1030,7 @@ This lets transport and handlers stop work promptly on cancellation/timeout.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/06b480bf6145606f143d16da74fb7c17da7cf351/src/grpc/call_context.cr#L13" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/2fc663493472d0e2af17919c54e85444f0e2ebab/src/grpc/call_context.cr#L13" target="_blank">View source</a>]
         
       </div>
     </div>

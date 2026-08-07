@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Crystal Docs 1.19.1">
+<meta name="generator" content="Crystal Docs 1.20.3">
 <meta name="crystal_docs.project_version" content="main">
 <meta name="crystal_docs.project_name" content="grpc">
 
@@ -655,7 +655,7 @@ Bytes 1-4: Message-Length (big-endian uint32) — length of the (possibly compre
   </h2>
   
     
-      <a href="https://github.com/kojix2/grpc/blob/06b480bf6145606f143d16da74fb7c17da7cf351/src/grpc/codec.cr#L9" target="_blank">
+      <a href="https://github.com/kojix2/grpc/blob/2fc663493472d0e2af17919c54e85444f0e2ebab/src/grpc/codec.cr#L9" target="_blank">
         grpc/codec.cr
       </a>
     
@@ -699,7 +699,7 @@ Bytes 1-4: Message-Length (big-endian uint32) — length of the (possibly compre
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#decode%28data%3ABytes%29%3ATuple%28Bytes%2CInt32%29-class-method" class="signature"><strong>.decode</strong>(data : Bytes) : Tuple(Bytes, Int32)</a>
+        <a href="#decode%28data%3ABytes%2Cencoding%3AString%7CNil%3Dnil%2Cvalidate_encoding%3ABool%3Dfalse%29%3ATuple%28Bytes%2CInt32%29-class-method" class="signature"><strong>.decode</strong>(data : Bytes, encoding : String | Nil = <span class="n">nil</span>, validate_encoding : Bool = <span class="n">false</span>) : Tuple(Bytes, Int32)</a>
         
           <div class="summary"><p>Decode reads one gRPC message from the given Bytes slice.</p></div>
         
@@ -713,7 +713,7 @@ Bytes 1-4: Message-Length (big-endian uint32) — length of the (possibly compre
       </li>
     
       <li class="entry-summary">
-        <a href="#decode_payload%28compressed%3AUInt8%2Cbody%3ABytes%29%3ABytes-class-method" class="signature"><strong>.decode_payload</strong>(compressed : UInt8, body : Bytes) : Bytes</a>
+        <a href="#decode_payload%28compressed%3AUInt8%2Cbody%3ABytes%2Cencoding%3AString%7CNil%3Dnil%2Cvalidate_encoding%3ABool%3Dfalse%29%3ABytes-class-method" class="signature"><strong>.decode_payload</strong>(compressed : UInt8, body : Bytes, encoding : String | Nil = <span class="n">nil</span>, validate_encoding : Bool = <span class="n">false</span>) : Bytes</a>
         
       </li>
     
@@ -748,12 +748,12 @@ Bytes 1-4: Message-Length (big-endian uint32) — length of the (possibly compre
     Class Method Detail
   </h2>
   
-    <div class="entry-detail" id="decode(data:Bytes):Tuple(Bytes,Int32)-class-method">
+    <div class="entry-detail" id="decode(data:Bytes,encoding:String|Nil=nil,validate_encoding:Bool=false):Tuple(Bytes,Int32)-class-method">
       <div class="signature">
         
-        def self.<strong>decode</strong>(data : Bytes) : Tuple(Bytes, Int32)
+        def self.<strong>decode</strong>(data : Bytes, encoding : String | Nil = <span class="n">nil</span>, validate_encoding : Bool = <span class="n">false</span>) : Tuple(Bytes, Int32)
 
-        <a class="method-permalink" href="#decode%28data%3ABytes%29%3ATuple%28Bytes%2CInt32%29-class-method">#</a>
+        <a class="method-permalink" href="#decode%28data%3ABytes%2Cencoding%3AString%7CNil%3Dnil%2Cvalidate_encoding%3ABool%3Dfalse%29%3ATuple%28Bytes%2CInt32%29-class-method">#</a>
       </div>
       
         <div class="doc">
@@ -767,7 +767,7 @@ Raises StatusError on incomplete or malformed frames.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/06b480bf6145606f143d16da74fb7c17da7cf351/src/grpc/codec.cr#L34" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/2fc663493472d0e2af17919c54e85444f0e2ebab/src/grpc/codec.cr#L34" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -788,23 +788,23 @@ Raises StatusError on incomplete or malformed frames.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/06b480bf6145606f143d16da74fb7c17da7cf351/src/grpc/codec.cr#L60" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/2fc663493472d0e2af17919c54e85444f0e2ebab/src/grpc/codec.cr#L67" target="_blank">View source</a>]
         
       </div>
     </div>
   
-    <div class="entry-detail" id="decode_payload(compressed:UInt8,body:Bytes):Bytes-class-method">
+    <div class="entry-detail" id="decode_payload(compressed:UInt8,body:Bytes,encoding:String|Nil=nil,validate_encoding:Bool=false):Bytes-class-method">
       <div class="signature">
         
-        def self.<strong>decode_payload</strong>(compressed : UInt8, body : Bytes) : Bytes
+        def self.<strong>decode_payload</strong>(compressed : UInt8, body : Bytes, encoding : String | Nil = <span class="n">nil</span>, validate_encoding : Bool = <span class="n">false</span>) : Bytes
 
-        <a class="method-permalink" href="#decode_payload%28compressed%3AUInt8%2Cbody%3ABytes%29%3ABytes-class-method">#</a>
+        <a class="method-permalink" href="#decode_payload%28compressed%3AUInt8%2Cbody%3ABytes%2Cencoding%3AString%7CNil%3Dnil%2Cvalidate_encoding%3ABool%3Dfalse%29%3ABytes-class-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/06b480bf6145606f143d16da74fb7c17da7cf351/src/grpc/codec.cr#L47" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/2fc663493472d0e2af17919c54e85444f0e2ebab/src/grpc/codec.cr#L48" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -826,7 +826,7 @@ Pass <code>compress: true</code> to gzip-compress the payload.</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/kojix2/grpc/blob/06b480bf6145606f143d16da74fb7c17da7cf351/src/grpc/codec.cr#L14" target="_blank">View source</a>]
+          [<a href="https://github.com/kojix2/grpc/blob/2fc663493472d0e2af17919c54e85444f0e2ebab/src/grpc/codec.cr#L14" target="_blank">View source</a>]
         
       </div>
     </div>
