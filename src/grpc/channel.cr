@@ -81,12 +81,15 @@ module GRPC
       request_bytes : Bytes,
       ctx : ClientContext = ClientContext.new,
     ) : ResponseEnvelope
+      ctx.check_active!
       wait_for_rate_limit_slot
       release = acquire_concurrency_slot
 
       if @interceptors.empty?
         begin
-          get_or_create_connection.unary_call(service, method, request_bytes, ctx.effective_metadata)
+          connection = get_or_create_connection
+          ctx.check_active!
+          connection.unary_call(service, method, request_bytes, ctx.effective_metadata)
         ensure
           release.call
         end
@@ -95,7 +98,9 @@ module GRPC
         info = CallInfo.new(method_path, RPCKind::Unary)
         req = RequestEnvelope.new(info, request_bytes)
         base = UnaryClientCall.new do |_method_path, req_env, call_ctx|
-          response = get_or_create_connection.unary_call(service, method, req_env.raw, call_ctx.effective_metadata)
+          connection = get_or_create_connection
+          call_ctx.check_active!
+          response = connection.unary_call(service, method, req_env.raw, call_ctx.effective_metadata)
           ResponseEnvelope.new(
             req_env.info,
             response.raw,
@@ -141,12 +146,15 @@ module GRPC
       request_bytes : Bytes,
       ctx : ClientContext = ClientContext.new,
     ) : RawServerStream
+      ctx.check_active!
       wait_for_rate_limit_slot
       release = acquire_concurrency_slot
 
       if @interceptors.empty?
         begin
-          raw = get_or_create_connection.open_server_stream(service, method, request_bytes, ctx.effective_metadata)
+          connection = get_or_create_connection
+          ctx.check_active!
+          raw = connection.open_server_stream(service, method, request_bytes, ctx.effective_metadata)
           raw.with_on_finish(release)
         rescue ex
           release.call
@@ -157,7 +165,9 @@ module GRPC
         info = CallInfo.new(method_path, RPCKind::ServerStreaming)
         req = RequestEnvelope.new(info, request_bytes)
         base = ServerStreamClientCall.new do |_mp, req_env, call_ctx|
-          get_or_create_connection.open_server_stream(service, method, req_env.raw, call_ctx.effective_metadata)
+          connection = get_or_create_connection
+          call_ctx.check_active!
+          connection.open_server_stream(service, method, req_env.raw, call_ctx.effective_metadata)
         end
         chain = Interceptors.build_client_chain(@interceptors, base)
         begin
@@ -181,13 +191,16 @@ module GRPC
       ctx : ClientContext = ClientContext.new,
       send_queue_size : Int32 = 0,
     ) : RawBidiCall
+      ctx.check_active!
       wait_for_rate_limit_slot
       release = acquire_concurrency_slot
 
       method_path = "/#{service}/#{method}"
       if @interceptors.empty?
         begin
-          raw = get_or_create_connection.open_bidi_stream_live(service, method, ctx.effective_metadata, send_queue_size)
+          connection = get_or_create_connection
+          ctx.check_active!
+          raw = connection.open_bidi_stream_live(service, method, ctx.effective_metadata, send_queue_size)
           raw.with_on_finish(release)
         rescue ex
           release.call
@@ -195,7 +208,9 @@ module GRPC
         end
       else
         base = LiveBidiStreamClientCall.new do |_mp, call_ctx|
-          get_or_create_connection.open_bidi_stream_live(service, method, call_ctx.effective_metadata, send_queue_size)
+          connection = get_or_create_connection
+          call_ctx.check_active!
+          connection.open_bidi_stream_live(service, method, call_ctx.effective_metadata, send_queue_size)
         end
         chain = Interceptors.build_client_chain(@interceptors, base)
         begin
@@ -219,13 +234,16 @@ module GRPC
       ctx : ClientContext = ClientContext.new,
       send_queue_size : Int32 = 0,
     ) : RawClientCall
+      ctx.check_active!
       wait_for_rate_limit_slot
       release = acquire_concurrency_slot
 
       method_path = "/#{service}/#{method}"
       if @interceptors.empty?
         begin
-          raw = get_or_create_connection.open_client_stream_live(service, method, ctx.effective_metadata, send_queue_size)
+          connection = get_or_create_connection
+          ctx.check_active!
+          raw = connection.open_client_stream_live(service, method, ctx.effective_metadata, send_queue_size)
           raw.with_on_finish(release)
         rescue ex
           release.call
@@ -233,7 +251,9 @@ module GRPC
         end
       else
         base = LiveClientStreamClientCall.new do |_mp, call_ctx|
-          get_or_create_connection.open_client_stream_live(service, method, call_ctx.effective_metadata, send_queue_size)
+          connection = get_or_create_connection
+          call_ctx.check_active!
+          connection.open_client_stream_live(service, method, call_ctx.effective_metadata, send_queue_size)
         end
         chain = Interceptors.build_client_chain(@interceptors, base)
         begin

@@ -408,6 +408,7 @@ module GRPC
         @pending_streams = {} of Int32 => PendingStream
         @stream_boxes = {} of Int32 => Void*
         @data_source_boxes = {} of Int32 => Void*
+        @deadline_watch_stops = {} of Int32 => ::Channel(Nil)
 
         # nghttp2 client session automatically prepends the HTTP/2 connection preface
         # to the first session_mem_send output, so we must NOT write it manually.
@@ -558,6 +559,7 @@ module GRPC
           @pending[stream_id] = call
           @stream_boxes[stream_id] = boxed_call
           @data_source_boxes[stream_id] = boxed_src
+          start_deadline_watcher(stream_id, metadata, call)
           flush_send
         end
 
@@ -629,6 +631,7 @@ module GRPC
           @pending_streams[stream_id] = ps
           @stream_boxes[stream_id] = boxed_ps
           @data_source_boxes[stream_id] = boxed_src
+          start_deadline_watcher(stream_id, metadata, ps)
 
           # Wire up the cancel proc so PendingStream.cancel can send RST_STREAM.
           ps.cancel_proc = -> {
@@ -675,6 +678,7 @@ module GRPC
 
           @pending_streams[stream_id] = ps
           @stream_boxes[stream_id] = boxed_ps
+          start_deadline_watcher(stream_id, metadata, ps)
 
           ps.send_resume_proc = build_live_resume_proc(ps, stream_id)
           ps.cancel_proc = build_cancel_proc(stream_id)
@@ -785,6 +789,7 @@ module GRPC
         # Ignore SETTINGS ACK: FLAG_ACK == FLAG_END_STREAM == 0x01
         return if frame_type(frame) == LibNghttp2::FRAME_SETTINGS
         stream_id = frame_stream_id(frame)
+        stop_deadline_watcher(stream_id)
         if call = @pending[stream_id]?
           call.complete
         elsif ps = @pending_streams[stream_id]?
@@ -793,6 +798,7 @@ module GRPC
       end
 
       def on_stream_close_cb(stream_id : Int32, error_code : UInt32) : Nil
+        stop_deadline_watcher(stream_id)
         call = @pending.delete(stream_id)
         if call && error_code != LibNghttp2::NO_ERROR
           call.transport_error = stream_close_status(error_code)
@@ -831,11 +837,13 @@ module GRPC
 
         calls = @pending.values
         streams = @pending_streams.values
+        deadline_stops = @deadline_watch_stops.values
 
         @pending = {} of Int32 => PendingCall
         @pending_streams = {} of Int32 => PendingStream
         @stream_boxes.clear
         @data_source_boxes.clear
+        @deadline_watch_stops = {} of Int32 => ::Channel(Nil)
 
         calls.each do |call|
           call.transport_error = status
@@ -846,6 +854,73 @@ module GRPC
           stream.transport_error = status
           stream.live_send_buf.try &.close
           stream.finish
+        end
+
+        deadline_stops.each { |stop| stop.send(nil) rescue nil }
+      end
+
+      # ameba:disable Metrics/CyclomaticComplexity
+      private def start_deadline_watcher(stream_id : Int32, metadata : Metadata,
+                                         terminal : PendingCall | PendingStream) : Nil
+        timeout_value = metadata.get("grpc-timeout")
+        return unless timeout_value
+        duration = parse_timeout(timeout_value)
+        return unless duration
+
+        stop = ::Channel(Nil).new(1)
+        @deadline_watch_stops[stream_id] = stop
+        spawn do
+          expired = false
+          if duration > Time::Span.zero
+            select
+            when stop.receive
+            when timeout(duration)
+              expired = true
+            end
+          else
+            expired = true
+          end
+          next unless expired
+
+          @mutex.synchronize do
+            next unless @deadline_watch_stops.delete(stream_id)
+            status = Status.new(StatusCode::DEADLINE_EXCEEDED, "deadline exceeded")
+            case terminal
+            when PendingCall
+              terminal.transport_error = status
+              terminal.complete
+            when PendingStream
+              terminal.transport_error = status
+              terminal.live_send_buf.try &.close
+              terminal.finish
+            end
+            unless @closed || @session.null?
+              rc = LibNghttp2.submit_rst_stream(@session, LibNghttp2::FLAG_NONE, stream_id,
+                LibNghttp2::NGHTTP2_CANCEL)
+              flush_send rescue nil if rc >= 0
+            end
+          end
+        end
+      end
+
+      # ameba:enable Metrics/CyclomaticComplexity
+
+      private def stop_deadline_watcher(stream_id : Int32) : Nil
+        if stop = @deadline_watch_stops.delete(stream_id)
+          stop.send(nil) rescue nil
+        end
+      end
+
+      private def parse_timeout(value : String) : Time::Span?
+        return unless value.matches?(/\A[0-9]{1,8}[HMSmun]\z/)
+        number = value[0..-2].to_i64
+        case value[-1]
+        when 'H' then number.hours
+        when 'M' then number.minutes
+        when 'S' then number.seconds
+        when 'm' then number.milliseconds
+        when 'u' then number.microseconds
+        when 'n' then number.nanoseconds
         end
       end
     end

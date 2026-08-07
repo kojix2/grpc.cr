@@ -786,11 +786,12 @@ module GRPC
         return if timeout_str.nil? || timeout_str.empty?
 
         # Format: integer followed by unit (H=hours, M=minutes, S=seconds, m=ms, u=us, n=ns)
-        raise StatusError.new(StatusCode::INVALID_ARGUMENT, "invalid grpc-timeout") if timeout_str.size < 2
+        unless timeout_str.matches?(/\A[0-9]{1,8}[HMSmun]\z/)
+          raise StatusError.new(StatusCode::INVALID_ARGUMENT, "invalid grpc-timeout")
+        end
         unit = timeout_str[-1]
         value = timeout_str[0..-2].to_i64?
         raise StatusError.new(StatusCode::INVALID_ARGUMENT, "invalid grpc-timeout") unless value
-        raise StatusError.new(StatusCode::INVALID_ARGUMENT, "invalid grpc-timeout") if value < 0
 
         span = timeout_unit_to_span(unit, value)
         raise StatusError.new(StatusCode::INVALID_ARGUMENT, "invalid grpc-timeout") unless span
@@ -803,8 +804,8 @@ module GRPC
         when 'M' then value.minutes
         when 'S' then value.seconds
         when 'm' then value.milliseconds
-        when 'u' then (value / 1000.0).seconds
-        when 'n' then (value / 1_000_000.0).seconds
+        when 'u' then value.microseconds
+        when 'n' then value.nanoseconds
         end
       end
 

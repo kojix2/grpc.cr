@@ -1229,6 +1229,25 @@ describe "GRPC deadline" do
     end
   end
 
+  it "rejects grpc-timeout values longer than eight digits" do
+    port = find_free_port
+    server = GRPC::Server.new
+    server.handle MetaEchoService.new
+    server.bind("127.0.0.1:#{port}")
+    server.start
+    channel = GRPC::Channel.new("127.0.0.1:#{port}")
+
+    begin
+      meta = GRPC::Metadata.new
+      meta.add("grpc-timeout", "123456789m")
+      response = channel.unary_call("test.MetaEcho", "HasDeadline", Bytes.empty, meta)
+      response.status.code.should eq(GRPC::StatusCode::INVALID_ARGUMENT)
+    ensure
+      channel.close
+      server.stop
+    end
+  end
+
   it "terminates a slow unary handler when deadline is exceeded mid-flight" do
     port = find_free_port
     server = GRPC::Server.new

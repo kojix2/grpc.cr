@@ -79,12 +79,7 @@ module GRPC
       remaining = dl - Time.utc
       m = Metadata.new
       m.merge!(@metadata)
-      if remaining.total_seconds > 0
-        # gRPC-timeout is encoded as an integer with a unit suffix.
-        # 'm' = milliseconds, 'S' = seconds, 'M' = minutes, 'H' = hours.
-        timeout_ms = remaining.total_milliseconds.ceil.to_i64
-        m.set("grpc-timeout", "#{timeout_ms}m")
-      end
+      m.set("grpc-timeout", encode_timeout(remaining)) if remaining > Time::Span.zero
       m
     end
 
@@ -100,6 +95,27 @@ module GRPC
       dl = @deadline
       return false unless dl
       Time.utc >= dl
+    end
+
+    def check_active! : Nil
+      raise StatusError.new(StatusCode::DEADLINE_EXCEEDED, "deadline exceeded") if timed_out?
+    end
+
+    private def encode_timeout(remaining : Time::Span) : String
+      limit = 99_999_999_i64
+      units = {
+        {'n', remaining.total_nanoseconds},
+        {'u', remaining.total_microseconds},
+        {'m', remaining.total_milliseconds},
+        {'S', remaining.total_seconds},
+        {'M', remaining.total_minutes},
+        {'H', remaining.total_hours},
+      }
+      units.each do |unit, raw|
+        value = raw.ceil.to_i64
+        return "#{Math.max(value, 1_i64)}#{unit}" if value <= limit
+      end
+      "#{limit}H"
     end
   end
 end

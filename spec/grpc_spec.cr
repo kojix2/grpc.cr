@@ -1028,6 +1028,30 @@ describe GRPC do
       meta.get("grpc-timeout").should be_nil
     end
 
+    it "uses at most eight timeout digits and chooses a coarser unit when needed" do
+      ctx = GRPC::ClientContext.new(deadline: 48.hours)
+      value = ctx.effective_metadata.get("grpc-timeout")
+      value.should_not be_nil
+      value = value.as(String)
+      value.should match(/\A[0-9]{1,8}[HMSmun]\z/)
+      value.ends_with?('m').should be_false
+    end
+
+    it "rejects an already-expired deadline locally" do
+      ctx = GRPC::ClientContext.new(deadline: Time.utc - 1.second)
+      ex = expect_raises(GRPC::StatusError) { ctx.check_active! }
+      ex.code.should eq(GRPC::StatusCode::DEADLINE_EXCEEDED)
+    end
+
+    it "does not open a transport for an already-expired call" do
+      channel = GRPC::Channel.new("127.0.0.1:1")
+      ctx = GRPC::ClientContext.new(deadline: Time.utc - 1.second)
+      ex = expect_raises(GRPC::StatusError) do
+        channel.unary_call("test.Service", "Method", Bytes.empty, ctx)
+      end
+      ex.code.should eq(GRPC::StatusCode::DEADLINE_EXCEEDED)
+    end
+
     it "reports remaining time before deadline" do
       ctx = GRPC::ClientContext.new(deadline: 10.seconds)
       ctx.remaining.should_not be_nil
