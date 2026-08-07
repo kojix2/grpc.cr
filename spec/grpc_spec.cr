@@ -400,6 +400,15 @@ describe GRPC do
       consumed.should eq(framed.size)
     end
 
+    it "requires grpc-encoding gzip when transport validation is enabled" do
+      frame = GRPC::Codec.encode("compressed".to_slice, compress: true)
+      expect_raises(GRPC::StatusError, /grpc-encoding: gzip/) do
+        GRPC::Codec.decode(frame, nil, validate_encoding: true)
+      end
+      decoded, _ = GRPC::Codec.decode(frame, "gzip", validate_encoding: true)
+      String.new(decoded).should eq("compressed")
+    end
+
     it "transparently decodes mixed compressed/uncompressed frames" do
       plain = GRPC::Codec.encode("hello".to_slice)
       compressed = GRPC::Codec.encode("world".to_slice, compress: true)

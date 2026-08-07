@@ -14,6 +14,7 @@ module GRPC
       property live_send_buf : LiveSendBuffer? # GC anchor for live bidi
       property send_resume_proc : (-> Nil)?    # wakes up deferred DATA for live bidi
       property cancel_proc : (-> Nil)?
+      property? outbound_compression : Bool
       @status_override : Status?
       @header_state : StreamHeaderState
       @terminal_state : StreamTerminalState
@@ -28,7 +29,8 @@ module GRPC
         @status_override = nil
         @header_state = StreamHeaderState.new
         @terminal_state = StreamTerminalState.new
-        @deframer = GrpcDeframer.new
+        @deframer = GrpcDeframer.new(validate_encoding: true)
+        @outbound_compression = false
       end
 
       def headers : Metadata
@@ -45,6 +47,7 @@ module GRPC
 
       def add_header(key : String, value : String) : Nil
         @header_state.add_header(key, value)
+        @deframer.encoding = value if key.downcase == "grpc-encoding"
       rescue ex : ArgumentError
         self.transport_error = Status.internal(ex.message || "invalid response metadata")
       end
@@ -427,14 +430,16 @@ module GRPC
       # unary_call sends one gRPC request and blocks until the response arrives.
       def unary_call(service : String, method : String, request_body : Bytes,
                      metadata : Metadata = Metadata.new) : ResponseEnvelope
-        submit_unary_request(service, method, Codec.encode(request_body), metadata)
+        submit_unary_request(service, method,
+          Codec.encode(request_body, compress: request_compression?(metadata)), metadata)
       end
 
       # open_server_stream sends one gRPC request and returns a RawServerStream that
       # delivers server-pushed messages as they arrive.
       def open_server_stream(service : String, method : String, request_bytes : Bytes,
                              metadata : Metadata = Metadata.new) : RawServerStream
-        pending_to_raw_stream(submit_streaming_request(service, method, Codec.encode(request_bytes), metadata))
+        pending_to_raw_stream(submit_streaming_request(service, method,
+          Codec.encode(request_bytes, compress: request_compression?(metadata)), metadata))
       end
 
       # open_bidi_stream_live opens a true full-duplex bidi stream.
@@ -473,7 +478,7 @@ module GRPC
 
       private def pending_to_raw_client_call(ps : PendingStream) : RawClientCall
         RawClientCall.new(
-          ->(b : Bytes) { ps.send_outgoing(Codec.encode(b)) },
+          ->(b : Bytes) { ps.send_outgoing(Codec.encode(b, compress: ps.outbound_compression?)) },
           -> {
             ps.close_send
             # Drain the channel until it is closed (nil sentinel).
@@ -496,7 +501,7 @@ module GRPC
 
       private def pending_to_raw_bidi_call(ps : PendingStream) : RawBidiCall
         RawBidiCall.new(
-          ->(b : Bytes) { ps.send_outgoing(Codec.encode(b)) },
+          ->(b : Bytes) { ps.send_outgoing(Codec.encode(b, compress: ps.outbound_compression?)) },
           stream_close_proc(ps),
           ps.messages,
           stream_headers_proc(ps),
@@ -566,7 +571,11 @@ module GRPC
           call.grpc_trailers
         ) unless status.ok?
         begin
-          body, _ = Codec.decode(call.response_bytes)
+          body, consumed = Codec.decode(call.response_bytes,
+            call.response_headers.get("grpc-encoding"), validate_encoding: true)
+          if consumed != call.response_bytes.size
+            raise StatusError.new(StatusCode::INTERNAL, "unary response must contain exactly one complete gRPC frame")
+          end
           ResponseEnvelope.new(
             CallInfo.new("/#{service}/#{method}", RPCKind::Unary),
             body,
@@ -650,6 +659,7 @@ module GRPC
         @mutex.synchronize do
           lsb = LiveSendBuffer.new(send_queue_size)
           ps.live_send_buf = lsb
+          ps.outbound_compression = request_compression?(metadata)
 
           nva_list = build_request_headers(service, method, metadata)
           nva = nva_list.to_unsafe
@@ -720,9 +730,20 @@ module GRPC
           make_nv("content-type", "application/grpc"),
           make_nv("te", "trailers"),
           make_nv("user-agent", "grpc-crystal/#{GRPC::VERSION}"),
+          make_nv("grpc-accept-encoding", "gzip"),
         ] of LibNghttp2::Nv
         metadata.each_wire { |k, v| nva_list << make_nv(k, v) }
         nva_list
+      end
+
+      private def request_compression?(metadata : Metadata) : Bool
+        case encoding = metadata.get("grpc-encoding")
+        when nil, "identity" then false
+        when "gzip"          then true
+        else
+          raise StatusError.new(StatusCode::UNIMPLEMENTED,
+            "unsupported grpc-encoding: #{encoding}")
+        end
       end
 
       # ---- Callbacks ----

@@ -44,7 +44,7 @@ module GRPC
         def initialize(@kind : Symbol)
           @channel = ::Channel(Bytes?).new(256)
           @requests = RawRequestStream.new(@channel)
-          @deframer = GrpcDeframer.new
+          @deframer = GrpcDeframer.new(validate_encoding: true)
           @error_status = nil
           @closed = Atomic(Bool).new(false)
         end
@@ -211,6 +211,7 @@ module GRPC
           state = @live_request_states[stream_id]?
           unless state
             state = LiveRequestState.new(kind)
+            state.deframer.encoding = sd.headers.get("grpc-encoding")
             @live_request_states[stream_id] = state
             spawn dispatch_live_request_stream(stream_id, sd, service, method_name, state)
           end
@@ -243,6 +244,7 @@ module GRPC
         if target = request_stream_target(sd)
           service, method_name, kind = target
           state = LiveRequestState.new(kind)
+          state.deframer.encoding = sd.headers.get("grpc-encoding")
           @live_request_states[stream_id] = state
           spawn dispatch_live_request_stream(stream_id, sd, service, method_name, state)
           finish_live_request_stream(stream_id, state)

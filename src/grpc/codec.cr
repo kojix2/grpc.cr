@@ -31,7 +31,8 @@ module GRPC
     # Returns {message_bytes, bytes_consumed}.
     # Decompresses gzip-compressed frames automatically.
     # Raises StatusError on incomplete or malformed frames.
-    def self.decode(data : Bytes) : {Bytes, Int32}
+    def self.decode(data : Bytes, encoding : String? = nil,
+                    validate_encoding : Bool = false) : {Bytes, Int32}
       raise StatusError.new(StatusCode::INTERNAL, "incomplete gRPC frame header") if data.size < HEADER_SIZE
 
       compressed = data[0]
@@ -41,13 +42,19 @@ module GRPC
       raise StatusError.new(StatusCode::INTERNAL, "incomplete gRPC frame body") if data.size < total
 
       body = data[HEADER_SIZE, length]
-      {decode_payload(compressed, body), total}
+      {decode_payload(compressed, body, encoding, validate_encoding), total}
     end
 
-    def self.decode_payload(compressed : UInt8, body : Bytes) : Bytes
+    def self.decode_payload(compressed : UInt8, body : Bytes,
+                            encoding : String? = nil,
+                            validate_encoding : Bool = false) : Bytes
       # Keep the uncompressed path as a borrowed slice; only gzip requires a
       # fresh allocation for the decompressed payload.
       if compressed == 1
+        if validate_encoding && encoding != "gzip"
+          raise StatusError.new(StatusCode::UNIMPLEMENTED,
+            "compressed gRPC message requires grpc-encoding: gzip")
+        end
         decompress_gzip(body)
       elsif compressed == 0
         body

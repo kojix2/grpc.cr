@@ -8,8 +8,9 @@ module GRPC
       @segments : Deque(Bytes)
       @head_offset : Int32
       @remainder_size : Int32
+      property encoding : String?
 
-      def initialize
+      def initialize(@encoding : String? = nil, @validate_encoding : Bool = false)
         @segments = Deque(Bytes).new
         @head_offset = 0
         @remainder_size = 0
@@ -63,7 +64,7 @@ module GRPC
 
       private def consume_message_payload(header : FrameHeader) : Bytes
         payload = consume_payload_exact(header.length)
-        Codec.decode_payload(header.compressed, payload)
+        Codec.decode_payload(header.compressed, payload, @encoding, @validate_encoding)
       end
 
       private def skip_exact(n : Int32) : Nil
