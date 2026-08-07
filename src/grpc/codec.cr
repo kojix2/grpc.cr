@@ -48,6 +48,7 @@ module GRPC
     def self.decode_payload(compressed : UInt8, body : Bytes,
                             encoding : String? = nil,
                             validate_encoding : Bool = false) : Bytes
+      validate_encoding!(encoding) if validate_encoding
       # Keep the uncompressed path as a borrowed slice; only gzip requires a
       # fresh allocation for the decompressed payload.
       if compressed == 1
@@ -61,6 +62,12 @@ module GRPC
       else
         raise StatusError.new(StatusCode::UNIMPLEMENTED, "unsupported gRPC compression flag: #{compressed}")
       end
+    end
+
+    def self.validate_encoding!(encoding : String?) : Nil
+      return if encoding.nil? || encoding == "identity" || encoding == "gzip"
+      raise StatusError.new(StatusCode::UNIMPLEMENTED,
+        "unsupported grpc-encoding: #{encoding}")
     end
 
     # Decode all gRPC messages from the given Bytes slice.

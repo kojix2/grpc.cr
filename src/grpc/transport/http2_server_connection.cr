@@ -684,6 +684,12 @@ module GRPC
       end
 
       private def immediate_stream_rejection(sd : StreamData) : Status?
+        begin
+          Codec.validate_encoding!(sd.headers.get("grpc-encoding"))
+        rescue ex : StatusError
+          return ex.status
+        end
+
         path = sd.headers.get(":path") || ""
         parts = path.split("/")
         service_full_name = parts[1]? || ""

@@ -409,6 +409,14 @@ describe GRPC do
       String.new(decoded).should eq("compressed")
     end
 
+    it "rejects an unsupported declared encoding for an uncompressed frame" do
+      frame = GRPC::Codec.encode("plain".to_slice)
+      ex = expect_raises(GRPC::StatusError) do
+        GRPC::Codec.decode(frame, "snappy", validate_encoding: true)
+      end
+      ex.code.should eq(GRPC::StatusCode::UNIMPLEMENTED)
+    end
+
     it "transparently decodes mixed compressed/uncompressed frames" do
       plain = GRPC::Codec.encode("hello".to_slice)
       compressed = GRPC::Codec.encode("world".to_slice, compress: true)
@@ -1603,6 +1611,23 @@ describe GRPC do
 
       stream.grpc_status.code.should eq(GRPC::StatusCode::INTERNAL)
       stream.grpc_status.message.should contain("incomplete")
+    end
+
+    it "ignores DATA that races with local cancellation" do
+      stream = GRPC::Transport::PendingStream.new
+      stream.cancel_proc = -> { nil }
+      stream.cancel
+
+      stream.receive_data(GRPC::Codec.encode(Bytes[1_u8]))
+      stream.messages.receive?.should be_nil
+    end
+
+    it "rejects unsupported response encodings before streaming DATA" do
+      stream = GRPC::Transport::PendingStream.new
+      stream.add_header("grpc-encoding", "snappy")
+
+      stream.grpc_status.code.should eq(GRPC::StatusCode::UNIMPLEMENTED)
+      stream.messages.receive?.should be_nil
     end
   end
 

@@ -47,9 +47,15 @@ module GRPC
 
       def add_header(key : String, value : String) : Nil
         @header_state.add_header(key, value)
-        @deframer.encoding = value if key.downcase == "grpc-encoding"
+        if key.downcase == "grpc-encoding"
+          Codec.validate_encoding!(value)
+          @deframer.encoding = value
+        end
       rescue ex : ArgumentError
         self.transport_error = Status.internal(ex.message || "invalid response metadata")
+      rescue ex : StatusError
+        self.transport_error = ex.status
+        finish
       end
 
       def receive_data(chunk : Bytes) : Nil
