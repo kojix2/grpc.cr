@@ -62,6 +62,10 @@ module GRPC
       new(StatusCode::NOT_FOUND, message)
     end
 
+    def self.resource_exhausted(message = "") : Status
+      new(StatusCode::RESOURCE_EXHAUSTED, message)
+    end
+
     def self.unimplemented(message = "") : Status
       new(StatusCode::UNIMPLEMENTED, message)
     end

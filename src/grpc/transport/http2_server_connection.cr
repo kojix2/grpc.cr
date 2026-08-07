@@ -49,15 +49,22 @@ module GRPC
           @closed = Atomic(Bool).new(false)
         end
 
-        def push(message : Bytes) : Nil
-          return if @closed.get
-          @channel.send(message)
+        def push(message : Bytes) : Bool
+          return false if @closed.get
+          select
+          when @channel.send(message)
+            true
+          else
+            false
+          end
+        rescue ::Channel::ClosedError
+          false
         end
 
         def close : Nil
           # compare_and_set returns {old_value, success?}; only the winner executes.
           return unless @closed.compare_and_set(false, true)[1]
-          @channel.send(nil)
+          @channel.close
         rescue
           # no-op
         end
@@ -662,7 +669,13 @@ module GRPC
         return if state.error_status
 
         state.deframer.append(chunk)
-        state.deframer.drain_messages.each { |message| state.push(message) }
+        state.deframer.drain_messages.each do |message|
+          unless state.push(message)
+            state.error_status = Status.resource_exhausted("request stream receive buffer exhausted")
+            state.close
+            break
+          end
+        end
       rescue ex : StatusError
         state.error_status = ex.status
         state.close

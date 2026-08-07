@@ -549,6 +549,30 @@ describe GRPC do
       buf.read_into(raw_buf.to_unsafe, 64_u64, pointerof(flags2))
       (flags2 & LibNghttp2::DATA_FLAG_EOF).should_not eq(0)
     end
+
+    it "bounded mode: close releases a sender waiting for capacity" do
+      buf = GRPC::Transport::LiveSendBuffer.new(1)
+      buf.push(Bytes[1_u8])
+      result = ::Channel(Exception?).new(1)
+
+      spawn do
+        begin
+          buf.push(Bytes[2_u8])
+          result.send(nil)
+        rescue ex
+          result.send(ex)
+        end
+      end
+      Fiber.yield
+      buf.close
+
+      select
+      when ex = result.receive
+        ex.should be_a(GRPC::StatusError)
+      when timeout(100.milliseconds)
+        fail("blocked sender was not released by close")
+      end
+    end
   end
 
   describe GRPC::Transport::GrpcDeframer do
@@ -1514,6 +1538,23 @@ describe GRPC do
 
       stream.messages.receive?.should be_nil
       stream.grpc_status.code.should eq(GRPC::StatusCode::UNIMPLEMENTED)
+    end
+
+    it "fails only the saturated response stream instead of blocking the connection callback" do
+      stream = GRPC::Transport::PendingStream.new
+      frame = GRPC::Codec.encode(Bytes[1_u8])
+      129.times { stream.receive_data(frame) }
+
+      stream.grpc_status.code.should eq(GRPC::StatusCode::RESOURCE_EXHAUSTED)
+    end
+
+    it "reports an incomplete trailing response frame at end of stream" do
+      stream = GRPC::Transport::PendingStream.new
+      stream.receive_data(Bytes[0_u8, 0_u8, 0_u8])
+      stream.finish
+
+      stream.grpc_status.code.should eq(GRPC::StatusCode::INTERNAL)
+      stream.grpc_status.message.should contain("incomplete")
     end
   end
 

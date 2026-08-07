@@ -51,7 +51,20 @@ module GRPC
 
       def receive_data(chunk : Bytes) : Nil
         @deframer.append(chunk)
-        @deframer.drain_messages.each { |msg| @messages.send(msg) }
+        @deframer.drain_messages.each do |msg|
+          delivered = select
+          when @messages.send(msg)
+            true
+          else
+            false
+          end
+          unless delivered
+            self.transport_error = Status.resource_exhausted("response stream receive buffer exhausted")
+            @cancel_proc.try &.call
+            finish
+            break
+          end
+        end
       rescue ex : StatusError
         self.transport_error = ex.status
         finish
@@ -59,7 +72,11 @@ module GRPC
 
       def finish : Nil
         return unless @terminal_state.mark_finished
-        @messages.send(nil) rescue nil
+        if @deframer.remainder_size > 0 && @status_override.nil?
+          @status_override = Status.internal("incomplete gRPC response frame")
+        end
+        @live_send_buf.try &.close
+        @messages.close rescue nil
       end
 
       def transport_error=(status : Status) : Nil
@@ -84,6 +101,7 @@ module GRPC
       # message channel so waiting iterators unblock.
       def cancel : Nil
         return unless @terminal_state.mark_cancelled
+        @live_send_buf.try &.close
         @cancel_proc.try &.call
         @messages.close rescue nil
       end
@@ -195,7 +213,7 @@ module GRPC
       @lsb_mutex : Mutex
       # Counting semaphore for bounded mode.  Pre-filled with *capacity* permits;
       # push consumes one permit (blocks when 0), read_into returns one on shift.
-      @permits : ::Channel(Nil)?
+      @permits : ::Channel(Bool)?
 
       def initialize(capacity : Int32 = 0)
         @deque = Deque(Bytes).new
@@ -205,8 +223,8 @@ module GRPC
         @resume_requested = false
         @lsb_mutex = Mutex.new
         if capacity > 0
-          permits = ::Channel(Nil).new(capacity)
-          capacity.times { permits.send(nil) }
+          permits = ::Channel(Bool).new(capacity)
+          capacity.times { permits.send(true) }
           @permits = permits
         else
           @permits = nil
@@ -214,19 +232,30 @@ module GRPC
       end
 
       def push(bytes : Bytes) : Nil
-        # Block until a slot is available (no-op when unbounded).
-        @permits.try &.receive
         @lsb_mutex.synchronize do
+          raise StatusError.new(StatusCode::CANCELLED, "send buffer is closed") if @closed
+        end
+        if permits = @permits
+          unless permits.receive?
+            raise StatusError.new(StatusCode::CANCELLED, "send buffer is closed")
+          end
+        end
+        @lsb_mutex.synchronize do
+          raise StatusError.new(StatusCode::CANCELLED, "send buffer is closed") if @closed
           @deque.push(bytes)
           @resume_requested = true
         end
       end
 
       def close : Nil
+        permits = nil.as(::Channel(Bool)?)
         @lsb_mutex.synchronize do
+          return if @closed
           @closed = true
           @resume_requested = true
+          permits = @permits
         end
+        permits.try &.close
       end
 
       def closed? : Bool
@@ -278,7 +307,7 @@ module GRPC
         @deferred = false
         @current = IO::Memory.new(@deque.shift)
         # Return one permit now that a slot has been freed.
-        @permits.try { |permits_ch| permits_ch.send(nil) rescue nil }
+        @permits.try { |permits_ch| permits_ch.send(true) rescue nil }
         nil
       end
 
@@ -330,6 +359,7 @@ module GRPC
       @stream_boxes : Hash(Int32, Void*)
       # stream_id => Void* (GC anchor for nghttp2 DataSource.ptr boxes)
       @data_source_boxes : Hash(Int32, Void*)
+      @deadline_watch_stops : Hash(Int32, ::Channel(Nil))
       # GC anchor for the TLS context and socket (prevents premature collection)
       @tls_context_anchor : OpenSSL::SSL::Context::Client?
       @tls_socket_anchor : OpenSSL::SSL::Socket::Client?
